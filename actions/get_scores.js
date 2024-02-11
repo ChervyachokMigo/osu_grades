@@ -7,7 +7,7 @@ const load_osu_db = require('../tools/load_osu_db');
 
 const { RankedStatus } = require('osu-tools');
 const { scores_folder_path } = require('../const');
-const { login, password } = require('../config.js');
+const { login, password } = require('../config');
 
 module.exports = async( args ) => {
     console.log('getting scores');

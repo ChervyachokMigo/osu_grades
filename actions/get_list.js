@@ -1,4 +1,5 @@
-const { readdirSync, readFileSync, existsSync } = require('fs');
+const colors = require('colors');
+const { readdirSync, readFileSync, existsSync, writeFileSync } = require('fs');
 const path = require('path');
 
 const { scores_folder_path } = require('../const');
@@ -19,7 +20,7 @@ module.exports = (args) => {
         return;
     }
 
-    const grades = [{}, {}, {}, {}];
+    const list = [{}, {}, {}, {}];
 
     const files = readdirSync(scores_userdata_path, { encoding: 'utf8' });
 
@@ -37,25 +38,40 @@ module.exports = (args) => {
             const score = scores.shift();
 
             const mode = Number(score.ruleset_id);
-            
-            grades[mode][score.rank] = 1 + (grades[mode][score.rank] || 0);
+
+            if (!list[mode][score.rank]){
+                list[mode][score.rank] = [];
+            }
+
+            list[mode][score.rank].push(score.beatmap_id);
 
         } catch (e) {
             console.error(e);
         }
     }
 
-    const grades_sort = grades.map( x => Object.entries(x)
-        .sort(([,a],[,b]) => b - a)
-        .reduce((r, [k, v]) => ({ ...r, [k]: v }), {}) );
+    let output_data = `\nUser ${userid} beatmap list by grades\n`;
 
-    console.log('User', userid, 'grades');
-    for (let i in grades_sort){
-        console.log(`[${gamemode[i]}]\n${
-            Object.entries(grades_sort[i])
-            .map( x => ' ' + x.join(': '))
+    console.log(output_data);
+
+    for (let i in list){
+        if (Object.keys(list[i]).length == 0){
+            continue;
+        }
+
+        output_data += `\n[${gamemode[i]}]\n${
+            Object.entries(list[i])
+            .map( x => `\n [ ${x[0]} ]\n${x[1].join('\n')}`)
+            .join('\n')
+        }\n`;
+
+        console.log(`\n[${gamemode[i].yellow}]\n${
+            Object.entries(list[i])
+            .map( x => `\n [ ${x[0].green} ]\n${x[1].join('\n')}`)
             .join('\n')
         }\n`);
     }
-
+    const output_filename = `${userid}_beatmap_list_by_grade.txt`;
+    writeFileSync( output_filename, output_data, { encoding: 'utf8' } );
+    console.log('results saved in file', output_filename.yellow, '\n');
 }

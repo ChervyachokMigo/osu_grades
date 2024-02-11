@@ -1,14 +1,15 @@
 const axios = require('axios');
 const { writeFileSync } = require('fs');
 const path = require('path');
-const { auth, v2 } = require('osu-api-extended');
-
-const { folder_prepare, gamemode } = require("../tools/misc.js");
-const load_osu_db = require('../tools/load_osu_db.js');
+const { auth } = require('osu-api-extended');
 
 const { RankedStatus } = require('osu-tools');
-const { scores_v1_folder_path } = require('../const.js');
-const { login, password, api_key } = require('../config.js');
+
+const { folder_prepare, gamemode } = require("../tools/misc");
+const load_osu_db = require('../tools/load_osu_db');
+
+const { scores_v1_folder_path } = require('../const');
+const { login, password, api_key } = require('../config');
 
 
 module.exports = async( args ) => {

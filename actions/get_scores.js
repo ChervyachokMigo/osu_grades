@@ -40,8 +40,8 @@ module.exports = async( args ) => {
     let is_continue = continue_md5 ? true : false;
 
     //check scores folder
-    folder_prepare(scores_folder_path);
     const scores_userdata_path = path.join(scores_folder_path, userid.toString());
+    folder_prepare(scores_userdata_path);
     console.log('set scores folder', scores_userdata_path);
 
     //get osu db data
@@ -94,7 +94,7 @@ module.exports = async( args ) => {
             try {
                 const data = await v2.scores.user.beatmap( x.beatmap_id, userid, { mode: gamemode[x.gamemode_int], best_only: false });
                 if (!data || data.length === 0){
-                    console.error('warning:', 'not scores for beatmap', x.beatmap_id);
+                    //console.error('warning:', 'not scores for beatmap', x.beatmap_id);
                     continue;
                 }
                 console.log('founded new score, saving', output_path)

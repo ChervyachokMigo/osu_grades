@@ -1,0 +1,16 @@
+{
+  "name": "!nnaoi_osu_grades",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "osu-api-extended": "^2.8.1",
+    "osu-tools": "github:ChervyachokMigo/osu-tools"
+  }
+}

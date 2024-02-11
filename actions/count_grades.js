@@ -40,8 +40,8 @@ module.exports = (args) => {
 
             grades[mode][score.rank] = 
                     grades[mode][score.rank] ? 
-                        grades[mode][score.rank] + 1: 
-                            1
+                    grades[mode][score.rank] + 1 : 
+                    1
 
         } catch (e) {
             console.error(e);
@@ -54,7 +54,11 @@ module.exports = (args) => {
 
     console.log('User', userid, 'grades');
     for (let i in grades_sort){
-        console.log(`[${gamemode[i]}]\n${Object.entries(grades_sort[i]).map( x => ' ' + x.join(': ')).join('\n')}\n`);
+        console.log(`[${gamemode[i]}]\n${
+            Object.entries(grades_sort[i])
+            .map( x => ' ' + x.join(': '))
+            .join('\n')
+        }\n`);
     }
 
 }

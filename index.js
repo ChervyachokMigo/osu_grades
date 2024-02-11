@@ -13,6 +13,7 @@ const command_exec = async () => {
         { name: 'parse', F: require('./actions/parse')},
         { name: 'save_csv', F: require('./actions/save_csv')},
         { name: 'get_scores', F: require('./actions/get_scores')},
+        { name: 'get_scores_v1', F: require('./actions/get_scores_v1')},
         { name: 'count_grades', F: require('./actions/count_grades')},
     ];
 
@@ -23,7 +24,7 @@ const command_exec = async () => {
             await F(args);
             console.log('complete');
 
-            return 0;
+            return;
         }
     }
 

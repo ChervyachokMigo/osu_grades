@@ -1,13 +1,15 @@
+const axios = require('axios');
 const { writeFileSync } = require('fs');
 const path = require('path');
 const { auth, v2 } = require('osu-api-extended');
 
-const { folder_prepare, gamemode } = require("../tools/misc");
-const load_osu_db = require('../tools/load_osu_db');
+const { folder_prepare, gamemode } = require("../tools/misc.js");
+const load_osu_db = require('../tools/load_osu_db.js');
 
 const { RankedStatus } = require('osu-tools');
-const { scores_folder_path } = require('../const');
-const { login, password } = require('../config.js');
+const { scores_folder_path } = require('../const.js');
+const { login, password, api_key } = require('../config.js');
+
 
 module.exports = async( args ) => {
     console.log('getting scores');
@@ -18,6 +20,14 @@ module.exports = async( args ) => {
         console.error('userid invalid:', userid);
         return;
     }
+
+    //check continue
+    let continue_md5 = args.shift() || null;
+    if (continue_md5 && continue_md5.length !==32){
+        console.error('[continue_md5] > wrong md5 hash');
+        return;
+    }
+    let is_continue = continue_md5 ? true : false;
 
     //check gamemode
     const selected_ruleset = Number(args.shift()) || -1;
@@ -31,17 +41,10 @@ module.exports = async( args ) => {
         console.log('gamemode: all');
     }
 
-    //check continue
-    let continue_md5 = args.shift() || null;
-    if (continue_md5 && continue_md5.length !==32){
-        console.error('[continue_md5] > wrong md5 hash');
-        return;
-    }
-    let is_continue = continue_md5 ? true : false;
 
     //check scores folder
-    folder_prepare(scores_folder_path);
     const scores_userdata_path = path.join(scores_folder_path, userid.toString());
+    folder_prepare(scores_userdata_path);
     console.log('set scores folder', scores_userdata_path);
 
     //get osu db data
@@ -87,7 +90,9 @@ module.exports = async( args ) => {
 
         if (x.ranked_status_int === RankedStatus.ranked && x.beatmap_id > 0){
             try {
-                const data = await v2.scores.user.beatmap( x.beatmap_id, userid, { best_only: false });
+                const url = `https://osu.ppy.sh/api/get_scores?k=${api_key}&b=${x.beatmap_id}&u=${userid}&m=${x.gamemode_int}`;
+                const { data } = await axios(url);
+
                 if ( !data || data.length == 0 ){
                     continue;
                 }

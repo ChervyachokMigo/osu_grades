@@ -1,4 +1,4 @@
-const { writeFileSync } = require('fs');
+const { writeFileSync, existsSync } = require('fs');
 const path = require('path');
 const { auth, v2 } = require('osu-api-extended');
 
@@ -73,7 +73,15 @@ module.exports = async( args ) => {
         }
 
         //skip gamemodes
-        if ( selected_ruleset> -1 && x.gamemode_int !== selected_ruleset ){
+        if ( selected_ruleset > -1 && x.gamemode_int !== selected_ruleset ){
+            continue;
+        }
+
+        const output_name = x.beatmap_md5 + '.json';
+        const output_path = path.join(scores_userdata_path, output_name);
+
+        //skip existed score
+        if (existsSync(output_path)){
             continue;
         }
 
@@ -82,13 +90,11 @@ module.exports = async( args ) => {
             console.log('processed', (i/osu_db.length*100).toFixed(2), '% beatmaps');
         }
 
-        const output_name = x.beatmap_md5 + '.json';
-        const output_path = path.join(scores_userdata_path, output_name);
-
         if (x.ranked_status_int === RankedStatus.ranked && x.beatmap_id > 0){
             try {
-                const data = await v2.scores.user.beatmap( x.beatmap_id, userid, { best_only: false });
-                if ( !data || data.length == 0 ){
+                const data = await v2.scores.user.beatmap( x.beatmap_id, userid, { mode: gamemode[x.gamemode_int], best_only: false });
+                if (!data || data.length === 0){
+                    console.error('warning:', 'not scores for beatmap', x.beatmap_id);
                     continue;
                 }
                 console.log('founded new score, saving', output_path)

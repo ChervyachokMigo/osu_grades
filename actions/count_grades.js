@@ -28,12 +28,12 @@ module.exports = (args) => {
         try {
             let scores = JSON.parse(readFileSync(path.join(scores_userdata_path, filename), { encoding: 'utf8' }))
 
-            if (!scores || scores.length === 0){
+            if (!scores || typeof scores !== 'object' || scores.length === 0){
                 console.error('warning:', filename, 'not contains scores');
                 continue;
             }
 
-            scores.sort( (a, b) => a.total_score - b.total_score);
+            scores.sort( (a, b) => b.total_score - a.total_score);
 
             const score = scores.shift();
 

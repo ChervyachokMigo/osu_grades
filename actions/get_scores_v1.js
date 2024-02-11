@@ -77,7 +77,15 @@ module.exports = async( args ) => {
         }
 
         //skip gamemodes
-        if ( selected_ruleset> -1 && x.gamemode_int !== selected_ruleset ){
+        if ( selected_ruleset > -1 && x.gamemode_int !== selected_ruleset ){
+            continue;
+        }
+
+        const output_name = x.beatmap_md5 + '.json';
+        const output_path = path.join(scores_userdata_path, output_name);
+
+        //skip existed score
+        if (existsSync(output_path)){
             continue;
         }
 
@@ -86,15 +94,12 @@ module.exports = async( args ) => {
             console.log('processed', (i/osu_db.length*100).toFixed(2), '% beatmaps');
         }
 
-        const output_name = x.beatmap_md5 + '.json';
-        const output_path = path.join(scores_userdata_path, output_name);
-
         if (x.ranked_status_int === RankedStatus.ranked && x.beatmap_id > 0){
             try {
                 const url = `https://osu.ppy.sh/api/get_scores?k=${api_key}&b=${x.beatmap_id}&u=${userid}&m=${x.gamemode_int}`;
                 const { data } = await axios(url);
-
-                if ( !data || data.length == 0 ){
+                if (!data || data.length === 0){
+                    console.error('warning:', 'not scores for beatmap', x.beatmap_id);
                     continue;
                 }
                 console.log('founded new score, saving', output_path)

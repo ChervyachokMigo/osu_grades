@@ -1,5 +1,6 @@
 module.exports = {
     osu_db_folder: 'C:\\osu!',
     login: '',
-    password: ''
+    password: '',
+    api_key: ''
 }

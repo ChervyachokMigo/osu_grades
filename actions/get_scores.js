@@ -13,14 +13,14 @@ module.exports = async( args ) => {
     console.log('getting scores');
 
     //check userid
-    const userid = Number(args.shift()) | null;
-    if (!userid || isNaN(userid) || !userid == 0){
-        console.error('userid invalid');
+    const userid = Number(args.shift()) || null;
+    if (!userid || isNaN(userid) || userid == 0){
+        console.error('userid invalid:', userid);
         return;
     }
 
     //check continue
-    const continue_md5 = args.shift() | null;
+    let continue_md5 = args.shift() || null;
     if (continue_md5 && continue_md5.length !==32){
         console.error('[continue_md5] > wrong md5 hash');
         return;

@@ -10,9 +10,10 @@ const command_exec = async () => {
     folder_prepare('data');
 
     const actions = [
-        {name: 'parse', F: require('./actions/parse')},
-        {name: 'save_csv', F: require('./actions/save_csv')},
-        {name: 'get_scores', F: require('./actions/get_scores')},
+        { name: 'parse', F: require('./actions/parse')},
+        { name: 'save_csv', F: require('./actions/save_csv')},
+        { name: 'get_scores', F: require('./actions/get_scores')},
+        { name: 'count_grades', F: require('./actions/count_grades')},
     ];
 
     for (let { name, F } of actions) {

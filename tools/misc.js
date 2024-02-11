@@ -1,7 +1,8 @@
 const { existsSync, mkdirSync } = require('fs');
 
-
 module.exports = {
+    gamemode: ['osu', 'taiko', 'fruits', 'mania'],
+
     folder_prepare: (path) =>{
         try{
             if (!existsSync(path)) {

@@ -5,5 +5,5 @@ module.exports = {
     csv_folder_path: path.join('data', 'csv'),
     beatmap_ids_csv_filename: 'beatmap_ids.csv',
     scores_folder_path: path.join('data', 'scores'),
-
+    scores_v1_folder_path: path.join('data', 'scores_v1'),
 }

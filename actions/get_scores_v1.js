@@ -7,7 +7,7 @@ const { folder_prepare, gamemode } = require("../tools/misc.js");
 const load_osu_db = require('../tools/load_osu_db.js');
 
 const { RankedStatus } = require('osu-tools');
-const { scores_folder_path } = require('../const.js');
+const { scores_v1_folder_path } = require('../const.js');
 const { login, password, api_key } = require('../config.js');
 
 
@@ -43,7 +43,7 @@ module.exports = async( args ) => {
 
 
     //check scores folder
-    const scores_userdata_path = path.join(scores_folder_path, userid.toString());
+    const scores_userdata_path = path.join(scores_v1_folder_path, userid.toString());
     folder_prepare(scores_userdata_path);
     console.log('set scores folder', scores_userdata_path);
 

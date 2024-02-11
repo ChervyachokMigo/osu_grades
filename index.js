@@ -23,7 +23,7 @@ const command_exec = async () => {
             console.log('executting command:', action);
             console.log('args:', args);
             await F(args);
-            console.log('complete');
+            console.log('complete\n');
 
             return;
         }

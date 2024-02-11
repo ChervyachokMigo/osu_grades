@@ -1,4 +1,5 @@
-const { readdirSync, readFileSync, existsSync } = require('fs');
+const colors = require('colors');
+const { readdirSync, readFileSync, existsSync, writeFileSync } = require('fs');
 const path = require('path');
 
 const { scores_folder_path } = require('../const');
@@ -37,7 +38,7 @@ module.exports = (args) => {
             const score = scores.shift();
 
             const mode = Number(score.ruleset_id);
-            
+
             grades[mode][score.rank] = 1 + (grades[mode][score.rank] || 0);
 
         } catch (e) {
@@ -49,13 +50,30 @@ module.exports = (args) => {
         .sort(([,a],[,b]) => b - a)
         .reduce((r, [k, v]) => ({ ...r, [k]: v }), {}) );
 
-    console.log('User', userid, 'grades');
+    let output_data = `\nUser ${userid} grades\n`;
+
+    console.log(output_data);
+
     for (let i in grades_sort){
-        console.log(`[${gamemode[i]}]\n${
+        if (Object.keys(grades_sort[i]).length == 0){
+            continue;
+        }
+
+        output_data += `\n[${gamemode[i]}]\n${
             Object.entries(grades_sort[i])
-            .map( x => ' ' + x.join(': '))
+            .map( x => ` ${x[0]}: ${x[1]}`)
+            .join('\n')
+        }\n`;
+
+        console.log(`\n[${gamemode[i].yellow}]\n${
+            Object.entries(grades_sort[i])
+            .map( x => ` ${x[0].green}: ${x[1]}`)
             .join('\n')
         }\n`);
     }
+
+    const output_filename = `${userid}_count_grades.txt`;
+    writeFileSync( output_filename, output_data, { encoding: 'utf8' } );
+    console.log('results saved in file', output_filename.yellow, '\n');
 
 }

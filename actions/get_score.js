@@ -1,8 +1,6 @@
-const { auth, v2 } = require('osu-api-extended');
+const { v2 } = require('osu-api-extended');
 
-const load_osu_db = require('../tools/load_osu_db');
-
-const { login, password } = require('../config');
+const osu_auth = require('../tools/osu_auth');
 
 module.exports = async( args ) => {
     console.log('getting scores');
@@ -21,16 +19,9 @@ module.exports = async( args ) => {
         return;
     }
 
-    //get osu db data
-    const osu_db = load_osu_db();
-    if (!osu_db){
-        console.error('[osu_db] > is not exists');
-        return;
-    }
-
     //auth osu
     console.log('authing to osu');
-    await auth.login_lazer( login, password );
+    await osu_auth();
 
     //start process
     console.log('finding score');

@@ -6,4 +6,5 @@ module.exports = {
     beatmap_ids_csv_filename: 'beatmap_ids.csv',
     scores_folder_path: path.join('data', 'scores'),
     scores_v1_folder_path: path.join('data', 'scores_v1'),
+    osu_token_path: path.join('data', 'osu_token.json'),
 }

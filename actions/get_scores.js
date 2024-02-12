@@ -1,13 +1,13 @@
 const { writeFileSync, existsSync } = require('fs');
 const path = require('path');
-const { auth, v2 } = require('osu-api-extended');
+const { v2 } = require('osu-api-extended');
 
-const { folder_prepare, gamemode } = require("../tools/misc");
+const osu_auth = require('../tools/osu_auth');
+const { folder_prepare, gamemode, check_gamemode } = require("../tools/misc");
 const load_osu_db = require('../tools/load_osu_db');
 
 const { RankedStatus } = require('osu-tools');
 const { scores_folder_path } = require('../const');
-const { login, password } = require('../config');
 
 module.exports = async( args ) => {
     console.log('getting scores');
@@ -20,16 +20,7 @@ module.exports = async( args ) => {
     }
 
     //check gamemode
-    const selected_ruleset = Number(args.shift()) || -1;
-    if (isNaN(selected_ruleset)){
-        console.error('gamemode invalid:', selected_ruleset);
-        return;
-    }
-    if (selected_ruleset > -1){
-        console.log('gamemode:', gamemode[selected_ruleset]);
-    } else {
-        console.log('gamemode: all');
-    }
+    const ruleset = check_gamemode(Number(args.shift()));
 
     //check continue
     let continue_md5 = args.shift() || null;
@@ -53,7 +44,7 @@ module.exports = async( args ) => {
 
     //auth osu
     console.log('authing to osu');
-    await auth.login_lazer( login, password );
+    await osu_auth();
 
     //start process
     console.log('starting to send requests');
@@ -73,7 +64,7 @@ module.exports = async( args ) => {
         }
 
         //skip gamemodes
-        if ( selected_ruleset > -1 && x.gamemode_int !== selected_ruleset ){
+        if ( ruleset.idx > -1 && x.gamemode_int !== ruleset.idx ){
             continue;
         }
 

@@ -17,6 +17,8 @@ const command_exec = async () => {
         { name: 'count_grades', F: require('./actions/count_grades')},
         { name: 'get_list', F: require('./actions/get_list')},
         { name: 'get_score', F: require('./actions/get_score')},
+        { name: 'refresh', F: require('./actions/refresh')},
+        { name: 'refresh_all', F: require('./actions/refresh_all')},
     ];
 
     for (let { name, F } of actions) {

@@ -17,6 +17,15 @@ module.exports = {
         }
     },
 
-
+    check_gamemode: (mode_arg) => {
+        const mode_idx = typeof mode_arg === 'undefined' || isNaN(mode_arg) || mode_arg > 3 ? -1 : mode_arg; 
+        if (mode_idx > -1){
+            console.log('gamemode:', module.exports.gamemode[mode_idx]);
+            return {name: module.exports.gamemode[mode_idx], idx: mode_idx};
+        } else {
+            console.log('gamemode: all');
+            return {name: null, idx: mode_idx};
+        }
+    }
 
 }

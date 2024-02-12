@@ -4,5 +4,11 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			"**/data/csv": true,
+			"**/data/scores": true,
+			"**/node_modules": true
+		}
+	}
 }

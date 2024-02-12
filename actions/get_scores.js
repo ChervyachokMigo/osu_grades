@@ -8,6 +8,7 @@ const load_osu_db = require('../tools/load_osu_db');
 
 const { RankedStatus } = require('osu-tools');
 const { scores_folder_path } = require('../const');
+const storage = require('../tools/user_scores_storage');
 
 module.exports = async( args ) => {
     console.log('getting scores');
@@ -41,6 +42,9 @@ module.exports = async( args ) => {
         console.error('[osu_db] > is not exists');
         return;
     }
+
+    //load storage
+    storage.load();
 
     //auth osu
     console.log('authing to osu');
@@ -76,6 +80,10 @@ module.exports = async( args ) => {
             continue;
         }
 
+        if (storage.find(userid, x.beatmap_md5, x.gamemode_int)){
+            continue;
+        }
+
         //print percent every 1000 beatmaps
         if (i % 1000 == 0) {
             console.log('processed', (i/osu_db.length*100).toFixed(2), '% beatmaps');
@@ -88,8 +96,16 @@ module.exports = async( args ) => {
                     //console.error('warning:', 'not scores for beatmap', x.beatmap_id);
                     continue;
                 }
-                console.log('founded new score, saving', output_path)
+                
+                console.log('founded new score, saving', output_path);
+
                 writeFileSync(output_path, JSON.stringify(data), {encoding: 'utf8'});
+
+                storage.add(userid, {
+                    mode: x.gamemode_int, 
+                    beatmap_md5: x.beatmap_md5, 
+                    beatmap_id: x.beatmap_id 
+                });
 
             } catch (e) {
 

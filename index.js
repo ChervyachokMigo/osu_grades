@@ -14,9 +14,9 @@ const command_exec = async () => {
 
     const action_modules = readdirSync('actions', { encoding: 'utf8' });
 
-    const actions = action_modules.map( x => { return { 
-        name: path.basename(x, '.js'), 
-        F: require(`./actions/${x}`) 
+    const actions = action_modules.map( filename => { return { 
+        name: path.basename( filename, '.js' ),
+        F: require( `./actions/${filename}` ),
     }});
 
     for ( let { name, F } of actions ) {

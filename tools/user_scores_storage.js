@@ -1,6 +1,6 @@
 const { writeFileSync, existsSync, readFileSync, readdirSync } = require('fs');
 
-const { scores_storage_path } = require("../const");
+const { scores_storage_path } = require("../misc/const");
 const load_osu_db = require("./load_osu_db");
 const { check_userid } = require('./misc');
 

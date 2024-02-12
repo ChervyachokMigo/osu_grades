@@ -7,7 +7,7 @@ const refresh = require('./refresh');
 module.exports = async( args ) => {
 
     //check gamemode
-    const ruleset = check_gamemode(Number(args.shift()));
+    const ruleset = check_gamemode(args.shift());
 
     //check scores folder
     folder_prepare(scores_folder_path);

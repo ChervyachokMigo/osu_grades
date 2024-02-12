@@ -1,16 +1,13 @@
 const { v2 } = require('osu-api-extended');
 
 const osu_auth = require('../tools/osu_auth');
+const { check_userid } = require('../tools/misc');
 
 module.exports = async( args ) => {
     console.log('getting scores');
 
-    //check userid
-    const userid = Number(args.shift()) || null;
-    if (!userid || isNaN(userid) || userid == 0){
-        console.error('userid invalid:', userid);
-        return;
-    }
+    const userid = check_userid(args.shift());
+    if (!userid) return;
 
     //check beatmap_id
     const beatmap_id = Number(args.shift()) || null;

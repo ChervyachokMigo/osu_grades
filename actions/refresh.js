@@ -2,22 +2,18 @@ const { v2 } = require('osu-api-extended');
 const path = require('path');
 
 const osu_auth = require('../tools/osu_auth');
-const { check_gamemode, folder_prepare } = require('../tools/misc');
+const { check_gamemode, folder_prepare, check_userid } = require('../tools/misc');
 const { scores_folder_path } = require('../const');
 const { existsSync, writeFileSync, readFileSync } = require('fs');
 
 module.exports = async( args ) => {
     console.log('getting recent scores');
 
-    //check userid
-    const userid = Number(args.shift()) || null;
-    if (!userid || isNaN(userid) || userid == 0){
-        console.error('userid invalid:', userid);
-        return;
-    }
+    const userid = check_userid(args.shift());
+    if (!userid) return;
 
     //check gamemode
-    const ruleset = check_gamemode(Number(args.shift()));
+    const ruleset = check_gamemode(args.shift());
 
     //check scores folder
     const scores_userdata_path = path.join(scores_folder_path, userid.toString());

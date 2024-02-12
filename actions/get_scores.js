@@ -3,7 +3,7 @@ const path = require('path');
 const { v2 } = require('osu-api-extended');
 
 const osu_auth = require('../tools/osu_auth');
-const { folder_prepare, gamemode, check_gamemode } = require("../tools/misc");
+const { folder_prepare, gamemode, check_gamemode, print_processed, check_userid } = require("../tools/misc");
 const load_osu_db = require('../tools/load_osu_db');
 
 const { RankedStatus } = require('osu-tools');
@@ -13,15 +13,11 @@ const storage = require('../tools/user_scores_storage');
 module.exports = async( args ) => {
     console.log('getting scores');
 
-    //check userid
-    const userid = Number(args.shift()) || null;
-    if (!userid || isNaN(userid) || userid == 0){
-        console.error('userid invalid:', userid);
-        return;
-    }
+    const userid = check_userid(args.shift());
+    if (!userid) return;
 
     //check gamemode
-    const ruleset = check_gamemode(Number(args.shift()));
+    const ruleset = check_gamemode(args.shift());
 
     //check continue
     let continue_md5 = args.shift() || null;
@@ -60,7 +56,9 @@ module.exports = async( args ) => {
         if (is_continue){
             if ( x.beatmap_md5 === continue_md5 ) {
                 console.log('continue from', continue_md5);
-                console.log('processed', (i/osu_db.length*100).toFixed(2), '% beatmaps');
+
+                print_processed(i, osu_db.length, scores_userdata_path);
+
                 is_continue = false;
             } else {
                 continue;
@@ -86,7 +84,7 @@ module.exports = async( args ) => {
 
         //print percent every 1000 beatmaps
         if (i % 1000 == 0) {
-            console.log('processed', (i/osu_db.length*100).toFixed(2), '% beatmaps');
+            print_processed(i, osu_db.length, scores_userdata_path);
         }
 
         if (x.ranked_status_int === RankedStatus.ranked && x.beatmap_id > 0){

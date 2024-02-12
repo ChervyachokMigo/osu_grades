@@ -2,6 +2,7 @@ const { writeFileSync, existsSync, readFileSync, readdirSync } = require('fs');
 
 const { scores_storage_path } = require("../const");
 const load_osu_db = require("./load_osu_db");
+const { check_userid } = require('./misc');
 
 let scores_storage = [];
 
@@ -20,12 +21,9 @@ module.exports = {
         }
     },
 
-    add: (userid, score) => {
-        //check userid
-        if (!userid || isNaN(userid) || userid == 0){
-            console.error('userid invalid:', userid);
-            return;
-        }
+    add: (arg_userid, score) => {
+        const userid = check_userid(arg_userid);
+        if (!userid) return;
 
         let idx = scores_storage.findIndex( x => x.userid === userid );
         if ( idx === -1 ) {
@@ -40,12 +38,8 @@ module.exports = {
     },
 
     add_all: (args) => {
-        //check userid
-        const userid = Number(args.shift()) || null;
-        if (!userid || isNaN(userid) || userid == 0){
-            console.error('userid invalid:', userid);
-            return;
-        }
+        const userid = check_userid(args.shift());
+        if (!userid) return;
 
         const gamemode = Number(args.shift()) || null;
 

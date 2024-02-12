@@ -2,17 +2,14 @@ const colors = require('colors');
 const { readdirSync, readFileSync, existsSync, writeFileSync } = require('fs');
 const path = require('path');
 
-const { scores_folder_path } = require('../const');
-const { gamemode } = require('../tools/misc');
+const { scores_folder_path, grades_results_path } = require('../const');
+const { gamemode, check_userid, folder_prepare } = require('../tools/misc');
 
 module.exports = (args) => {
     console.log('counting grades');
-    //check userid
-    const userid = Number(args.shift()) || null;
-    if (!userid || isNaN(userid) || userid == 0){
-        console.error('userid invalid:', userid);
-        return;
-    }
+
+    const userid = check_userid(args.shift());
+    if (!userid) return;
 
     const scores_userdata_path = path.join(scores_folder_path, userid.toString());
     if (!existsSync(scores_userdata_path)) {
@@ -23,6 +20,11 @@ module.exports = (args) => {
     const list = [{}, {}, {}, {}];
 
     const files = readdirSync(scores_userdata_path, { encoding: 'utf8' });
+
+    if (files.length === 0) {
+        console.error(`user ${userid} was not scanned`);
+        return;
+    }
 
     for (let filename of files){
         try {
@@ -71,7 +73,12 @@ module.exports = (args) => {
             .join('\n')
         }\n`);
     }
+
     const output_filename = `${userid}_beatmap_list_by_grade.txt`;
-    writeFileSync( output_filename, output_data, { encoding: 'utf8' } );
+    const output_path = path.join( grades_results_path, output_filename)
+    folder_prepare(grades_results_path);
+
+    writeFileSync( output_path, output_data, { encoding: 'utf8' } );
+    
     console.log('results saved in file', output_filename.yellow, '\n');
 }

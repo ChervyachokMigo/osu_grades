@@ -1,5 +1,5 @@
 
-const { folder_prepare, check_gamemode } = require('../tools/misc');
+const { folder_prepare } = require('../tools/misc');
 const { scores_folder_path } = require('../const');
 const { readdirSync } = require('fs');
 const refresh = require('./refresh');

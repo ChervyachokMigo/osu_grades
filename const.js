@@ -8,4 +8,5 @@ module.exports = {
     scores_v1_folder_path: path.join('data', 'scores_v1'),
     osu_token_path: path.join('data', 'osu_token.json'),
     scores_storage_path: path.join('data', 'users_scores.json'),
+    grades_results_path: 'results',
 }

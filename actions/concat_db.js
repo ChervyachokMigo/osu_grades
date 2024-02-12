@@ -21,27 +21,25 @@ const beatmap_props = [
 ];
 
 module.exports = () => {
-    console.log('parsing osu.db');
+    console.log('concat osu.db');
     try {
         const results_db = osu_db_load( osu_db_path, beatmap_props );
 
         let json = load_osu_db(osu_db_parsed_path);
         
-        console.log(results_db.beatmaps.length);
-        console.log(json.length);
+        console.log('osu.db size:', results_db.beatmaps.length);
+        console.log('saved json size:', json.length);
 
         const json_set = new Set(json.map( x => x.beatmap_md5 ));
 
         json = [
             ...json,
-            ...results_db.beatmaps.filter( x => !json_set.has(x.beatmap_md5) )
+            ...results_db.beatmaps.filter( x => !json_set.has(x.beatmap_md5) ),
         ];
 
-        console.log(json.length);
+        console.log('new json size:', json.length);
 
         writeFileSync( osu_db_parsed_path, JSON.stringify(json), { encoding: 'utf8' });
-
-        console.log('parsed', json.length, 'beatmap records');
 
     } catch (e) {
         console.log(e);

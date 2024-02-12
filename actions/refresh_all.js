@@ -1,5 +1,5 @@
 
-const { folder_prepare, check_gamemode } = require('../tools/misc');
+const { folder_prepare, check_gamemode, gamemode } = require('../tools/misc');
 const { scores_folder_path } = require('../const');
 const { readdirSync } = require('fs');
 const refresh = require('./refresh');
@@ -19,7 +19,12 @@ module.exports = async( args ) => {
         return;
     }
 
-    for (let userid of users){
-        await refresh( [userid, ruleset.idx] );
-    }
+    for (let userid of users)
+        if (ruleset.idx === -1)
+            for (let mode in gamemode)
+                await refresh( [userid, mode] );
+            
+        else 
+            await refresh( [userid, ruleset.idx] );
+
 }

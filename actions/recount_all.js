@@ -1,6 +1,6 @@
 
 const { folder_prepare } = require('../tools/misc');
-const { scores_folder_path } = require('../const');
+const { scores_folder_path } = require('../misc/const');
 const { readdirSync } = require('fs');
 const refresh = require('./refresh');
 const count_grades = require('./count_grades');

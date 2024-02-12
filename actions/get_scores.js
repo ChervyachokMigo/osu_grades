@@ -7,7 +7,7 @@ const { folder_prepare, gamemode, check_gamemode, print_processed, check_userid 
 const load_osu_db = require('../tools/load_osu_db');
 
 const { RankedStatus } = require('osu-tools');
-const { scores_folder_path } = require('../const');
+const { scores_folder_path } = require('../misc/const');
 const storage = require('../tools/user_scores_storage');
 
 module.exports = async( args ) => {

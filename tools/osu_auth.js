@@ -1,8 +1,8 @@
 const { readFileSync, existsSync, writeFileSync } = require('fs');
 const { auth } = require ('osu-api-extended');
 
-const { osu_token_path } = require('../const.js');
-const { login, password } = require('../config.js');
+const { osu_token_path } = require('../misc/const');
+const { login, password } = require('../data/config');
 
 let access_token = null;
 let expires_in = null;

@@ -1,3 +1,3 @@
-copy config-sample.js config.js
-start config.js
+copy misc\config-sample.js data\config.js
+start data\config.js
 pause

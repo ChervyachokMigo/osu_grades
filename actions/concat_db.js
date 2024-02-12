@@ -2,8 +2,8 @@ const path = require('path');
 const { writeFileSync } = require('fs');
 const { osu_db_load, beatmap_property } = require('osu-tools');
 
-const { osu_db_folder } = require('../config');
-const { osu_db_parsed_path } = require('../const');
+const { osu_db_folder } = require('../data/config');
+const { osu_db_parsed_path } = require('../misc/const');
 const load_osu_db = require('../tools/load_osu_db');
 
 const osu_db_path = path.join(osu_db_folder, 'osu!.db');

@@ -8,8 +8,8 @@ const osu_auth = require('../tools/osu_auth');
 const { folder_prepare, check_gamemode, print_processed, check_userid } = require("../tools/misc");
 const load_osu_db = require('../tools/load_osu_db');
 
-const { scores_v1_folder_path } = require('../const');
-const { api_key } = require('../config');
+const { scores_v1_folder_path } = require('../misc/const');
+const { api_key } = require('../data/config');
 
 
 module.exports = async( args ) => {

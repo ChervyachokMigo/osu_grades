@@ -1,2 +1,1 @@
-npm install
-pause
+npm install && pause

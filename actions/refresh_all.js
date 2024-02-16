@@ -20,11 +20,10 @@ module.exports = async( args ) => {
     }
 
     for (let userid of users)
-        if (ruleset.idx === -1)
+        if (ruleset.idx >=-1 && ruleset.idx <=3)
+            await refresh( [userid, ruleset.idx] );
+        else
             for (let mode in gamemode)
                 await refresh( [userid, mode] );
-            
-        else 
-            await refresh( [userid, ruleset.idx] );
 
 }

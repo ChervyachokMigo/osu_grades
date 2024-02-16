@@ -6,6 +6,7 @@ const { check_gamemode, folder_prepare, check_userid } = require('../tools/misc'
 const { scores_folder_path } = require('../misc/const');
 const { existsSync, writeFileSync, readFileSync } = require('fs');
 
+
 module.exports = async( args ) => {
     console.log('getting recent scores');
 
@@ -27,44 +28,62 @@ module.exports = async( args ) => {
     //start process
     console.log('finding scores');
     try {
-        const data = await v2.scores.user.category(userid, 'recent', {mode: ruleset.name, offset: 0, limit: 1000});
-        if (!data || data.length === 0){
-            console.error('warning:', 'not scores for gamemode', ruleset.name, 'for user', userid);
-            return;
-        }
+        
+        let receiving = true;
+        const limit = 100;
+        let offset = 0;
 
-        for (let score of data){
+        while ( receiving ) {
+            const data = await v2.scores.user.category(userid, 'recent', {mode: ruleset.name, offset, limit});
 
-            const score_path = path.join( scores_userdata_path, score.beatmap.checksum + '.json' ); 
-
-            let modify_score = Object.assign( {}, score );
-            //delete excess information
-            const delete_props = ['beatmap', 'beatmapset', 'user', 'position', 'mods_id'];
-            for (let prop of delete_props){
-                delete modify_score[prop];
+            console.log('receiving', data.length,'scores');
+            if (!data || data.length === 0){
+                console.error('warning:', 'not scores for gamemode', ruleset.name, 'for user', userid);
+                return;
             }
 
-            if ( existsSync(score_path) ) {
+            offset += limit;
 
-                let saved_scores = JSON.parse(readFileSync(score_path, { encoding: 'utf8' }));
-                const is_score_saved = saved_scores.findIndex( x => modify_score.id === x.id ) > -1;
+            if (data.length < limit){
+                receiving = false;
+            }
+        
+            for (let score of data){
 
-                if ( !is_score_saved ){
-                    saved_scores.push(score);
-                    saved_scores.sort( (a, b) => b.total_score - a.total_score);
+                const score_path = path.join( scores_userdata_path, score.beatmap.checksum + '.json' ); 
 
-                    console.log('founded new score, saving', score_path);
-                    writeFileSync(score_path, JSON.stringify(saved_scores), {encoding: 'utf8'});
-
-                } else {
-                    //score is saved, nothing to do
+                let modify_score = Object.assign( {}, score );
+                //delete excess information
+                const delete_props = ['beatmap', 'beatmapset', 'user', 'position', 'mods_id'];
+                for (let prop of delete_props){
+                    delete modify_score[prop];
                 }
 
-            } else {
+                if ( existsSync(score_path) ) {
 
-                console.log('founded new score, saving', score_path);
-                writeFileSync(score_path, JSON.stringify([modify_score]), {encoding: 'utf8'});
+                    let saved_scores = JSON.parse(readFileSync(score_path, { encoding: 'utf8' }));
+                    const is_score_saved = saved_scores.findIndex( x => modify_score.id === x.id ) > -1;
 
+                    if ( !is_score_saved ){
+                        saved_scores.push(score);
+                        saved_scores.sort( (a, b) => b.total_score - a.total_score);
+
+                        console.log('founded new score, saving', score_path);
+                        writeFileSync(score_path, JSON.stringify(saved_scores), {encoding: 'utf8'});
+
+                    } else {
+                        //score is saved, nothing to do
+
+                        //console.log('score alredy saved', score_path);
+
+                    }
+
+                } else {
+
+                    console.log('founded new score, saving', score_path);
+                    writeFileSync(score_path, JSON.stringify([modify_score]), {encoding: 'utf8'});
+
+                }
             }
         }
 

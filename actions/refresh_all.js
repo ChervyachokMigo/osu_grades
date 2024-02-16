@@ -18,7 +18,7 @@ module.exports = async( args ) => {
         console.log('no users for refreshing')
         return;
     }
-
+    console.log('idx', ruleset.idx)
     for (let userid of users)
         if (ruleset.idx >=-1 && ruleset.idx <=3)
             await refresh( [userid, ruleset.idx] );

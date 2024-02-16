@@ -19,8 +19,8 @@ module.exports = {
 
     check_gamemode: (mode_arg) => {
 
-        let mode_idx = typeof mode_arg === 'undefined' ? -1 : Number(mode_arg);
-        mode_idx = (isNaN(mode_arg) || mode_arg > 3 || mode_arg < 0 ) ? -1 : mode_arg; 
+        let mode_idx = typeof mode_arg === 'undefined' ? -2 : Number(mode_arg);
+        mode_idx = (isNaN(mode_arg) || mode_arg > 3 || mode_arg < -1 ) ? -2 : mode_arg; 
 
         if ( mode_idx >= 0 && mode_arg <= 3 ){
             console.log('gamemode:', module.exports.gamemode[mode_idx]);
@@ -28,9 +28,14 @@ module.exports = {
                 name: module.exports.gamemode[mode_idx], 
                 idx: mode_idx
             };
-
-        } else {
+        } else if (mode_idx == -1) {
             console.log('gamemode: all');
+            return { 
+                name: null, 
+                idx: -1
+            };
+        } else {
+            console.log('gamemode: every');
             return { 
                 name: null, 
                 idx: mode_idx

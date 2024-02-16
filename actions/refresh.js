@@ -43,7 +43,7 @@ module.exports = async( args ) => {
             }
 
             offset += limit;
-
+            
             if (data.length < limit){
                 receiving = false;
             }

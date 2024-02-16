@@ -36,11 +36,12 @@ module.exports = async( args ) => {
         while ( receiving ) {
             const data = await v2.scores.user.category(userid, 'recent', {mode: ruleset.name, offset, limit});
 
-            console.log('receiving', data.length,'scores');
             if (!data || data.length === 0){
                 console.error('warning:', 'not scores for gamemode', ruleset.name, 'for user', userid);
                 return;
             }
+
+            console.log('receiving', data.length,'scores');
 
             offset += limit;
             

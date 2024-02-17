@@ -1,14 +1,16 @@
-const { writeFileSync, existsSync } = require('fs');
-const path = require('path');
+
 const { v2 } = require('osu-api-extended');
+const { Op } = require('@sequelize/core');
 
 const osu_auth = require('../tools/osu_auth');
-const { folder_prepare, gamemode, check_gamemode, print_processed, check_userid } = require("../tools/misc");
-const load_osu_db = require('../tools/load_osu_db');
+const { gamemode, check_gamemode, print_processed, check_userid } = require("../tools/misc");
+
+const find_beatmaps = require('../tools/find_beatmaps');
 
 const { RankedStatus } = require('osu-tools');
-const { scores_folder_path } = require('../misc/const');
-const storage = require('../tools/user_scores_storage');
+
+const { save_score, save_scores } = require('../modules/DB/scores');
+const { osu_score } = require('../modules/DB/defines');
 
 module.exports = async( args ) => {
     console.log('getting scores');
@@ -27,20 +29,20 @@ module.exports = async( args ) => {
     }
     let is_continue = continue_md5 ? true : false;
 
-    //check scores folder
-    const scores_userdata_path = path.join(scores_folder_path, userid.toString());
-    folder_prepare(scores_userdata_path);
-    console.log('set scores folder', scores_userdata_path);
+    //load scores from db
+    const scores_db = await osu_score.findAll({ 
+        where: { userid }, 
+        logging: false, 
+        raw: true
+    });
+    console.log('scores', scores_db.length, 'already saved')
 
-    //get osu db data
-    const osu_db = load_osu_db();
-    if (!osu_db){
-        console.error('[osu_db] > is not exists');
-        return;
-    }
-
-    //load storage
-    storage.load();
+    //load beatmaps from DB
+    const beatmaps_db = (await find_beatmaps({ 
+        gamemode: { [Op.between]: [0, 3] }, 
+        ranked: RankedStatus.ranked }))
+        .filter( x => x.beatmap_id > 0 );
+    console.log('founded', beatmaps_db.length, 'beatmaps');
 
     //auth osu
     console.log('authing to osu');
@@ -48,16 +50,16 @@ module.exports = async( args ) => {
 
     //start process
     console.log('starting to send requests');
-    let i = -1;
-    for (let x of osu_db){
+    let i = 0;
+    for (let beatmap of beatmaps_db){
         i++;
         
         //go to md5 and continue
         if (is_continue){
-            if ( x.beatmap_md5 === continue_md5 ) {
+            if ( beatmap.md5 === continue_md5 ) {
                 console.log('continue from', continue_md5);
 
-                print_processed(i, osu_db.length, scores_userdata_path);
+                print_processed(i, beatmaps_db.length);
 
                 is_continue = false;
             } else {
@@ -66,54 +68,30 @@ module.exports = async( args ) => {
         }
 
         //skip gamemodes
-        if ( ruleset.idx > -1 && x.gamemode_int !== ruleset.idx ){
-            continue;
-        }
-
-        const output_name = x.beatmap_md5 + '.json';
-        const output_path = path.join(scores_userdata_path, output_name);
-
-        //skip existed score
-        if (existsSync(output_path)){
-            continue;
-        }
-
-        if (storage.find(userid, x.beatmap_md5, x.gamemode_int)){
+        if ( ruleset.idx > -1 && beatmap.gamemode !== ruleset.idx ){
             continue;
         }
 
         //print percent every 1000 beatmaps
         if (i % 1000 == 0) {
-            print_processed(i, osu_db.length, scores_userdata_path);
+            print_processed(i, beatmaps_db.length);
         }
 
-        if (x.ranked_status_int === RankedStatus.ranked && x.beatmap_id > 0){
-            try {
-                const data = await v2.scores.user.beatmap( x.beatmap_id, userid, { mode: gamemode[x.gamemode_int], best_only: false });
-                if (!data || data.length === 0){
-                    //console.error('warning:', 'not scores for beatmap', x.beatmap_id);
-                    continue;
-                }
-                
-                console.log('founded new score, saving', output_path);
-
-                writeFileSync(output_path, JSON.stringify(data), {encoding: 'utf8'});
-
-                storage.add(userid, {
-                    mode: x.gamemode_int, 
-                    beatmap_md5: x.beatmap_md5, 
-                    beatmap_id: x.beatmap_id 
-                });
-
-            } catch (e) {
-
-                console.log( output_path, x);
-                console.error(e);
-                break;
-                
-            }
+        try {
+            const data = await v2.scores.user.beatmap( beatmap.beatmap_id, userid, { mode: gamemode[beatmap.gamemode], best_only: false });
             
-        }
+            if (!data || data.length === 0){
+                // no scores for beatmap
+                continue;
+            }
 
+            const scores = data.map( x => { return {...x, md5: beatmap.md5 }});
+            await save_scores(scores);
+
+        } catch (e) {
+            console.log( beatmap );
+            console.error( e );
+            break;
+        }
     }
 }

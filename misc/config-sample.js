@@ -1,4 +1,12 @@
 module.exports = {
+    DB_HOST: `localhost`, 
+    DB_PORT: `3306`, 
+    DB_USER: ``, 
+    DB_PASSWORD: ``, 
+
+    DB_NAME_BEATMAPS: 'osu_beatmaps',
+    DB_NAME_SCORES: 'osu_scores',
+
     osu_db_folder: 'C:\\osu!',
     login: '',
     password: '',

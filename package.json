@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sequelize/core": "^7.0.0-alpha.37",
     "axios": "^1.6.7",
     "colors": "^1.4.0",
+    "mysql2": "^3.9.1",
     "osu-api-extended": "^2.8.1",
     "osu-tools": "github:ChervyachokMigo/osu-tools"
   }

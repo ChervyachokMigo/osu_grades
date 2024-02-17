@@ -2,6 +2,7 @@ const { readdirSync } = require('fs');
 const path = require('path');
 
 const { folder_prepare } = require('./tools/misc');
+const { prepareDB } = require('./modules/DB/defines');
 
 const args = process.argv.slice(2);
 
@@ -11,6 +12,8 @@ const command_exec = async () => {
     const action = args.shift();
 
     folder_prepare('data');
+
+    await prepareDB();
 
     const action_modules = readdirSync('actions', { encoding: 'utf8' });
 

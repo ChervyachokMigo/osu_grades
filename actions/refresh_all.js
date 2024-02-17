@@ -12,8 +12,7 @@ module.exports = async( args ) => {
     //check scores folder
     folder_prepare(scores_folder_path);
 
-    const users = readdirSync(scores_folder_path, {encoding: 'utf8'} );
-
+    const users = [5275518, 9547517, 9708920, 20024750]
     if (users.length == 0) {
         console.log('no users for refreshing')
         return;

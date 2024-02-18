@@ -118,12 +118,21 @@ module.exports = {
         [ 'beatmap', 'beatmapset', 'user', 'position', 'mods_id' ]
             .forEach( p => delete modified_score[p] );
 
-        const saved_scores = (existsSync(score_path) ? 
+        const is_old_score = existsSync(score_path);
+
+        const saved_scores = ( is_old_score ? 
         [ ...JSON.parse( readFileSync( score_path, { encoding: 'utf8' })), modified_score ] : 
         [ modified_score ]).filter(( v, i, a) => a.findIndex( x => x.id === v.id ) === i );
 
+        const before_sort_length = saved_scores.length;
         saved_scores.sort( (a, b) => b.total_score - a.total_score);
 
-        writeFileSync(score_path, JSON.stringify(saved_scores), {encoding: 'utf8'});
+        //save if only new score
+        if ( !is_old_score || (is_old_score && saved_scores.length !== before_sort_length ) ) {
+            console.log('founded new score, saving', score_path);
+            writeFileSync(score_path, JSON.stringify(saved_scores), {encoding: 'utf8'});
+            
+        }
     }
 }
+

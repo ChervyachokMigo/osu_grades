@@ -1,7 +1,7 @@
 const osu_auth = require('../tools/osu_auth');
 const { check_gamemode, check_userid } = require("../tools/misc");
 
-module.exports = async({ args, init = async () => {}, callback }) => {
+module.exports = async({ args, init = async () => false, callback }) => {
     //check userid
     const userid = check_userid(args.shift());
     if (!userid) return;

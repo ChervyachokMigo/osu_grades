@@ -2,8 +2,8 @@ const colors = require('colors');
 const { readdirSync, readFileSync, existsSync, writeFileSync } = require('fs');
 const path = require('path');
 
-const { scores_folder_path, grades_results_path } = require('../misc/const');
-const { gamemode, check_userid, folder_prepare } = require('../tools/misc');
+const { scores_folder_path, grades_results_path, gamemode } = require('../misc/const');
+const { check_userid, folder_prepare } = require('../tools/misc');
 
 module.exports = (args) => {
     console.log('counting grades');

@@ -1,30 +1,12 @@
-const { existsSync, mkdirSync, readdirSync } = require('fs');
-
-const gamemode = ['osu', 'taiko', 'fruits', 'mania'];
-
-const rank_to_int = {
-    "F": 0,
-    "D": 1,
-    "C": 2,
-    "B": 3,
-    "A": 4,
-    "S": 5,
-    "X": 6,
-    "SH": 7,
-    'XH': 8
-}
+const { existsSync, mkdirSync } = require('fs');
+const { gamemode } = require('../misc/const');
 
 module.exports = {
-    gamemode,
-    rank_to_int,
-
     folder_prepare: (path) =>{
         try{
-            if (!existsSync(path)) {
+            if (!existsSync(path)) 
                 mkdirSync(path, {recursive: true}); 
-            }
             return true;
-
         } catch (e) {
             console.error('Cannot create folder:', path);
             console.error(e);
@@ -33,7 +15,6 @@ module.exports = {
     },
 
     check_gamemode: (mode_arg) => {
-
         let mode_idx = typeof mode_arg === 'undefined' ? -2 : Number(mode_arg);
         mode_idx = (isNaN(mode_arg) || mode_arg < -1 || mode_arg > 3 ) ? -2 : Number(mode_arg); 
 
@@ -55,7 +36,6 @@ module.exports = {
                 name: null, 
                 idx: mode_idx
             };
-
         }
     },
 

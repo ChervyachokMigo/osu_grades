@@ -1,13 +1,10 @@
 const { RankedStatus } = require('osu-tools');
-const { Op } = require('@sequelize/core');
 
 const osu_auth = require('../tools/osu_auth');
 const find_beatmaps = require('../tools/find_beatmaps');
 const { check_gamemode, print_processed, check_userid } = require("../tools/misc");
 
-const { osu_score } = require('../modules/DB/defines');
 const { print_progress_frequency } = require('../data/config');
-const { scores_folder_path } = require('../misc/const');
 
 module.exports = async({ args, init = async () => {}, callback }) => {
     //check userid
@@ -27,17 +24,8 @@ module.exports = async({ args, init = async () => {}, callback }) => {
 
     await init(userid);
 
-    //load scores from db
-    const scores_db = await osu_score.findAll({ 
-        where: { userid }, 
-        logging: false, 
-        raw: true
-    });
-    console.log('scores', scores_db.length, 'already saved');
-
     //load beatmaps from DB
-    const beatmaps_db = (await find_beatmaps({ 
-        gamemode: { [Op.between]: [0, 3] }, 
+    const beatmaps_db = (await find_beatmaps({
         ranked: RankedStatus.ranked }))
         .filter( x => x.beatmap_id > 0 );
     console.log('founded', beatmaps_db.length, 'ranked beatmaps');
@@ -49,17 +37,15 @@ module.exports = async({ args, init = async () => {}, callback }) => {
     //start process
     console.log('starting to send requests');
     let i = 0;
-    console.time('requesting')
+    console.time('past time');
     for (let beatmap of beatmaps_db){
         i++;
-        
+
         //go to md5 and continue
         if (is_continue){
             if ( beatmap.md5 === continue_md5 ) {
                 console.log('continue from', continue_md5);
-
                 print_processed(i, beatmaps_db.length);
-
                 is_continue = false;
             } else {
                 continue;
@@ -74,13 +60,12 @@ module.exports = async({ args, init = async () => {}, callback }) => {
         //print percent every 1000 beatmaps
         if ( i % (1000 / print_progress_frequency) == 0 ) {
             print_processed( i, beatmaps_db.length );
-            console.timeLog( 'requesting', i );
+            console.timeLog( 'past time' );
         }
 
-        const result = await callback( beatmap, userid );
-
-        if (result === true) {
+        if ( await callback( beatmap, userid ) ){
             break;
-        }
+        };
+
     }
 }

@@ -1,8 +1,9 @@
 const { ModsIntToShortText } = require('osu-tools');
 
 const { osu_score_legacy } = require("../DB/defines")
-const { Num, rank_to_int } = require('../../tools/misc');
+const { Num } = require('../../tools/misc');
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
+const { rank_to_int } = require('../../misc/const');
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
     score: {

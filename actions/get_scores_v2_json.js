@@ -2,10 +2,11 @@ const { writeFileSync, existsSync } = require('fs');
 const path = require('path');
 const { v2 } = require('osu-api-extended');
 
-const { gamemode, folder_prepare } = require("../tools/misc");
+const { folder_prepare } = require("../tools/misc");
 
-const { scores_folder_path } = require('../misc/const');
+const { scores_folder_path, gamemode } = require('../misc/const');
 const get_scores_loop = require('../tools/get_scores_loop');
+const { save_score_v2_to_json } = require('../modules/scores/json');
 
 module.exports = async( args ) => {
     console.log('getting scores with v2 to jsons');
@@ -17,31 +18,21 @@ module.exports = async( args ) => {
         console.log('set scores folder', scores_userdata_path);
 
     }, callback: async ( beatmap, userid ) => {
-        const scores_userdata_path = path.join(scores_folder_path, userid.toString());
-        const output_name = beatmap.md5 + '.json';
-        const output_path = path.join(scores_userdata_path, output_name);
-
-        //skip existed score
-        if (existsSync(output_path)){
-            return true;
-        }
-
         try {
             const data = await v2.scores.user.beatmap( beatmap.beatmap_id, userid, { mode: gamemode[beatmap.gamemode_int], best_only: false });
             
-            if (!data || data.length === 0){
-                // no scores for beatmap
-            } else {
-                console.log('founded new score, saving', output_path);
-                writeFileSync(output_path, JSON.stringify(data), {encoding: 'utf8'});
-            }
+            if (data && data.length > 0){
+                for (let score of data){ 
+                    save_score_v2_to_json(userid, score);
+                }
+            } 
+            
+            // else no data for user on beatmap
 
         } catch (e) {
-
             console.log( beatmap );
             console.error( e );
             return true;
-            
         }
 
     }});

@@ -1,5 +1,5 @@
 const { readFileSync, existsSync } = require('fs');
-const { osu_db_parsed_path } = require('../misc/const');
+const { osu_db_parsed_path } = require('../../misc/const');
 
 module.exports = () => {
     if ( existsSync(osu_db_parsed_path) === false){

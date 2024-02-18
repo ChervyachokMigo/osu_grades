@@ -9,4 +9,5 @@ module.exports = {
     osu_token_path: path.join('data', 'osu_token.json'),
     scores_storage_path: path.join('data', 'users_scores.json'),
     grades_results_path: 'results',
+    scores_backup_path: path.join('data', 'scores_backup')
 }

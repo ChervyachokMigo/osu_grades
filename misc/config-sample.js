@@ -13,4 +13,6 @@ module.exports = {
     api_key: '',
 
     print_progress_frequency: 4,
+    backup_instead_remove: true,
+
 }

@@ -7,9 +7,9 @@ module.exports = {
     DB_NAME_BEATMAPS: 'osu_beatmaps',
     DB_NAME_SCORES: 'osu_scores',
 
+    api_key: '',
     login: '',
     password: '',
-    api_key: '',
 
     print_progress_frequency: 4,
     backup_instead_remove: true,

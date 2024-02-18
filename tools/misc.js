@@ -1,7 +1,22 @@
 const { existsSync, mkdirSync, readdirSync } = require('fs');
 
+const gamemode = ['osu', 'taiko', 'fruits', 'mania'];
+
+const rank_to_int = {
+    "F": 0,
+    "D": 1,
+    "C": 2,
+    "B": 3,
+    "A": 4,
+    "S": 5,
+    "X": 6,
+    "SH": 7,
+    'XH': 8
+}
+
 module.exports = {
-    gamemode: ['osu', 'taiko', 'fruits', 'mania'],
+    gamemode,
+    rank_to_int,
 
     folder_prepare: (path) =>{
         try{
@@ -20,12 +35,12 @@ module.exports = {
     check_gamemode: (mode_arg) => {
 
         let mode_idx = typeof mode_arg === 'undefined' ? -2 : Number(mode_arg);
-        mode_idx = (isNaN(mode_arg) || mode_arg < -1 || mode_arg > 3 ) ? -2 : mode_arg; 
+        mode_idx = (isNaN(mode_arg) || mode_arg < -1 || mode_arg > 3 ) ? -2 : Number(mode_arg); 
 
         if ( mode_idx >= 0 && mode_arg <= 3 ){
-            console.log('gamemode:', module.exports.gamemode[mode_idx]);
+            console.log('gamemode:', gamemode[mode_idx]);
             return { 
-                name: module.exports.gamemode[mode_idx], 
+                name: gamemode[mode_idx], 
                 idx: mode_idx
             };
         } else if (mode_idx == -1) {
@@ -45,7 +60,7 @@ module.exports = {
     },
 
     print_processed: (current, size) => {
-        console.log('processed', (current/size*100).toFixed(2), '% beatmaps,', `(${current}/${size})`);
+        console.log('processed', (current / size * 100).toFixed(2), '% beatmaps,', `(${current}/${size})`);
     },
 
     check_userid: (str) => {
@@ -55,6 +70,8 @@ module.exports = {
             return null;
         }
         return userid;
-    }
+    },
+
+    Num: (x, default_value = 0) => !isNaN(Number(x))? Number(x) : default_value,
 
 }

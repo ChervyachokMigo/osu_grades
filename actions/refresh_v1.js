@@ -4,7 +4,7 @@ const path = require('path');
 const osu_auth = require('../tools/osu_auth');
 const { check_gamemode, folder_prepare, check_userid } = require('../tools/misc');
 const { scores_folder_path } = require('../misc/const');
-const { save_scores_v2 } = require('../modules/scores/v2');
+const { save_scores_v1 } = require('../modules/scores/v1');
 
 module.exports = async( args ) => {
     console.log('getting recent scores');
@@ -25,7 +25,7 @@ module.exports = async( args ) => {
     await osu_auth();
 
     //start process
-    console.log('finding scores');
+    console.log('finding scores');/*
     try {
         
         const loop = {
@@ -48,7 +48,7 @@ module.exports = async( args ) => {
             }
 
             const scores = data.map( x => ({...x, md5: x.beatmap.checksum }));
-            await save_scores_v2(scores);
+            await save_scores_v1(scores);
 
             console.log('receiving', scores.length, 'scores');
 
@@ -58,6 +58,6 @@ module.exports = async( args ) => {
         console.log( userid );
         console.error(e);
         return;
-    }
+    }*/
 
 }

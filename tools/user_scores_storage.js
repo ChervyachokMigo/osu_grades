@@ -63,11 +63,11 @@ module.exports = {
         console.log(scores_storage[idx].scores.length)
 
         const scores_in_db = osu_db.filter( x => gamemode ? x.gamemode_int === gamemode : true )
-            .map( x => { return {
+            .map( x => ({
                 mode: x.gamemode_int,
                 beatmap_id: x.beatmap_id,
                 beatmap_md5: x.beatmap_md5
-            }});
+            }));
 
         const saved_scores = new Set(scores_storage[idx].scores.map( x => x.beatmap_md5));
 

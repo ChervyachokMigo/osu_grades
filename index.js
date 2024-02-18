@@ -17,10 +17,10 @@ const command_exec = async () => {
 
     const action_modules = readdirSync('actions', { encoding: 'utf8' });
 
-    const actions = action_modules.map( filename => { return { 
+    const actions = action_modules.map( filename => ({ 
         name: path.basename( filename, '.js' ),
         F: require( `./actions/${filename}` ),
-    }});
+    }));
 
     for ( let { name, F } of actions ) {
         if ( name === action ){
@@ -38,3 +38,11 @@ const command_exec = async () => {
 
 command_exec();
 
+
+// сделать config editor
+// сделать лаунчер
+// перенести импорт карт из карт менеджера
+// вернуть сохранялку в json файлы чисто как опцию
+
+// сделать апи для вывода подсчитанных результатов с автообновлением
+// переделать подсчет ранков

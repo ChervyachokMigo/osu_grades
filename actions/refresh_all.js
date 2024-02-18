@@ -1,7 +1,7 @@
 
 const { folder_prepare, check_gamemode, gamemode } = require('../tools/misc');
 const { scores_folder_path } = require('../misc/const');
-const { readdirSync } = require('fs');
+
 const refresh = require('./refresh');
 
 module.exports = async( args ) => {

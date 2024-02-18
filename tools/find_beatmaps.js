@@ -6,12 +6,13 @@ module.exports = async ({
     beatmap_id = null, 
     beatmapset_id = null, 
     gamemode = null, 
-    ranked = null 
+    ranked = null,
+    single = false,
 }) => {
 
     const md5_condition = beatmap_md5 ? { hash: beatmap_md5 } : undefined;
 
-    const beatmap_id_condition = { gamemode, ranked };
+    const beatmap_id_condition = {};
     if (gamemode)
         beatmap_id_condition.gamemode = gamemode;
     if (ranked)
@@ -21,8 +22,7 @@ module.exports = async ({
     if (beatmapset_id) 
         beatmap_id_condition.beatmapset_id = beatmapset_id;
 
-
-    return await osu_beatmap_id.findAll({
+    const options = {
         where: beatmap_id_condition,
 
         include: [{ model: beatmaps_md5, where: md5_condition }],
@@ -43,5 +43,12 @@ module.exports = async ({
 
         logging: false,
         raw: true, 
-    });
+    }
+
+    if (single) {
+        return await osu_beatmap_id.findOne(options);
+    } else {
+        return await osu_beatmap_id.findAll(options);
+    }
+    
 }

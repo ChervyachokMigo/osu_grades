@@ -40,7 +40,7 @@ module.exports = async({ args, init = async () => {}, callback }) => {
         gamemode: { [Op.between]: [0, 3] }, 
         ranked: RankedStatus.ranked }))
         .filter( x => x.beatmap_id > 0 );
-    console.log('founded', beatmaps_db.length, 'beatmaps');
+    console.log('founded', beatmaps_db.length, 'ranked beatmaps');
 
     //auth osu
     console.log('authing to osu');

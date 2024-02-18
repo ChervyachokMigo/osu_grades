@@ -1,4 +1,4 @@
-const { existsSync, readdirSync, readFileSync, rmSync, renameSync } = require('fs');
+const { existsSync, readdirSync, readFileSync, rmSync, renameSync, writeFileSync } = require('fs');
 const { RankedStatus } = require('osu-tools');
 const path = require('path');
 const { Op } = require('@sequelize/core');
@@ -12,7 +12,7 @@ const { scores_folder_path, scores_backup_path } = require('../../misc/const');
 const { backup_instead_remove } = require('../../data/config');
 const { folder_prepare } = require('../../tools/misc');
 
-const save_json_scores_v1 = async ( userid, beatmaps_db ) => {
+const import_json_user_scores_v1 = async ( userid, beatmaps_db ) => {
     const user_scores_path = path.join( scores_folder_path, userid.toString() );
     const user_scores_backup_path = path.join( scores_backup_path, userid.toString() );
 
@@ -24,8 +24,6 @@ const save_json_scores_v1 = async ( userid, beatmaps_db ) => {
     if (backup_instead_remove) {
         folder_prepare( user_scores_backup_path );
     }
-
-    //const scores_db = await osu_score.findAll({ where: { userid } ,logging: false, raw: true})
 
     const scores_json_names = readdirSync(user_scores_path, 'utf8');
     for (let score_json_name of scores_json_names){
@@ -53,7 +51,7 @@ const save_json_scores_v1 = async ( userid, beatmaps_db ) => {
     }
 }
 
-const save_json_scores = async ( userid ) => {
+const import_json_user_scores = async ( userid ) => {
     const user_scores_path = path.join( scores_folder_path, userid.toString() );
     const user_scores_backup_path = path.join( scores_backup_path, userid.toString() );
     
@@ -65,8 +63,6 @@ const save_json_scores = async ( userid ) => {
     if (backup_instead_remove) {
         folder_prepare( user_scores_backup_path );
     }
-
-    //const scores_db = await osu_score.findAll({ where: { userid } ,logging: false, raw: true})
 
     const scores_json_names = readdirSync(user_scores_path, 'utf8');
     for (let score_json_name of scores_json_names){
@@ -86,29 +82,48 @@ const save_json_scores = async ( userid ) => {
 }
 
 module.exports = {
-    save_json_scores,
+    import_json_user_scores,
+    import_json_user_scores_v1,
 
-    save_all_json_scores: async () => {
+    import_all_json_scores: async () => {
         const userids = readdirSync( scores_folder_path, 'utf8' );
         for (let userid of userids) {
             console.log('saving scores for userid', userid);
-            await save_json_scores(userid);
+            await import_json_user_scores(userid);
         }
     },
 
-    save_all_json_scores_v1: async () => {
+    import_all_json_scores_v1: async () => {
         //load beatmaps from DB
         const beatmaps_db = (await find_beatmaps({ 
             gamemode: { [Op.between]: [0, 3] }, 
             ranked: RankedStatus.ranked }))
             .filter( x => x.beatmap_id > 0 );
 
-        console.log('founded', beatmaps_db.length, 'beatmaps');
+        console.log('founded', beatmaps_db.length, 'ranked beatmaps');
 
         const userids = readdirSync( scores_folder_path, 'utf8' );
         for (let userid of userids) {
             console.log('saving scores for userid', userid);
-            await save_json_scores_v1(userid, beatmaps_db);
+            await import_json_user_scores_v1(userid, beatmaps_db);
         }
+    },
+
+    save_score_v2_to_json: ( userid, score ) => {
+        const scores_userdata_path = path.join( scores_folder_path, userid.toString() );
+        const score_path = path.join( scores_userdata_path, score.beatmap.checksum + '.json' ); 
+
+        //delete excess information
+        const modified_score = Object.assign( {}, score );
+        [ 'beatmap', 'beatmapset', 'user', 'position', 'mods_id' ]
+            .forEach( p => delete modified_score[p] );
+
+        const saved_scores = (existsSync(score_path) ? 
+        [ ...JSON.parse( readFileSync( score_path, { encoding: 'utf8' })), modified_score ] : 
+        [ modified_score ]).filter(( v, i, a) => a.findIndex( x => x.id === v.id ) === i );
+
+        saved_scores.sort( (a, b) => b.total_score - a.total_score);
+
+        writeFileSync(score_path, JSON.stringify(saved_scores), {encoding: 'utf8'});
     }
 }

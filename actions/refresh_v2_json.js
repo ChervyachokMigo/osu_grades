@@ -1,11 +1,22 @@
 const { v2 } = require('osu-api-extended');
-const { save_scores_v2 } = require('../modules/scores/v2');
+const path = require('path');
+
 const update_scores_by_user_recent = require('../tools/update_scores_by_user_recent');
+
+const { folder_prepare } = require('../tools/misc');
+const { save_score_v2_to_json } = require('../modules/scores/json');
+const { scores_folder_path } = require('../misc/const');
 
 module.exports = async( args ) => {
     console.log('getting recent scores v2');
 
-    await update_scores_by_user_recent({ args, callback: async ( userid, ruleset ) => {
+    await update_scores_by_user_recent({ args, init: (userid) => {
+        //check scores folder
+        const scores_userdata_path = path.join( scores_folder_path, userid.toString() );
+        folder_prepare( scores_userdata_path );
+        console.log( 'set scores folder', scores_userdata_path );
+
+    }, callback: async ( userid, ruleset ) => {
         try {
             const loop = {
                 limit: 100,
@@ -28,14 +39,14 @@ module.exports = async( args ) => {
                     loop.receiving = false;
                 }
                 
-                const scores = data.map( x => ({...x, md5: x.beatmap.checksum }));
-                await save_scores_v2( scores );
-                console.log('receiving', scores.length, 'scores');
-
-        }} catch (e) {
+                for (let score of data){ 
+                    save_score_v2_to_json( userid, score );
+                    
+        }}} catch (e) {
             console.error( e );
             return;
         }
 
     }});
 }
+

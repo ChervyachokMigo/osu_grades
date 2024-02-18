@@ -1,63 +1,43 @@
-const { v2 } = require('osu-api-extended');
-const path = require('path');
-
-const osu_auth = require('../tools/osu_auth');
-const { check_gamemode, folder_prepare, check_userid } = require('../tools/misc');
-const { scores_folder_path } = require('../misc/const');
 const { save_scores_v1 } = require('../modules/scores/v1');
+const update_scores_by_user_recent = require('../tools/update_scores_by_user_recent');
+const find_beatmaps = require('../tools/find_beatmaps');
+const { api_key } = require('../data/config');
+const Axios = require('axios');
+const { Num } = require('../tools/misc');
 
 module.exports = async( args ) => {
-    console.log('getting recent scores');
+    console.log('getting recent scores v1');
 
-    const userid = check_userid(args.shift());
-    if (!userid) return;
+    await update_scores_by_user_recent({ args, callback: async ( userid, ruleset ) => {
+        try {
+            const url = `https://osu.ppy.sh/api/get_user_recent?k=${api_key}&u=${userid}&m=${ruleset.idx}&limit=50`;
+            const res = await Axios( url );
 
-    //check gamemode
-    const ruleset = check_gamemode(args.shift());
+            if (!res.data || res.data.length === 0){
+                // no scores for beatmap
+                console.log( 'warning! not found scores for user', userid, 'with gamemode', ruleset.name );
+                return;
+            } else {
+                const scores = ( await Promise.all( await res.data
+                    .filter( x => x.score_id && Num( x.beatmap_id ))
+                    .map( async score => ({ score,
+                        beatmap: await find_beatmaps({ beatmap_id: score.beatmap_id, single: true })}))))
+                    .filter( x => x.beatmap );
+                    
+                if (scores.length == 0) {
+                    console.log( 'warning! not found scores for user', userid, 'with gamemode', ruleset.name );
+                } else {
+                    await save_scores_v1( scores );                    
+                }
+            }
+            
+        } catch (e) {
 
-    //check scores folder
-    const scores_userdata_path = path.join(scores_folder_path, userid.toString());
-    folder_prepare(scores_userdata_path);
-    console.log('set scores folder', scores_userdata_path);
-
-    //auth osu
-    console.log('authing to osu');
-    await osu_auth();
-
-    //start process
-    console.log('finding scores');/*
-    try {
-        
-        const loop = {
-            limit: 100,
-            receiving: true,
-            offset: 0
+            console.error( e );
+            return;
+            
         }
 
-        while ( loop.receiving ) {
-            const data = await v2.scores.user.category(userid, 'recent', { mode: ruleset.name, offset: loop.offset, limit: loop.limit });
-            loop.offset += loop.limit;
-
-            if (!data || data.length === 0){
-                console.error('warning:', 'not scores for gamemode', ruleset.name, 'for user', userid);
-                break;
-            }
-
-            if (data.length < loop.limit){
-                loop.receiving = false;
-            }
-
-            const scores = data.map( x => ({...x, md5: x.beatmap.checksum }));
-            await save_scores_v1(scores);
-
-            console.log('receiving', scores.length, 'scores');
-
-        }
-
-    } catch (e) {
-        console.log( userid );
-        console.error(e);
-        return;
-    }*/
+    }});
 
 }

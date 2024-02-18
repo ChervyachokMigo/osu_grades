@@ -2,7 +2,7 @@ const { ModsIntToShortText } = require('osu-tools');
 
 const { osu_score_legacy } = require("../DB/defines")
 const { Num, rank_to_int } = require('../../tools/misc');
-const { get_md5_id } = require('../DB/tools');
+const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
     score: {
@@ -13,14 +13,14 @@ const convert_v2_to_v1 = async ({ score, beatmap }) => ({
         score: Num(score.legacy_total_score),
         max_combo: Num(score.max_combo),
         pp: Num(score.pp),
-        mods: score.mods.map( x => x.acronym ).join('+')
+        mods: mods_v2_to_string( score.mods )
     },
     beatmap,
 });
 
-const score_v1_parse = async ({ beatmap, score }) => (score.score_id ? {
+const score_v1_parse = async ({ beatmap, score }) => ({
     md5: await get_md5_id(beatmap.md5),
-    beatmap_id: Num(beatmap.id),
+    beatmap_id: Num(beatmap.beatmap_id),
     id: BigInt(score.score_id),
     userid: Num(score.user_id),
     gamemode: beatmap.gamemode,
@@ -30,7 +30,7 @@ const score_v1_parse = async ({ beatmap, score }) => (score.score_id ? {
     max_combo: Num(score.max_combo),
     pp: Num(score.pp),
     mods: score.enabled_mods? ModsIntToShortText(Num(score.enabled_mods)).join('+'): score.mods,
-}: null);
+});
 
 // v1
 /**

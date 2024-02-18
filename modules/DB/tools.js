@@ -14,4 +14,6 @@ module.exports = {
         return result[0].getDataValue('id');
     },
 
+    mods_v2_to_string: (mods) => mods ? mods.map( x => x.acronym ).join('+') : 'No Mods',
+
 }

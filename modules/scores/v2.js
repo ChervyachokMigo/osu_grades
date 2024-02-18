@@ -1,7 +1,7 @@
 
 const { osu_score } = require("../DB/defines")
 const { Num, rank_to_int } = require('../../tools/misc');
-const { get_md5_id } = require("../DB/tools");
+const { get_md5_id, mods_v2_to_string } = require("../DB/tools");
 
 const convert_v2_to_db = async ( score ) => ({
     md5: await get_md5_id(score.md5),
@@ -17,7 +17,7 @@ const convert_v2_to_db = async ( score ) => ({
     legacy_total_score: BigInt(score.legacy_total_score ? score.legacy_total_score : 0),
     max_combo: score.max_combo,
     pp: Num(score.pp),
-    mods: score.mods.map( x => x.acronym ).join('+'),
+    mods: mods_v2_to_string( score.mods ),
     passed: score.passed,
     ranked: score.ranked
 });

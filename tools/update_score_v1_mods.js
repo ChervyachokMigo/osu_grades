@@ -10,7 +10,7 @@ const { prepareDB,  osu_score_legacy } = require("../modules/DB/defines");
         logging: false, 
         raw: true
     })).map( x => ({...x, 
-        mods: ModsIntToShortText(x.mods).join('+')}));
+        mods: ModsIntToShortText(x.mods).join('+')  }));
 
     console.log('scores', scores_db.length, 'records');
     

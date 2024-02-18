@@ -2,7 +2,6 @@
 const { folder_prepare } = require('../tools/misc');
 const { scores_folder_path } = require('../misc/const');
 const { readdirSync } = require('fs');
-const refresh = require('./refresh');
 const count_grades = require('./count_grades');
 const get_list = require('./get_list');
 
@@ -14,7 +13,7 @@ module.exports = async( args ) => {
     const users = readdirSync(scores_folder_path, {encoding: 'utf8'} );
 
     if (users.length == 0) {
-        console.log('no users for refreshing')
+        console.log('no users for recounting')
         return;
     }
 

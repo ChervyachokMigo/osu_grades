@@ -7,8 +7,9 @@ const { check_gamemode, print_processed, check_userid } = require("../tools/misc
 
 const { osu_score } = require('../modules/DB/defines');
 const { print_progress_frequency } = require('../data/config');
+const { scores_folder_path } = require('../misc/const');
 
-module.exports = async( args, callback ) => {
+module.exports = async({ args, init = async () => {}, callback }) => {
     //check userid
     const userid = check_userid(args.shift());
     if (!userid) return;
@@ -23,6 +24,8 @@ module.exports = async( args, callback ) => {
         return;
     }
     let is_continue = continue_md5 ? true : false;
+
+    await init(userid);
 
     //load scores from db
     const scores_db = await osu_score.findAll({ 
@@ -74,7 +77,7 @@ module.exports = async( args, callback ) => {
             console.timeLog( 'requesting', i );
         }
 
-        const result = await callback(beatmap, userid);
+        const result = await callback( beatmap, userid );
 
         if (result === true) {
             break;

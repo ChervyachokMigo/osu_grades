@@ -2,7 +2,7 @@
 const { folder_prepare, check_gamemode, gamemode } = require('../tools/misc');
 const { scores_folder_path } = require('../misc/const');
 
-const refresh = require('./refresh');
+const refresh_v2 = require('./refresh_v2');
 
 module.exports = async( args ) => {
 
@@ -20,9 +20,9 @@ module.exports = async( args ) => {
     console.log('idx', ruleset.idx)
     for (let userid of users)
         if (ruleset.idx >=-1 && ruleset.idx <=3)
-            await refresh( [userid, ruleset.idx] );
+            await refresh_v2( [userid, ruleset.idx] );
         else
             for (let mode in gamemode)
-                await refresh( [userid, mode] );
+                await refresh_v2( [userid, mode] );
 
 }

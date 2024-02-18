@@ -6,7 +6,7 @@ const { api_key } = require('../data/config');
 module.exports = async( args ) => {
     console.log('getting scores with v1');
 
-    await get_scores_loop( args, async (beatmap, userid) => {
+    await get_scores_loop({ args, callback: async (beatmap, userid) => {
 
         try{
             console.log('requesting beatmap', beatmap.md5)
@@ -28,7 +28,7 @@ module.exports = async( args ) => {
             
         }
 
-    });
+    }});
 
 
 }

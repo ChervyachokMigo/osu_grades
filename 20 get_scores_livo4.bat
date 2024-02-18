@@ -1,2 +1,2 @@
-node index.js get_scores 9708920
+node index.js get_scores_v2 9708920
 pause

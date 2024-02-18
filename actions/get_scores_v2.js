@@ -7,7 +7,7 @@ const { gamemode } = require("../tools/misc");
 module.exports = async( args ) => {
     console.log('getting scores with v2');
 
-    await get_scores_loop( args, async ( beatmap, userid ) => {
+    await get_scores_loop({ args, callback: async ( beatmap, userid ) => {
         try {
             console.log('requesting beatmap', beatmap.md5 );
             const data = await v2.scores.user.beatmap( beatmap.beatmap_id, userid, { mode: gamemode[beatmap.gamemode], best_only: false });
@@ -27,6 +27,6 @@ module.exports = async( args ) => {
 
         }
 
-    });
+    }});
 
 }

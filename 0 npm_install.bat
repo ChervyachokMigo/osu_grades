@@ -1,1 +1,1 @@
-npm install && pause
+npm install && npm up && pause

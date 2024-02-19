@@ -6,6 +6,14 @@ const { prepareDB } = require('./modules/DB/defines');
 
 const args = process.argv.slice(2);
 
+const action_modules = readdirSync('actions', { encoding: 'utf8' });
+
+const actions = action_modules.map( filename => ({ 
+    name: path.basename( filename, '.js' ),
+    _args: require( `./actions/${filename}` ).args,
+    F: require( `./actions/${filename}` ).action,
+}));
+
 const command_exec = async () => {
     console.log('preparing commands');
 
@@ -15,19 +23,12 @@ const command_exec = async () => {
 
     await prepareDB();
 
-    const action_modules = readdirSync('actions', { encoding: 'utf8' });
-
-    const actions = action_modules.map( filename => ({ 
-        name: path.basename( filename, '.js' ),
-        F: require( `./actions/${filename}` ),
-    }));
-
-    for ( let { name, F } of actions ) {
+    for ( let { name, _args, F } of actions ) {
         if ( name === action ){
-            console.log('executting command:', action);
-            console.log('args:', args);
-            await F(args);
-            console.log('complete\n');
+            console.log( 'executting command:', action );
+            const parsed_args = Object.assign( {}, ...args.map( (v, i, a) => ({ [ _args[i] ? _args[i] : i ] : v })));
+            await F( parsed_args );
+            console.log( 'complete\n' );
 
             return;
         }

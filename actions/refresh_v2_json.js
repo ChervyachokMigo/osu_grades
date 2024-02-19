@@ -7,46 +7,47 @@ const { folder_prepare } = require('../tools/misc');
 const { save_score_v2_to_json } = require('../modules/scores/json');
 const { scores_folder_path } = require('../misc/const');
 
-module.exports = async( args ) => {
-    console.log('getting recent scores v2');
+module.exports = {
+    args: ['userid', 'gamemode'],
+    action: async( args ) => {
+        console.log('getting recent scores v2');
 
-    await update_scores_by_user_recent({ args, init: (userid) => {
-        //check scores folder
-        const scores_userdata_path = path.join( scores_folder_path, userid.toString() );
-        folder_prepare( scores_userdata_path );
-        console.log( 'set scores folder', scores_userdata_path );
+        await update_scores_by_user_recent({ args, init: (userid) => {
+            //check scores folder
+            const scores_userdata_path = path.join( scores_folder_path, userid.toString() );
+            folder_prepare( scores_userdata_path );
+            console.log( 'set scores folder', scores_userdata_path );
 
-    }, callback: async ( userid, ruleset ) => {
-        try {
-            const loop = {
-                limit: 100,
-                receiving: true,
-                offset: 0,
-            }
-
-            while ( loop.receiving ) {
-
-                const data = await v2.scores.user.category(userid, 'recent', { mode: ruleset.name, offset: loop.offset, limit: loop.limit });
-                loop.offset += loop.limit;
-
-                if (!data || data.length === 0){
-                    // no scores for beatmap
-                    console.log( 'warning! not found scores for user', userid, 'with gamemode', ruleset.name );
-                    return;
-                } 
-
-                if (data.length < loop.limit){
-                    loop.receiving = false;
+        }, callback: async ( userid, ruleset ) => {
+            try {
+                const loop = {
+                    limit: 100,
+                    receiving: true,
+                    offset: 0,
                 }
-                
-                for (let score of data){ 
-                    save_score_v2_to_json( userid, score );
-                    
-        }}} catch (e) {
-            console.error( e );
-            return;
-        }
 
+                while ( loop.receiving ) {
+
+                    const data = await v2.scores.user.category(userid, 'recent', { mode: ruleset.name, offset: loop.offset, limit: loop.limit });
+                    loop.offset += loop.limit;
+
+                    if (!data || data.length === 0){
+                        // no scores for beatmap
+                        console.log( 'warning! not found scores for user', userid, 'with gamemode', ruleset.name );
+                        return;
+                    } 
+
+                    if (data.length < loop.limit){
+                        loop.receiving = false;
+                    }
+                    
+                    for (let score of data){ 
+                        save_score_v2_to_json( userid, score );
+                        
+            }}} catch (e) {
+                console.error( e );
+                return;
+            }
     }});
-}
+}}
 

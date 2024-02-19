@@ -15,27 +15,33 @@ module.exports = {
         }
     },
 
-    check_gamemode: (mode_arg) => {
-        let mode_idx = typeof mode_arg === 'undefined' ? -2 : Number(mode_arg);
-        mode_idx = (isNaN(mode_arg) || mode_arg < -1 || mode_arg > 3 ) ? -2 : Number(mode_arg); 
+    check_gamemode: ( val ) => {
+        const idx = typeof val === 'undefined' ? -2 : 
+            ( isNaN( Number(val) ) || val < -1 || val > 3 ) ? -2 : 
+                Number(val);
 
-        if ( mode_idx >= 0 && mode_arg <= 3 ){
-            console.log('gamemode:', gamemode[mode_idx]);
+        if ( idx >= 0 && idx <= 3 ){
+
+            console.log('gamemode:', gamemode[idx]);
             return { 
-                name: gamemode[mode_idx], 
-                idx: mode_idx
+                name: gamemode[idx], 
+                idx,
             };
-        } else if (mode_idx == -1) {
+
+        } else if (idx == -1) {
+
             console.log('gamemode: all');
             return { 
                 name: null, 
                 idx: -1
             };
+
+        // if (idx == -2) by default
         } else {
             console.log('gamemode: every');
             return { 
                 name: null, 
-                idx: mode_idx
+                idx,
             };
         }
     },
@@ -54,16 +60,16 @@ module.exports = {
         }
     },
 
-    check_userid: ( str ) => {
-        const userid = Number(str) || null;
-        if ( !userid || isNaN(userid) || userid == 0 ){
-            console.error('userid invalid:', userid);
+    check_userid: ( val ) => {
+        const userid = Number(val) || null;
+        if ( !userid || isNaN( userid ) || userid == 0 ){
+            console.error( 'userid invalid:', userid );
             return null;
         }
         return userid;
     },
 
-    Num: (x, default_value = 0) => !isNaN(Number(x)) ? Number(x) : default_value,
+    Num: ( x, default_value = 0 ) => !isNaN( Number(x) ) ? Number(x) : default_value,
 
     convert_ranked: ( beatmap_ranked ) => {
         const status = {

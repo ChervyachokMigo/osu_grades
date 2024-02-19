@@ -52,50 +52,69 @@ const osu_scores_mysql = new Sequelize( DB_NAME_SCORES, DB_USER, DB_PASSWORD, {
     },
 });
 
-const osu_score = osu_scores_mysql.define ('osu_score', {
-    md5: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    beatmap_id: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    id: {type: DataTypes.BIGINT,  defaultvalue: 0n, allowNull: false, unique: true, primaryKey: true},
-    legacy_id: {type: DataTypes.BIGINT,  defaultvalue: 0n, allowNull: false},
-    userid: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    gamemode: {type: DataTypes.TINYINT,  defaultvalue: 0, allowNull: false},
-    rank: {type: DataTypes.TINYINT,  defaultvalue: 0, allowNull: false},
-    accuracy: {type: DataTypes.FLOAT,  defaultvalue: 0, allowNull: false},
-    date: {type: DataTypes.STRING,  defaultvalue: '', allowNull: false},
-    total_score: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    legacy_total_score: {type: DataTypes.BIGINT,  defaultvalue: 0n, allowNull: false},
-    max_combo: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    pp: {type: DataTypes.FLOAT,  defaultvalue: 0, allowNull: false},
-    mods: {type: DataTypes.STRING,  defaultvalue: 'CL', allowNull: false},
-    passed: {type: DataTypes.BOOLEAN,  defaultvalue: false, allowNull: false},
-    ranked: {type: DataTypes.BOOLEAN,  defaultvalue: false, allowNull: false},
-}, { noPrimaryKey: false });
-
 const osu_score_legacy = osu_scores_mysql.define ('osu_score_legacy', {
-    md5: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    beatmap_id: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    id: {type: DataTypes.BIGINT,  defaultvalue: 0n, allowNull: false, unique: true, primaryKey: true},
-    userid: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    gamemode: {type: DataTypes.TINYINT,  defaultvalue: 0, allowNull: false},
-    rank: {type: DataTypes.TINYINT,  defaultvalue: 0, allowNull: false},
-    date: {type: DataTypes.STRING,  defaultvalue: '', allowNull: false},
-    total_score: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    max_combo: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    pp: {type: DataTypes.FLOAT,  defaultvalue: 0, allowNull: false},
-    mods: {type: DataTypes.STRING,  defaultvalue: '', allowNull: false},
+    md5: {type: DataTypes.INTEGER, allowNull: false},
+    beatmap_id: {type: DataTypes.INTEGER, allowNull: false},
+    id: {type: DataTypes.BIGINT, allowNull: false, unique: true, primaryKey: true},
+    userid: {type: DataTypes.INTEGER, allowNull: false},
+    gamemode: {type: DataTypes.TINYINT, defaultvalue: 0, allowNull: false},
+    rank: {type: DataTypes.TINYINT, allowNull: false},
+    date: {type: DataTypes.STRING, allowNull: false},
+    total_score: {type: DataTypes.INTEGER, allowNull: false},
+    max_combo: {type: DataTypes.INTEGER, allowNull: false},
+    pp: {type: DataTypes.FLOAT, allowNull: false},
+    mods: {type: DataTypes.STRING, allowNull: false},
+}, { noPrimaryKey: false });
+
+const osu_score = osu_scores_mysql.define ('osu_score', {
+    md5: {type: DataTypes.INTEGER, allowNull: false},
+    beatmap_id: {type: DataTypes.INTEGER, allowNull: false},
+    id: {type: DataTypes.BIGINT, allowNull: false, unique: true, primaryKey: true},
+    legacy_id: {type: DataTypes.BIGINT, defaultValue: 0, allowNull: false},
+    userid: {type: DataTypes.INTEGER, allowNull: false},
+    gamemode: {type: DataTypes.TINYINT, defaultValue: 0, allowNull: false},
+    rank: {type: DataTypes.TINYINT, allowNull: false},
+    accuracy: {type: DataTypes.FLOAT, allowNull: false},
+    date: {type: DataTypes.STRING,  allowNull: false},
+    total_score: {type: DataTypes.INTEGER, allowNull: false},
+    legacy_total_score: {type: DataTypes.BIGINT, defaultValue: 0n, allowNull: false},
+    max_combo: {type: DataTypes.INTEGER, allowNull: false},
+    pp: {type: DataTypes.FLOAT, defaultValue: 0, allowNull: false},
+    mods: {type: DataTypes.STRING, defaultValue: 'No Mods', allowNull: false},
+    passed: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+    ranked: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+}, { noPrimaryKey: false });
+
+const osu_user_grade = osu_scores_mysql.define ('osu_user_grade', {
+    userid: {type: DataTypes.INTEGER, allowNull: false, key: 'user', unique: 'user'},
+    gamemode: {type: DataTypes.TINYINT, allowNull: false, key: 'user', unique: 'user'},
+    score_type: {type: DataTypes.TINYINT, allowNull: false, key: 'user', unique: 'user'},
+    F: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    D: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    C: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    B: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    A: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    S: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    X: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    SH: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
+    XH: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
 }, { noPrimaryKey: false });
 
 
-beatmaps_md5.hasMany( osu_score, { foreignKey: 'md5',  foreignKeyConstraints: false });
+osu_user_grade.hasMany( osu_score_legacy, { foreignKey: 'userid',  foreignKeyConstraints: false });
+osu_user_grade.hasMany( osu_score, { foreignKey: 'userid',  foreignKeyConstraints: false });
+
 beatmaps_md5.hasMany( osu_score_legacy, { foreignKey: 'md5',  foreignKeyConstraints: false });
+beatmaps_md5.hasMany( osu_score, { foreignKey: 'md5',  foreignKeyConstraints: false });
 
 const mysql_actions = [
     { names: 'beatmaps_md5', model: beatmaps_md5 },
     { names: 'beatmap_id', model: osu_beatmap_id },
     { names: 'beatmap_info', model: beatmap_info },
 
-    { names: 'osu_score', model: osu_score},
-    { names: 'osu_score_legacy', model: osu_score_legacy},
+    { names: 'osu_score_legacy', model: osu_score_legacy },
+    { names: 'osu_score', model: osu_score },
+    { names: 'osu_user_grade', model: osu_user_grade }
 ];
 
 module.exports = {
@@ -110,6 +129,7 @@ module.exports = {
 
     osu_score,
     osu_score_legacy,
+    osu_user_grade,
 
     prepareDB: async () => {
         console.log('База данных', 'Подготовка');

@@ -6,14 +6,14 @@ const { check_gamemode, print_processed, check_userid } = require("../tools/misc
 
 module.exports = async({ args, init = async () => {}, callback }) => {
     //check userid
-    const userid = check_userid( args.shift() );
+    const userid = check_userid( args.userid );
     if (!userid) return;
 
     //check gamemode
-    const ruleset = check_gamemode( args.shift() );
+    const ruleset = check_gamemode( args.gamemode );
 
     //check continue
-    let continue_md5 = args.shift() || null;
+    let continue_md5 = args.continue_md5 || null;
     if ( continue_md5 && continue_md5.length !==32 ){
         console.error( '[continue_md5] > wrong md5 hash' );
         return;
@@ -33,9 +33,10 @@ module.exports = async({ args, init = async () => {}, callback }) => {
 
     //start process
     console.log( 'starting to send requests' );
-    let i = 0;
+    let i = -1;
     for ( let beatmap of beatmaps_db ){
         i++;
+        print_processed({ current: i, size: beatmaps_db.length, frequency: Math.trunc(beatmaps_db.length / 50), name: 'beatmaps' });
 
         //go to md5 and continue
         if (is_continue){
@@ -52,8 +53,6 @@ module.exports = async({ args, init = async () => {}, callback }) => {
         if ( ruleset.idx > -1 && beatmap.gamemode !== ruleset.idx ){
             continue;
         }
-
-        print_processed({ current: i, size: beatmaps_db.length, frequency: beatmaps_db.length / 10000, name: 'beatmaps' });
 
         if ( await callback( beatmap, userid ) ){
             break;

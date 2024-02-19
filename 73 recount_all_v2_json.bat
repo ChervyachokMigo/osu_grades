@@ -1,2 +1,2 @@
-node index.js recount_all
+node index.js recount_all_v2_json
 pause

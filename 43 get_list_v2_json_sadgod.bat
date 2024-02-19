@@ -1,2 +1,2 @@
-node index.js get_list 9547517
+node index.js get_list_v2_json 9547517
 pause

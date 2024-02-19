@@ -1,5 +1,5 @@
 
-const { import_all_json_scores_v1, import_all_json_scores } = require("../modules/scores/json");
+const { import_all_json_scores_v1, import_all_json_scores_v2 } = require("../modules/scores/json");
 const { Num } = require("../tools/misc");
 
 module.exports = async (args) => {
@@ -16,7 +16,7 @@ module.exports = async (args) => {
         await import_all_json_scores_v1();
     } else {
         console.log('[score mode] set v2 mode');
-        await import_all_json_scores();
+        await import_all_json_scores_v2();
     }
 
 }

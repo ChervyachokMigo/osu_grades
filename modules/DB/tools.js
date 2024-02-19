@@ -5,7 +5,7 @@ module.exports = {
         if (hash && typeof hash !== 'string' && hash.length !== 32){
             return null;
         }
-    
+        
         const result = await beatmaps_md5.findOrCreate({ 
             where: { hash },
             logging: false

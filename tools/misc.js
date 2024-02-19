@@ -1,14 +1,15 @@
 const { existsSync, mkdirSync } = require('fs');
-const { gamemode } = require('../misc/const');
+const { gamemode, print_progress_frequency } = require('../misc/const');
+
 
 module.exports = {
-    folder_prepare: (path) =>{
+    folder_prepare: ( path ) =>{
         try{
-            if (!existsSync(path)) 
-                mkdirSync(path, {recursive: true}); 
+            if ( !existsSync( path )) 
+                mkdirSync( path, { recursive: true }); 
             return true;
         } catch (e) {
-            console.error('Cannot create folder:', path);
+            console.error( 'Cannot create folder:', path );
             console.error(e);
             return false;
         }
@@ -39,42 +40,43 @@ module.exports = {
         }
     },
 
-    print_processed: (current, size) => {
-        console.log('processed', (current / size * 100).toFixed(2), '% beatmaps,', `(${current}/${size})`);
+    print_processed: ({ current, size, initial = 0, 
+        frequency = print_progress_frequency, force = false, name, percent_precition = 2, show_percent = true, show_values = true }) => {
+        
+        const space = ( v ) => v ? v + ' ' : '';
+
+        const percent = Math.trunc( (1 / frequency) * size) || 1;
+        const print_current = initial == 0 ? Number(current) + 1 : current;
+        if ( force || print_current % percent == 0 || current == initial || print_current == size ) {
+            let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * 100 ).toFixed(percent_precition) + '%' : '';
+            let value_text = show_values ? `(${print_current}/${size})` : '';
+            console.log( 'processed ' + space(name) + space(percent_text) + value_text );
+        }
     },
 
-    check_userid: (str) => {
+    check_userid: ( str ) => {
         const userid = Number(str) || null;
-        if (!userid || isNaN(userid) || userid == 0){
+        if ( !userid || isNaN(userid) || userid == 0 ){
             console.error('userid invalid:', userid);
             return null;
         }
         return userid;
     },
 
-    Num: (x, default_value = 0) => !isNaN(Number(x))? Number(x) : default_value,
+    Num: (x, default_value = 0) => !isNaN(Number(x)) ? Number(x) : default_value,
 
     convert_ranked: ( beatmap_ranked ) => {
-        switch ( beatmap_ranked ) {
-            // graveyard
-            case -2: return 2;
-            // wip
-            case -1: return 2;
-            // pending
-            case 0:  return 2;
-            // ranked
-            case 1:  return 4;
-            // approved
-            case 2:  return 5;
-            // qualified
-            case 3:  return 6;
-            // loved
-            case 4:  return 7;
-            // unknown
-            default: return 0;
-
-            // 1 //unsubmitted
-        }
+        const status = {
+          '-2': 2, // graveyard
+          '-1': 2, // wip
+          '0': 2,  // pending
+          '1': 4,  // ranked
+          '2': 5,  // approved
+          '3': 6,  // qualified
+          '4': 7,  // loved
+        };
+        // 1 //unsubmitted
+        return status[beatmap_ranked] ?? 0; // unknown
     },
 
 }

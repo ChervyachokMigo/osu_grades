@@ -11,7 +11,7 @@ module.exports = {
     login: '',
     password: '',
 
-    print_progress_frequency: 4,
     backup_instead_remove: true,
+    print_progress_import_jsons_frequency: 100,
 
 }

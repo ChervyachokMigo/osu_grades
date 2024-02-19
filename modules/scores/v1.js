@@ -6,8 +6,8 @@ const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 const { rank_to_int } = require('../../misc/const');
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
-    score: {
-        score_id: BigInt(score.legacy_score_id ? score.legacy_score_id : 0),
+    score: score.legacy_score_id ? {
+        score_id: BigInt(score.legacy_score_id),
         user_id: Num(score.user_id),
         rank: rank_to_int[score.rank],
         date: score.ended_at,
@@ -15,11 +15,13 @@ const convert_v2_to_v1 = async ({ score, beatmap }) => ({
         max_combo: Num(score.max_combo),
         pp: Num(score.pp),
         mods: mods_v2_to_string( score.mods )
-    },
+    }: null,
     beatmap,
 });
 
-const score_v1_parse = async ({ beatmap, score }) => ({
+const score_v1_parse = async ({ beatmap, score }) => {
+    !beatmap || !beatmap.md5 ? console.log(score, beatmap): null ; return {
+    
     md5: await get_md5_id(beatmap.md5),
     beatmap_id: Num(beatmap.beatmap_id),
     id: BigInt(score.score_id),
@@ -31,7 +33,8 @@ const score_v1_parse = async ({ beatmap, score }) => ({
     max_combo: Num(score.max_combo),
     pp: Num(score.pp),
     mods: score.enabled_mods? ModsIntToShortText(Num(score.enabled_mods)).join('+'): score.mods,
-});
+}}
+
 
 // v1
 /**
@@ -39,7 +42,7 @@ const score_v1_parse = async ({ beatmap, score }) => ({
  * @param score
  */
 const save_scores_v1 = async ( data_arr ) => {
-    const scores = await Promise.all( data_arr.map ( async x => await score_v1_parse( x )));
+    const scores = (await Promise.all( data_arr.filter( x => x && x.score && x.beatmap ).map ( async x => await score_v1_parse( x ))))
     await osu_score_legacy.bulkCreate( scores, { ignoreDuplicates: true, logging: false });
 }
 

@@ -25,7 +25,7 @@ const convert_v2_to_db = async ( score ) => ({
 
 // Multiple scores
 const save_scores_v2 = async ( data_arr ) => {
-    const scores = await Promise.all( data_arr.map ( async x => await convert_v2_to_db( x )));
+    const scores = await Promise.all( data_arr.filter( x => x && x.id ).map ( async x => await convert_v2_to_db( x )));
     await osu_score.bulkCreate( scores, { ignoreDuplicates: true, logging: false });
 }
 

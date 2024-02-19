@@ -2,7 +2,7 @@ const path = require('path');
 const { writeFileSync } = require('fs');
 
 const { csv_folder_path } = require('../misc/const');
-const { folder_prepare } = require('../tools/misc');
+const { folder_prepare, print_processed } = require('../tools/misc');
 
 module.exports = (values = null, filename) => {
     console.log('saving csv');
@@ -18,8 +18,9 @@ module.exports = (values = null, filename) => {
 
         data.push( Object.keys(values[0]).map( x => `"${x}"` ).join(';') );
 
-        for (let record of values){
-            data.push( Object.values(record).map( x => typeof x === 'string'? `"${x}"` : x ).join(';') );
+        for ( let i in values ){
+            data.push( Object.values(values[i]).map( x => typeof x === 'string'? `"${x}"` : x ).join(';') );
+            print_processed({ current: i, size: values.length, name: 'rows' });
         }
 
         try {

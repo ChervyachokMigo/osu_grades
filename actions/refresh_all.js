@@ -1,5 +1,5 @@
 
-const { check_gamemode, Num } = require('../tools/misc');
+const { check_gamemode, check_score_mode } = require('../tools/misc');
 const { text_score_mode, gamemode } = require('../misc/const');
 
 module.exports = {

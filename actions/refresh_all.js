@@ -1,6 +1,7 @@
 
 const { check_gamemode, check_score_mode } = require('../tools/misc');
 const { text_score_mode, gamemode } = require('../misc/const');
+const users = require('../modules/DB/users');
 
 module.exports = {
     args: ['score_mode', 'gamemode'],
@@ -19,29 +20,24 @@ module.exports = {
         //check gamemode
         const ruleset = check_gamemode( args.gamemode );
 
-        const users = [5275518, 9547517, 9708920, 20024750];
-
-        if (users.length == 0) {
-            console.log('no users for refreshing')
+        // if args is gamemode (0-3) => find users with gamemode
+        // else => find users with all gamemodes
+        const users_play_options = ruleset.idx >= 0 && ruleset.idx < gamemode.length ? 
+            await users.findAll({ score_mode, gamemode: ruleset.idx }) :
+            [].concat( ...await Promise.all( 
+                gamemode.map( async (x, mode_idx) => await users.findAll({ score_mode, gamemode: mode_idx }) )));
+        
+        if (!users_play_options || users_play_options.length == 0) {
+            console.log( 'no users for refreshing' );
             return;
         }
 
-        // Perform refreshes
-        for (let userid of users) {
-            // single gamemode
-            if (ruleset.idx >= -1 && ruleset.idx <= 3 ) {
-                for (let {i, F} of score_modes) {
-                    if (score_mode === i ){
-                        await F({ userid, gamemode: ruleset.idx });
-                    }
-                }
-            } else {
-                // all gamemodes (args gamemode = -2)
-                for (let mode in gamemode) {
-                    for (let {i, F} of score_modes) {
-                        if ( score_mode === i ){
-                            await F({ userid, gamemode: mode });
-                        }
-                    }
-                }
-}}}}
+        for (let opt of users_play_options) {
+            const S = score_modes.find( v => v.i === opt.score_mode );
+            if (!S) {
+                throw new Error('something wrong with score mode');
+            }
+            await S.F({ userid: opt.userid, gamemode: opt.gamemode });
+        }
+
+}}

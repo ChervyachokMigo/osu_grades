@@ -86,9 +86,10 @@ const osu_score = osu_scores_mysql.define ('osu_score', {
 }, { noPrimaryKey: false });
 
 const osu_user_grade = osu_scores_mysql.define ('osu_user_grade', {
-    userid: {type: DataTypes.INTEGER, allowNull: false, key: 'user', unique: 'user'},
-    gamemode: {type: DataTypes.TINYINT, allowNull: false, key: 'user', unique: 'user'},
-    score_type: {type: DataTypes.TINYINT, allowNull: false, key: 'user', unique: 'user'},
+    userid: {type: DataTypes.INTEGER, allowNull: false, key: 'user', unique: 'user' },
+    gamemode: {type: DataTypes.TINYINT, allowNull: false, key: 'user', unique: 'user' },
+    score_mode: {type: DataTypes.TINYINT, allowNull: false },
+    username: {type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     F: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
     D: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
     C: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},

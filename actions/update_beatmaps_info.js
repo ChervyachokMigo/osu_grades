@@ -5,6 +5,7 @@ const { request_beatmap_by_date } = require("../modules/osu_requests_v1");
 
 const { saved_since_date_path } = require("../misc/const");
 const since_date_start = '2007-01-01';
+const limit = 500;
 
 module.exports = {
     args: [],
@@ -18,7 +19,7 @@ module.exports = {
         while ( is_continue ) {
             console.log( 'get beatmaps since', since_date );
             try {
-                const beatmaps = await request_beatmap_by_date({ since_date });
+                const beatmaps = await request_beatmap_by_date({ since_date, limit });
                 if (!beatmaps) break;
                 
                 for ( let beatmap_v1 of beatmaps ) {

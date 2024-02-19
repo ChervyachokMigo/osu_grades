@@ -39,8 +39,7 @@ module.exports = {
         return null;
     },
 
-    request_beatmap_by_date: async ({ since_date = null }) => {
-        const limit = 500;
+    request_beatmap_by_date: async ({ since_date = null, limit = 500 }) => {
         const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}&limit=${limit}`;
         const res = await axios( url );
 

@@ -3,8 +3,10 @@ const { Sequelize, DataTypes } = require('@sequelize/core');
 
 const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME_BEATMAPS, DB_NAME_SCORES } = require("../../data/config.js");
 
-const osu_beatmaps_mysql = new Sequelize( DB_NAME_BEATMAPS, DB_USER, DB_PASSWORD, { 
+const osu_beatmaps_mysql = new Sequelize( DB_NAME_BEATMAPS, DB_USER, DB_PASSWORD, {
     dialect: `mysql`,
+    host: DB_HOST,
+    port: DB_PORT,
     define: {
         updatedAt: false,
         createdAt: false,

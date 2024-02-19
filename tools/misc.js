@@ -1,8 +1,8 @@
 const { existsSync, mkdirSync } = require('fs');
+
 const { gamemode, print_progress_frequency } = require('../misc/const');
 
-
-module.exports = {
+const _this = module.exports = {
     folder_prepare: ( path ) =>{
         try{
             if ( !existsSync( path )) 
@@ -44,6 +44,15 @@ module.exports = {
                 idx,
             };
         }
+    },
+
+    check_score_mode: ( val ) => {
+        const res = _this.Num( val, 2 );
+        if (!res || isNaN(res) || res < 1 || res > 3 ){
+            console.error( 'score mode invalid:', val );
+            return null
+        }
+        return res;
     },
 
     print_processed: ({ current, size, initial = 0, 

@@ -9,7 +9,6 @@ module.exports = async ({
     ranked = null,
     single = false,
 }) => {
-
     const md5_condition = beatmap_md5 ? { hash: beatmap_md5 } : undefined;
 
     const beatmap_id_condition = {};

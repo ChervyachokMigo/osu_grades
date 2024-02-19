@@ -3,10 +3,10 @@ const path = require('path');
 const { v2 } = require('osu-api-extended');
 
 const { folder_prepare } = require("../tools/misc");
-
-const { scores_folder_path, gamemode } = require('../misc/const');
 const get_scores_loop = require('../tools/get_scores_loop');
 const { save_score_v2_to_json } = require('../modules/scores/json');
+
+const { scores_folder_path, gamemode } = require('../misc/const');
 
 module.exports = {
     args: ['userid', 'gamemode', 'continue_md5'],

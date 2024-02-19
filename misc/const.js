@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
     gamemode: [ 'osu', 'taiko', 'fruits', 'mania' ],
     rank_to_int: { "F": 0, "D": 1, "C": 2, "B": 3, "A": 4, "S": 5, "X": 6, "SH": 7, 'XH': 8 },
-    text_score_mode: Array(1).concat([ 'v1 db', 'v2 db', 'v2 json' ]),
+    text_score_mode: Array(1).concat([ 'v1', 'v2', 'v2 json' ]),
 
     print_progress_frequency: 4,
 

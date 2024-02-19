@@ -1,5 +1,6 @@
 
 const { v2 } = require('osu-api-extended');
+
 const get_scores_loop = require('../tools/get_scores_loop');
 const { save_scores_v2 } = require('../modules/scores/v2');
 const { gamemode } = require('../misc/const');

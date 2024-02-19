@@ -2,15 +2,14 @@ const { existsSync, readdirSync, readFileSync, rmSync, renameSync, writeFileSync
 const path = require('path');
 
 const find_beatmaps = require('../../tools/find_beatmaps');
-
 const { save_scores_v1, convert_v2_to_v1 } = require("./v1");
 const { save_scores_v2 } = require("./v2");
+const { folder_prepare, print_processed } = require('../../tools/misc');
+const save_beatmap_info = require('../beatmaps/save_beatmap_info');
+const { request_beatmap_by_md5 } = require('../osu_requests_v1');
 
 const { scores_folder_path, scores_backup_path } = require('../../misc/const');
 const { backup_instead_remove, print_progress_import_jsons_frequency } = require('../../data/config');
-const { folder_prepare, print_processed } = require('../../tools/misc');
-const get_beatmap_info = require('../beatmaps/get_beatmap_info');
-const save_beatmap_info = require('../beatmaps/save_beatmap_info');
 
 const import_json_user_scores_v1 = async ( userid ) => {
     const user_scores_path = path.join( scores_folder_path, userid.toString() );
@@ -36,12 +35,8 @@ const import_json_user_scores_v1 = async ( userid ) => {
         let beatmap = await find_beatmaps({ beatmap_md5: md5, single: true });
 
         if (!beatmap){
-            const beatmap_v1 = await get_beatmap_info( md5 );
-
-            if (!beatmap_v1) {
-                console.error( '[Error] no beatmap info on bancho', md5 );
-                continue;
-            }
+            const beatmap_v1 = await request_beatmap_by_md5({ md5 })
+            if (!beatmap_v1) continue;
 
             beatmap = await save_beatmap_info( beatmap_v1 );
             if (!beatmap) {

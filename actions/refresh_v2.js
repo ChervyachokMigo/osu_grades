@@ -1,4 +1,5 @@
 const { v2 } = require('osu-api-extended');
+
 const { save_scores_v2 } = require('../modules/scores/v2');
 const update_scores_by_user_recent = require('../tools/update_scores_by_user_recent');
 

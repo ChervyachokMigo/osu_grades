@@ -1,9 +1,10 @@
+const { readdirSync } = require('fs');
 
 const { folder_prepare } = require('../tools/misc');
-const { scores_folder_path } = require('../misc/const');
-const { readdirSync } = require('fs');
 const count_grades_v2_json = require('./count_grades_v2_json');
 const get_list_v2_json = require('./get_list_v2_json');
+
+const { scores_folder_path } = require('../misc/const');
 
 module.exports = {
     args: [],

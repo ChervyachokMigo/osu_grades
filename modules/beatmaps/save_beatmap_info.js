@@ -15,11 +15,6 @@ const convert_v1_to_db = ( beatmap_v1 ) => ({
 })
 
 module.exports = async ( beatmap_v1 ) => {
-    if (!beatmap) {
-        console.error('ignore beatmap for adding in db');
-        return;
-    }
-
     const beatmap = convert_v1_to_db( beatmap_v1 )
     const beatmap_md5_id = await get_md5_id( beatmap.checksum );
     

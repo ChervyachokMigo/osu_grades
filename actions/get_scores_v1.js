@@ -1,7 +1,6 @@
-const axios = require('axios');
 const get_scores_loop = require('../tools/get_scores_loop');
 const { save_scores_v1 } = require('../modules/scores/v1');
-const { api_key } = require('../data/config');
+const { request_user_beatmap_scores } = require('../modules/osu_requests_v1');
 
 module.exports = {
     args: ['userid', 'gamemode', 'continue_md5'],
@@ -9,18 +8,10 @@ module.exports = {
         console.log('getting scores with v1');
 
         await get_scores_loop({ args, callback: async ( beatmap, userid ) => {
+            try {
+                const scores = await request_user_beatmap_scores({ beatmap, userid })
+                if (scores) await save_scores_v1( scores );
 
-            try{
-                console.log('requesting beatmap', beatmap.md5)
-                const url = `https://osu.ppy.sh/api/get_scores?k=${api_key}&b=${beatmap.beatmap_id}&u=${userid}&m=${beatmap.gamemode}`;
-                const res = await axios( url );
-                
-                if (!res.data || res.data.length === 0){
-                    // no scores for beatmap
-                } else {
-                    const scores = res.data.map( score => ({ score, beatmap }));
-                    await save_scores_v1( scores );
-                }
             } catch (e) {
                 console.log( beatmap );
                 console.error( e );

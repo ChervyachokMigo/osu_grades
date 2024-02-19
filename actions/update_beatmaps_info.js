@@ -1,14 +1,10 @@
-const axios = require("axios");
 const { existsSync, readFileSync, writeFileSync } = require("fs");
 
 const save_beatmap_info = require("../modules/beatmaps/save_beatmap_info");
+const { request_beatmap_by_date } = require("../modules/osu_requests_v1");
 
-const { convert_ranked } = require("../tools/misc");
-const { api_key } = require("../data/config");
 const { saved_since_date_path } = require("../misc/const");
-
 const since_date_start = '2007-01-01';
-const limit = 500;
 
 module.exports = {
     args: [],
@@ -22,20 +18,15 @@ module.exports = {
         while ( is_continue ) {
             console.log( 'get beatmaps since', since_date );
             try {
-                const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}&limit=${limit}`;
-                const response = await axios( url );
-
-                if ( !response || !response.data ) {
-                    console.error('bancho not response');
-                    break;
-                }
+                const beatmaps = await request_beatmap_by_date({ since_date });
+                if (!beatmaps) break;
                 
-                for ( let beatmap_v1 of response.data ) {
+                for ( let beatmap_v1 of beatmaps ) {
                     since_date = beatmap_v1.approved_date;
                     await save_beatmap_info( beatmap_v1 );
                 }
 
-                if ( response.data.length !== limit ){
+                if ( beatmaps.length !== limit ){
                     console.log('done updating data');
                     is_continue = false;
                 }

@@ -5,23 +5,19 @@ const { text_score_mode, gamemode } = require('../misc/const');
 module.exports = {
     args: ['score_mode', 'gamemode'],
     action: async( args ) => {
-        const score_mode = Num( args.score_mode, 2 );
-
-        if (!score_mode || isNaN(score_mode) || score_mode < 1 || score_mode > 3 ){
-            console.error('scoring mode invalid:', score_mode);
-            return;
-        }
-
-        console.log( `=== selected score ${text_score_mode[score_mode]} mode` );
-
-        //check gamemode
-        const ruleset = check_gamemode( args.gamemode );
+        const score_mode = check_score_mode( args.score_mode );
+        if (!score_mode) return;
 
         const score_modes = [
             { i: 1, F: require('./refresh_v1').action }, 
             { i: 2, F: require('./refresh_v2').action }, 
             { i: 3, F: require('./refresh_v2_json').action },
         ];
+
+        console.log( `=== selected score ${text_score_mode[score_mode]} mode` );
+
+        //check gamemode
+        const ruleset = check_gamemode( args.gamemode );
 
         const users = [5275518, 9547517, 9708920, 20024750];
 

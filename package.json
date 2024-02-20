@@ -16,7 +16,6 @@
     "input": "^1.0.1",
     "mysql2": "^3.9.1",
     "osu-api-extended": "^2.8.1",
-    "osu-tools": "github:ChervyachokMigo/osu-tools",
-    "sequelize": "^6.37.1"
+    "osu-tools": "github:ChervyachokMigo/osu-tools"
   }
 }

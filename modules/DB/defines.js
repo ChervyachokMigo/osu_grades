@@ -149,6 +149,16 @@ module.exports = {
             await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME_BEATMAPS}\`;`);
             await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME_SCORES}\`;`);
         } catch (e){
+            console.error('проверьте правильность данных data\\config.js\n');
+            console.log( '', 
+                `DB_HOST: ${ !DB_HOST ? 'Ошибка: отсутствует значение\n' : `${DB_HOST} (${typeof DB_HOST})\n` }`, 
+                `DB_PORT: ${ !DB_PORT ? 'Ошибка: отсутствует значение\n' : `${DB_PORT} (${typeof DB_PORT})\n` }`, 
+                `DB_USER: ${ !DB_USER ? 'Ошибка: отсутствует значение\n' : `${DB_USER} (${typeof DB_USER})\n` }`, 
+                `DB_PASSWORD: ${ !DB_PASSWORD ? 'Ошибка: отсутствует значение\n' : `${DB_PASSWORD} (${typeof DB_PASSWORD})\n` }`, 
+                `DB_NAME_BEATMAPS: ${ !DB_NAME_BEATMAPS ? 'Ошибка: отсутствует значение\n' : `${DB_NAME_BEATMAPS} (${typeof DB_NAME_BEATMAPS})\n` }`, 
+                `DB_NAME_SCORES: ${ !DB_NAME_SCORES ? 'Ошибка: отсутствует значение\n' : `${DB_NAME_SCORES} (${typeof DB_NAME_SCORES})\n` }`, 
+            );
+
             if (e.code === 'ECONNREFUSED' || e.name === `SequelizeConnectionRefusedError`){
                 throw new Error('Нет доступа к базе');
             } else {

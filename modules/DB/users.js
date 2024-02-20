@@ -44,12 +44,14 @@ const _this = module.exports = {
     },
 
     action_delete: async (where) => {
-        return await osu_user_grade.destroy({ where, logging: false });
+        const res = await osu_user_grade.destroy({ where, logging: false });
+        if (res) console.log(`delete user id ${where.userid} with gamemode: ${gamemode[where.gamemode]}` );
     },
 
     action_list: async () => {
         const header = ` UserID\t\tScore Mode\tGamemode\tUsername\r\n`;
-        return header + (await _this.list_all()).map( x => x.text + '\r\n' ).join('');
+        const res = await _this.list_all();
+        return { text: header + res.map( x => x.text + '\r\n' ).join(''), length: res.length }
     }
 }
 

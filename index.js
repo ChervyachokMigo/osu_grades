@@ -29,7 +29,7 @@ const command_exec = async () => {
             const parsed_args = Object.assign( {}, ...args.map( (v, i, a) => ({ [ _args[i] ? _args[i] : i ] : v })));
             await F( parsed_args );
             console.log( 'complete\n' );
-
+            process.exit();
             return;
         }
     }

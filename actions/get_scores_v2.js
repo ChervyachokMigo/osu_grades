@@ -15,9 +15,11 @@ module.exports = {
                 const data = await v2.scores.user.beatmap( beatmap.beatmap_id, userid, { mode: gamemode[beatmap.gamemode], best_only: false });
                 
                 if (data && data.length > 0){
-                    console.log('found new score', beatmap.md5 );
-                    const scores = data.map( x => ({...x, md5: beatmap.md5 }));
-                    await save_scores_v2(scores);
+                    const scores = data.map( x => ({ ...x, md5: beatmap.md5 }));
+                    const res = await save_scores_v2( scores );
+                    if (res) {
+                        console.log('found new score', beatmap.md5 );
+                    }
                 }
 
             } catch (e) {

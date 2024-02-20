@@ -27,7 +27,8 @@ const convert_v2_to_db = async ( score ) => ({
 // Multiple scores
 const save_scores_v2 = async ( data_arr ) => {
     const scores = await Promise.all( data_arr.filter( x => x && x.id ).map ( async x => await convert_v2_to_db( x )));
-    await osu_score.bulkCreate( scores, { ignoreDuplicates: true, logging: false });
+    const res = await osu_score.bulkCreate( scores, { ignoreDuplicates: true, logging: false });
+    return res.map( x=> x.isNewRecord ).reduce( (x, y) => Number(x + y) ) + 0;
 }
 
 module.exports = {

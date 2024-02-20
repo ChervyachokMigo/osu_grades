@@ -4,11 +4,12 @@ const save_beatmap_info = require("../modules/beatmaps/save_beatmap_info");
 const { request_beatmaps_by_date } = require("../modules/osu_requests_v1");
 
 const { saved_since_date_path } = require("../misc/const");
+const { check_gamemode } = require("../tools/misc");
 const since_date_start = '2007-01-01';
 const limit = 500;
 
 module.exports = {
-    args: [],
+    args: ['gamemode'],
     action: async( args ) => {
         let is_continue = true;
 
@@ -16,10 +17,13 @@ module.exports = {
             JSON.parse( readFileSync( saved_since_date_path, 'utf8' )).since_date : 
             since_date_start;
 
+        //check gamemode
+        const ruleset = check_gamemode( args.gamemode );
+
         while ( is_continue ) {
             console.log( 'get beatmaps since', since_date );
             try {
-                const beatmaps = await request_beatmaps_by_date({ since_date, limit });
+                const beatmaps = await request_beatmaps_by_date({ since_date, limit, gamemode: ruleset.idx });
 
                 if (!beatmaps) break;
                 

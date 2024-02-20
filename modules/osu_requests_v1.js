@@ -38,8 +38,8 @@ module.exports = {
         return null;
     },
 
-    request_beatmaps_by_date: async ({ since_date = null, limit = 500 }) => {
-        const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}&limit=${limit}`;
+    request_beatmaps_by_date: async ({ since_date = null, limit = 500, gamemode }) => {
+        const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=${limit}`;
         const res = await axios( url );
 
         if ( res && res.data ) return res.data;
@@ -66,7 +66,7 @@ module.exports = {
      * @param gamemode optional
      */
     request_beatmap_by_id: async ({ beatmap, gamemode }) => {
-        const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode ? `&m=${gamemode}` : '' }&limit=1`;
+        const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=1`;
         const res = await axios( url );
 
         if ( res && res.data && res.data.length > 0 ) {

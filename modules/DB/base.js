@@ -91,8 +91,8 @@ module.exports = {
                 return await MysqlModel.bulkCreate(
                     values, {
                         logging: false, 
-                        ignoreDuplicates: true,
-                        //updateOnDuplicate: true,
+                        //ignoreDuplicates: true,
+                        updateOnDuplicate: true,
                 });
             } else {
                 return (await MysqlModel.upsert(

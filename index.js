@@ -39,6 +39,8 @@ const command_exec = async () => {
 
 command_exec();
 
+// get_scores_v1_from_v2_json fix
+// посчитать количество карт по статусам 
 // при запуске запустить beatmap check
 // фильтровать грейды по md5_int
 // разделение на в1 в2 джсон (по конфигу мб) и убрать osu_auth, не нужен для в1

@@ -4,7 +4,7 @@ const path = require('path');
 const update_scores_by_user_recent = require('../tools/update_scores_by_user_recent');
 
 const { folder_prepare } = require('../tools/misc');
-const { save_score_v2_to_json } = require('../modules/scores/json');
+const { save_scores_v2_to_json } = require('../modules/scores/json');
 const { scores_folder_path } = require('../misc/const');
 
 module.exports = {
@@ -28,7 +28,7 @@ module.exports = {
 
                 while ( loop.receiving ) {
 
-                    const data = await v2.scores.user.category(userid, 'recent', { mode: ruleset.name, offset: loop.offset, limit: loop.limit });
+                    const data = await v2.scores.user.category( userid, 'recent', { mode: ruleset.name, offset: loop.offset, limit: loop.limit });
                     loop.offset += loop.limit;
 
                     if (!data || data.length === 0){
@@ -41,10 +41,14 @@ module.exports = {
                         loop.receiving = false;
                     }
                     
-                    for (let score of data){ 
-                        save_score_v2_to_json( userid, score );
-                        
-            }}} catch (e) {
+                    const scores = data.map( response => ({ ...response, beatmap_md5: response.beatmap.checksum }));
+
+                    const res = save_scores_v2_to_json({ userid, scores });
+                    if (res) {
+                        console.log( `found new ${res} scores by user ${userid}` );
+                    }
+            }} catch (e) {
+
                 console.error( e );
                 return;
             }

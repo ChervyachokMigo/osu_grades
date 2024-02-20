@@ -1,8 +1,7 @@
 
-const { v2 } = require('osu-api-extended');
-
 const get_scores_loop = require('../tools/get_scores_loop');
 const { save_scores_v2 } = require('../modules/scores/v2');
+const { request_beatmap_user_scores } = require('../modules/osu_requests_v2');
 const { gamemode } = require('../misc/const');
 
 module.exports = {
@@ -12,18 +11,21 @@ module.exports = {
 
         await get_scores_loop({ args, callback: async ( beatmap, userid ) => {
             try {
-                const data = await v2.scores.user.beatmap( beatmap.beatmap_id, userid, { mode: gamemode[beatmap.gamemode], best_only: false });
+                const data = await request_beatmap_user_scores({ 
+                    beatmap_id: beatmap.beatmap_id, 
+                    gamemode: gamemode[beatmap.gamemode_int],
+                    userid, });
                 
-                if (data && data.length > 0){
-                    const scores = data.map( x => ({ ...x, md5: beatmap.md5 }));
+                if (data){
+                    const scores = data.map( x => ({ ...x, beatmap_md5: beatmap.md5 }));
                     const res = await save_scores_v2( scores );
                     if (res) {
-                        console.log('found new score', beatmap.md5 );
+                        console.log( `found ${res} scores of beatmap ${beatmap.md5} by user ${userid}` );
                     }
-                }
+                } 
 
             } catch (e) {
-                console.log( beatmap );
+                console.log( 'beatmap', beatmap );
                 console.error( e );
                 return true;
             }

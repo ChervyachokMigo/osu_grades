@@ -96,6 +96,13 @@ const _this = module.exports = {
 
     util: (args) => {
         console.log( require('util').inspect( args, {showHidden: true, depth: null, colors: true }) );
+    },
+    group_by(array, property) {
+        return array.reduce((memo, x) => {
+            memo[x[property]] ||= [];
+            memo[x[property]].push(x);
+            return memo;
+        }, {});
     }
 
 }

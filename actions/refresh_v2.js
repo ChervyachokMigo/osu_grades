@@ -31,9 +31,11 @@ module.exports = {
                         loop.receiving = false;
                     }
                     
-                    const scores = data.map( x => ({...x, md5: x.beatmap.checksum }));
-                    await save_scores_v2( scores );
-                    console.log('receiving', scores.length, 'scores');
+                    const scores = data.map( x => ({...x, beatmap_md5: x.beatmap.checksum }));
+                    const res = await save_scores_v2( scores );
+                    if (res) {
+                        console.log( `found ${res} scores by user ${userid}` );
+                    }
 
             }} catch (e) {
                 console.error( e );

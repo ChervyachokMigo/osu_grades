@@ -1,4 +1,4 @@
-const { beatmaps_md5 } = require("./defines");
+const { beatmaps_md5, mysql_actions } = require("./defines");
 
 module.exports = {
     get_md5_id: async ( hash ) => {
@@ -10,11 +10,16 @@ module.exports = {
         const result = await beatmaps_md5.findOrCreate({ 
             where: { hash },
             logging: false,
+            ignoreDuplicates: true,
         });
     
         return result.shift().getDataValue('id');
     },
 
-    mods_v2_to_string: (mods) => mods ? mods.map( x => x.acronym ).join('+') : 'No Mods',
+    get_model_fields: ( model_name, fields_name ) => {
+        return mysql_actions.find( x => x.names === model_name )[fields_name];
+    },
+
+    mods_v2_to_string: (mods) => mods && mods.length > 0 ? mods.map( x => x.acronym ).join('+') : 'No Mods',
 
 }

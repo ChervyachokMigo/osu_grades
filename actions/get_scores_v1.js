@@ -10,7 +10,12 @@ module.exports = {
         await get_scores_loop({ args, callback: async ( beatmap, userid ) => {
             try {
                 const scores = await request_user_beatmap_scores({ beatmap, userid })
-                if (scores) await save_scores_v1( scores );
+                if (scores) {
+                    const res = await save_scores_v1( scores );
+                    if (res) {
+                        console.log( `found ${res} scores of beatmap ${beatmap.md5} by user ${userid}` );
+                    }
+                }
 
             } catch (e) {
                 console.log( beatmap );

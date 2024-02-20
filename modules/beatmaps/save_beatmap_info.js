@@ -15,27 +15,29 @@ const convert_v1_to_db = ( beatmap_v1 ) => ({
 })
 
 module.exports = async ( beatmap_v1 ) => {
+    
     const beatmap_md5_id = await get_md5_id( beatmap_v1.file_md5 );
     const beatmap = convert_v1_to_db( beatmap_v1 );
-    
+
     try {
-        await MYSQL_SAVE('beatmap_info', { md5: beatmap_md5_id }, {
+        await MYSQL_SAVE( 'beatmap_info', { md5: beatmap_md5_id }, {
             artist: beatmap.artist,
             title: beatmap.title,
             creator: beatmap.creator,
             difficulty: beatmap.difficulty
         });
-        await MYSQL_SAVE('beatmap_id', { md5: beatmap_md5_id }, {
+
+        await MYSQL_SAVE( 'beatmap_id', { md5: beatmap_md5_id }, {
             beatmap_id: beatmap.beatmap_id,
             beatmapset_id: beatmap.beatmapset_id,
             gamemode: beatmap.gamemode,
             ranked: beatmap.ranked,
         });
-
+        
         return beatmap;
         
     } catch (e) {
-        console.log( beatmap_v1 );
+        console.log( 'beatmap_v1', beatmap_v1 );
         throw new Error(e);
     }
 }

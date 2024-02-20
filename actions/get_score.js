@@ -1,7 +1,6 @@
-const { v2 } = require('osu-api-extended');
-
 const osu_auth = require('../tools/osu_auth');
 const { check_userid } = require('../tools/misc');
+const { request_beatmap_user_scores } = require('../modules/osu_requests_v2');
 
 module.exports = {
     args: ['userid', 'beatmap_id'],
@@ -25,15 +24,12 @@ module.exports = {
         //start process
         console.log('finding score');
         try {
-            const data = await v2.scores.user.beatmap( beatmap_id, userid, { best_only: false });
-            if (!data || data.length === 0){
-                console.error('warning:', 'not scores for beatmap', beatmap_id);
-                return;
-            }
-            
-            data.sort( (a, b) => b.total_score - a.total_score);
 
-            console.log(data);
+            const data = await request_beatmap_user_scores({ beatmap_id, userid });
+            if (data) {
+                console.log(data);
+            }
+
         } catch (e) {
             console.log( userid, beatmap_id );
             console.error(e);

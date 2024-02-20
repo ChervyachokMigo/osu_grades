@@ -10,7 +10,7 @@ module.exports = {
         const url = `https://osu.ppy.sh/api/get_scores?k=${api_key}&b=${beatmap.beatmap_id}&u=${userid}&m=${beatmap.gamemode}`;
         const res = await axios( url );
         
-        if (res && res.data && res.data.length > 0){
+        if (res && res.data && typeof res.data == 'object' && res.data.length > 0){
             const scores = res.data.map( score => ({ score, beatmap }));
             return scores;
         } else {
@@ -22,7 +22,7 @@ module.exports = {
         const url = `https://osu.ppy.sh/api/get_user_recent?k=${api_key}&u=${userid}&m=${ruleset.idx}&limit=50`;
         const res = await axios( url );
 
-        if (res && res.data && res.data.length > 0){
+        if (res && res.data && typeof res.data == 'object' && res.data.length > 0){
             const scores = ( await Promise.all( await res.data
                 .filter( x => x.score_id && Num( x.beatmap_id ))
                 .map( async score => ({ score,
@@ -42,7 +42,8 @@ module.exports = {
         const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=${limit}`;
         const res = await axios( url );
 
-        if ( res && res.data ) return res.data;
+        if ( res && res.data && typeof res.data == 'object' )
+            return res.data;
 
         console.error('bancho not response beatmaps');
         return null;
@@ -52,7 +53,7 @@ module.exports = {
         const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&h=${md5}&limit=1`;
         const res = await axios( url );
         
-        if ( res && res.data && res.data.length > 0 ) {
+        if ( res && res.data && typeof res.data == 'object' && res.data.length > 0 ) {
             return res.data.shift();
         }
 
@@ -69,7 +70,7 @@ module.exports = {
         const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=1`;
         const res = await axios( url );
 
-        if ( res && res.data && res.data.length > 0 ) {
+        if ( res && res.data && typeof res.data == 'object' && res.data.length > 0 ) {
             return res.data.shift();
         }
 
@@ -81,7 +82,7 @@ module.exports = {
         const url = `https://osu.ppy.sh/api/get_user?k=${api_key}&u=${userid}`;
         const res = await axios( url );
         
-        if ( res && res.data && res.data.length > 0 ) {
+        if ( res && res.data && typeof res.data == 'object' && res.data.length > 0 ) {
             return res.data.shift();
         }
 

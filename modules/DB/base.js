@@ -81,26 +81,17 @@ module.exports = {
 
     MYSQL_SAVE: async ( action, keys, values ) => {
         const MysqlModel = select_mysql_model(action);
-
+        
         if ( keys && Object.keys(keys).length > 0 ){
             values = {...values, ...keys};
         }
 
         try {
             if (typeof values.length !== 'undefined' && values.length > 0){
-                return await MysqlModel.bulkCreate(
-                    values, {
-                        logging: false, 
-                        //ignoreDuplicates: true,
-                        updateOnDuplicate: true,
-                });
+                return await MysqlModel.bulkCreate( values, { logging: false, ignoreDuplicates: true });
             } else {
-                return (await MysqlModel.upsert(
-                    values, { 
-                        where: keys, 
-                        logging: false, 
-                        raw: true,
-                })).shift();
+                return (await MysqlModel.upsert( values, { where: keys, logging: false, raw: true }))
+                .shift();
             }
         } catch (e){
             if (e.code === 'ECONNREFUSED' || e.name === `SequelizeConnectionRefusedError`){

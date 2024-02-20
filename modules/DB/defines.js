@@ -1,7 +1,8 @@
 const { createConnection } = require('mysql2/promise');
-const { Sequelize, DataTypes } = require('@sequelize/core');
+const { Sequelize, DataTypes, Model } = require('@sequelize/core');
 
 const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME_BEATMAPS, DB_NAME_SCORES } = require("../../data/config.js");
+const { gamemode } = require('../../misc/const.js');
 
 const osu_beatmaps_mysql = new Sequelize( DB_NAME_BEATMAPS, DB_USER, DB_PASSWORD, {
     dialect: `mysql`,
@@ -111,7 +112,6 @@ const osu_user_grade = osu_scores_mysql.define ('osu_user_grade', {
     XH: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
 }, { noPrimaryKey: false });
 
-
 osu_user_grade.hasMany( osu_score_legacy, { foreignKey: 'userid',  foreignKeyConstraints: false });
 osu_user_grade.hasMany( osu_score, { foreignKey: 'userid',  foreignKeyConstraints: false });
 
@@ -125,10 +125,22 @@ const mysql_actions = [
 
     { names: 'osu_score_legacy', model: osu_score_legacy },
     { names: 'osu_score', model: osu_score },
-    { names: 'osu_user_grade', model: osu_user_grade }
+    { names: 'osu_user_grade', model: osu_user_grade },
 ];
 
-module.exports = {
+/** 
+* @param {Model} Model Execute model
+* @param {Boolean} all If true get all fields, else get only non-primary keys or only primary keys
+* @param {Boolean} primary If true get only primary keys, else get only non-primary keys
+* @return {Array} Array of fields of Model
+*/
+const get_model_field_list = async ({ model, all = false, primary = false }) => {
+    return await Promise.all(Object.entries(await model.describe( undefined, { logging: false }))
+    .filter( ([key, value]) => all ? true : primary ? value.primaryKey : !value.primaryKey )
+    .map( ([key, value]) => key ));
+}
+
+const _this = module.exports = {
     mysql_actions,
     
     osu_beatmaps_mysql,
@@ -167,13 +179,19 @@ module.exports = {
         }
         await osu_beatmaps_mysql.sync({ logging: false });
         await osu_scores_mysql.sync({ logging: false });
+
+        _this.mysql_actions.forEach( async ({ names, model }, i, a) => {
+            a[i].fileds = await get_model_field_list({ model, all: true });
+            a[i].keys = await get_model_field_list({ model, primary: true });
+            a[i].non_keys = a[i].fileds.filter( v =>!a[i].keys.includes( v ) );
+        });
         
         console.log('База данных', `Подготовка завершена`);
     },
 
     select_mysql_model: (action) => {
 
-        const MysqlModel = mysql_actions.find ( model => {
+        const mysql_model = _this.mysql_actions.find ( model => {
             if (typeof model.names === 'string'){
                 return model.names === action;
             } else if (typeof model.names === 'object') {
@@ -183,12 +201,12 @@ module.exports = {
             }
         });
     
-        if (!MysqlModel){
-            console.error(`DB: (selectMysqlModel) undefined action: ${action}`);
+        if ( !mysql_model ){
+            console.error(`DB: (select_mysql_model) undefined action: ${action}`);
             throw new Error('unknown mysql model', action);
         }
     
-        return MysqlModel.model;
+        return mysql_model.model;
     },
 
 }

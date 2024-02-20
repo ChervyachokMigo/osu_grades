@@ -2,8 +2,10 @@ const { beatmaps_md5 } = require("./defines");
 
 module.exports = {
     get_md5_id: async ( hash ) => {
-        if (hash && typeof hash !== 'string' && hash.length !== 32)
-            throw new Error( 'beatmap hash not valid', hash );
+        if ( !hash || hash && typeof hash !== 'string' && hash.length !== 32 ){
+            console.error( 'beatmap hash', hash )
+            throw new Error( 'beatmap hash not valid' );
+        }
         
         const result = await beatmaps_md5.findOrCreate({ 
             where: { hash },

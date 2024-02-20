@@ -38,23 +38,23 @@ const osu_scores_mysql = new Sequelize( DB_NAME_SCORES, DB_USER, DB_PASSWORD, {
 });
 
 const beatmaps_md5 = osu_beatmaps_mysql.define ('beatmaps_md5', {
-    hash: {type: DataTypes.STRING(32),  defaultvalue: '', allowNull: false, unique: true, index: true},
+    hash: {type: DataTypes.STRING(32), allowNull: false, unique: true, index: true},
 });
 
 const osu_beatmap_id = osu_beatmaps_mysql.define ('beatmap_id', {
-    md5: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false, unique: true, primaryKey: true},
-    beatmap_id: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    beatmapset_id: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false},
-    gamemode: {type: DataTypes.TINYINT.UNSIGNED,  defaultvalue: '', allowNull: false},
-    ranked: {type: DataTypes.TINYINT,  defaultvalue: 0, allowNull: false},
+    md5: {type: DataTypes.INTEGER, allowNull: false, unique: true, primaryKey: true},
+    beatmap_id: {type: DataTypes.INTEGER, allowNull: false},
+    beatmapset_id: {type: DataTypes.INTEGER, allowNull: false},
+    gamemode: {type: DataTypes.TINYINT.UNSIGNED, allowNull: false},
+    ranked: {type: DataTypes.TINYINT, allowNull: false},
 }, {noPrimaryKey: false});
 
 const beatmap_info = osu_beatmaps_mysql.define ('beatmap_info', {
-    md5: {type: DataTypes.INTEGER,  defaultvalue: 0, allowNull: false, unique: true, primaryKey: true},
-    artist: {type: DataTypes.STRING,  defaultvalue: '', allowNull: false},
-    title: {type: DataTypes.STRING,  defaultvalue: '', allowNull: false},
-    creator: {type: DataTypes.STRING,  defaultvalue: '', allowNull: false},
-    difficulty: {type: DataTypes.STRING,  defaultvalue: '', allowNull: false},
+    md5: {type: DataTypes.INTEGER,allowNull: false, unique: true, primaryKey: true},
+    artist: {type: DataTypes.STRING, allowNull: false},
+    title: {type: DataTypes.STRING, allowNull: false},
+    creator: {type: DataTypes.STRING, allowNull: false},
+    difficulty: {type: DataTypes.STRING, allowNull: false},
 }, {noPrimaryKey: false});
 
 beatmaps_md5.hasOne(osu_beatmap_id, { foreignKey: 'md5', foreignKeyConstraints: false});

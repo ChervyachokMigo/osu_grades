@@ -58,6 +58,9 @@ module.exports = {
                     for ( let delete_record of delete_records ) {
                         await user_action.F( delete_record );
                     }
+                    if (delete_records.length == 0) {
+                        console.log ('No selected users for deletion.\n')
+                    }
 
                 } else if ( variants.length === 1) {
                     const delete_record = variants[0];

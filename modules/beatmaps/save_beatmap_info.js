@@ -3,7 +3,7 @@ const { MYSQL_SAVE } = require("../DB/base");
 const { get_md5_id } = require("../DB/tools");
 
 const convert_v1_to_db = ( beatmap_v1 ) => ({
-    checksum: beatmap_v1.file_md5,
+    md5: beatmap_v1.file_md5,
     beatmap_id: Num(beatmap_v1.beatmap_id),
     beatmapset_id: Num(beatmap_v1.beatmapset_id),
     gamemode: Num(beatmap_v1.mode),
@@ -15,8 +15,8 @@ const convert_v1_to_db = ( beatmap_v1 ) => ({
 })
 
 module.exports = async ( beatmap_v1 ) => {
-    const beatmap = convert_v1_to_db( beatmap_v1 )
-    const beatmap_md5_id = await get_md5_id( beatmap.checksum );
+    const beatmap_md5_id = await get_md5_id( beatmap_v1.file_md5 );
+    const beatmap = convert_v1_to_db( beatmap_v1 );
     
     try {
         await MYSQL_SAVE('beatmap_info', { md5: beatmap_md5_id }, {

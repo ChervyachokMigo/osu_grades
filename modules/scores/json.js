@@ -4,12 +4,28 @@ const path = require('path');
 const find_beatmaps = require('../../tools/find_beatmaps');
 const { save_scores_v1, convert_v2_to_v1 } = require("./v1");
 const { save_scores_v2 } = require("./v2");
-const { folder_prepare, print_processed } = require('../../tools/misc');
+const { folder_prepare, print_processed, util } = require('../../tools/misc');
 const save_beatmap_info = require('../beatmaps/save_beatmap_info');
-const { request_beatmap_by_md5 } = require('../osu_requests_v1');
+const { request_beatmap_by_md5, request_beatmap_by_id } = require('../osu_requests_v1');
 
 const { scores_folder_path, scores_backup_path } = require('../../misc/const');
 const { backup_instead_remove, print_progress_import_jsons_frequency } = require('../../data/config');
+
+/**
+ * @returns converted score and beatmap data
+ * @returns readed score_v2 if beatmap not found
+ */
+const get_scores_v1_from_v2_json = async ({ filepath, beatmap }) => {
+    const scores = JSON.parse( readFileSync( filepath, 'utf8' ));
+
+    if (beatmap) {
+        const converted_scores =  await Promise.all( scores.map( 
+            async score => await convert_v2_to_v1({ score, beatmap })));
+        return converted_scores;
+    } else {
+        return scores.map( x => ({ score_v2: x }));
+    }
+} 
 
 const import_json_user_scores_v1 = async ( userid ) => {
     const user_scores_path = path.join( scores_folder_path, userid.toString() );
@@ -34,9 +50,18 @@ const import_json_user_scores_v1 = async ( userid ) => {
         const md5 = scores_json_names[i].slice(0, scores_json_names[i].length - 5);
         let beatmap = await find_beatmaps({ beatmap_md5: md5, single: true });
 
+        // trying to get beatmap info from bancho, first by md5, second by get beatmap id and request again
         if (!beatmap){
-            const beatmap_v1 = await request_beatmap_by_md5({ md5 })
-            if (!beatmap_v1) continue;
+            let beatmap_v1 = await request_beatmap_by_md5({ md5 })
+            if (!beatmap_v1) {
+                const scores_v2 = await get_scores_v1_from_v2_json({ filepath: scores_json_path });
+                const beatmap_id = scores_v2[0].score_v2.beatmap_id;
+                const ruleset_id = scores_v2[0].score_v2.ruleset_id;
+                
+                beatmap_v1 = await request_beatmap_by_id({ beatmap: beatmap_id });
+                if (!beatmap_v1) continue; // beatmap not found, no variants
+
+            }
 
             beatmap = await save_beatmap_info( beatmap_v1 );
             if (!beatmap) {
@@ -45,9 +70,7 @@ const import_json_user_scores_v1 = async ( userid ) => {
             }
         }
 
-        const scores = await Promise.all( 
-            JSON.parse( readFileSync( scores_json_path, 'utf8' ))
-            .map( async score => await convert_v2_to_v1({ score, beatmap })));
+        const scores = await get_scores_v1_from_v2_json({ filepath: scores_json_path, beatmap });
 
         await save_scores_v1( scores ).finally( () => {
             if ( backup_instead_remove ){

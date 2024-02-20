@@ -38,7 +38,7 @@ module.exports = {
         return null;
     },
 
-    request_beatmap_by_date: async ({ since_date = null, limit = 500 }) => {
+    request_beatmaps_by_date: async ({ since_date = null, limit = 500 }) => {
         const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}&limit=${limit}`;
         const res = await axios( url );
 
@@ -56,7 +56,24 @@ module.exports = {
             return res.data.shift();
         }
 
-        console.error( 'no beatmap info on bancho', md5 );
+        console.error( 'no beatmap info on bancho by md5', md5 );
+        return null;
+    },
+
+    /**
+     * 
+     * @param beatmap set required
+     * @param gamemode optional
+     */
+    request_beatmap_by_id: async ({ beatmap, gamemode }) => {
+        const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode ? `&m=${gamemode}` : '' }&limit=1`;
+        const res = await axios( url );
+
+        if ( res && res.data && res.data.length > 0 ) {
+            return res.data.shift();
+        }
+
+        console.error( 'no beatmap info on bancho by beatmap id', beatmap );
         return null;
     },
 

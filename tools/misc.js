@@ -94,4 +94,8 @@ const _this = module.exports = {
         return status[beatmap_ranked] ?? 0; // unknown
     },
 
+    util: (args) => {
+        console.log( require('util').inspect( args, {showHidden: true, depth: null, colors: true }) );
+    }
+
 }

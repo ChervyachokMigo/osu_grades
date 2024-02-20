@@ -21,20 +21,24 @@ const convert_v2_to_v1 = async ({ score, beatmap }) => ({
 });
 
 const score_v1_parse = async ({ beatmap, score }) => {
-    !beatmap || !beatmap.md5 ? console.log(score, beatmap): null ; return {
+    if (!beatmap || !beatmap.md5){
+        console.log({ beatmap, score })
+        throw new Error('no beatmap')
+    }
     
-    md5: await get_md5_id(beatmap.md5),
-    beatmap_id: Num(beatmap.beatmap_id),
-    id: BigInt(score.score_id),
-    userid: Num(score.user_id),
-    gamemode: beatmap.gamemode,
-    rank: rank_to_int[score.rank],
-    date: score.date,
-    total_score: Num(score.score),
-    max_combo: Num(score.max_combo),
-    pp: Num(score.pp),
-    mods: score.enabled_mods? ModsIntToShortText(Num(score.enabled_mods)).join('+'): score.mods,
-}}
+    return {
+        md5: await get_md5_id(beatmap.md5),
+        beatmap_id: Num(beatmap.beatmap_id),
+        id: BigInt(score.score_id),
+        userid: Num(score.user_id),
+        gamemode: beatmap.gamemode,
+        rank: rank_to_int[score.rank],
+        date: score.date,
+        total_score: Num(score.score),
+        max_combo: Num(score.max_combo),
+        pp: Num(score.pp),
+        mods: score.enabled_mods? ModsIntToShortText(Num(score.enabled_mods)).join('+'): score.mods,
+}};
 
 
 // v1

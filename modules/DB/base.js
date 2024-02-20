@@ -23,7 +23,7 @@ module.exports = {
             if (e.code === 'ECONNREFUSED' || e.name === `SequelizeConnectionRefusedError`){
                 throw new Error(`Нет доступа к базе данных.`);
             } else {
-                console.error( 'action', action, 'params', params );
+                console.error( 'action', action, 'params', condition );
                 throw new Error(e);
             }
         }

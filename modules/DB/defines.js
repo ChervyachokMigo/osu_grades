@@ -1,9 +1,26 @@
 const { createConnection } = require('mysql2/promise');
-const { Sequelize, DataTypes } = require('@sequelize/core');
+const { Sequelize, DataTypes } = require('sequelize');
 
 const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME_BEATMAPS, DB_NAME_SCORES } = require("../../data/config.js");
 
 const osu_beatmaps_mysql = new Sequelize( DB_NAME_BEATMAPS, DB_USER, DB_PASSWORD, {
+    dialect: `mysql`,
+    host: DB_HOST,
+    port: DB_PORT,
+    define: {
+        updatedAt: false,
+        createdAt: false,
+        deletedAt: false
+    },
+    pool: {
+        max: 30,
+        min: 0,
+        acquire: 60000,
+        idle: 60000
+    } 
+});
+
+const osu_scores_mysql = new Sequelize( DB_NAME_SCORES, DB_USER, DB_PASSWORD, { 
     dialect: `mysql`,
     host: DB_HOST,
     port: DB_PORT,
@@ -44,15 +61,6 @@ beatmaps_md5.hasOne(osu_beatmap_id, { foreignKey: 'md5', foreignKeyConstraints: 
 beatmaps_md5.hasOne(beatmap_info, { foreignKey: 'md5',  foreignKeyConstraints: false});
 
 osu_beatmap_id.hasOne(beatmap_info, { foreignKey: 'md5',  foreignKeyConstraints: false});
-
-const osu_scores_mysql = new Sequelize( DB_NAME_SCORES, DB_USER, DB_PASSWORD, { 
-    dialect: `mysql`,
-    define: {
-        updatedAt: false,
-        createdAt: false,
-        deletedAt: false
-    },
-});
 
 const osu_score_legacy = osu_scores_mysql.define ('osu_score_legacy', {
     md5: {type: DataTypes.INTEGER, allowNull: false},

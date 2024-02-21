@@ -11,6 +11,8 @@ const limit = 500;
 module.exports = {
 	args: ['gamemode'],
 	action: async( args ) => {
+		console.log( 'update beatmaps info, v1 api');
+
 		let is_continue = true;
 
 		let since_date = existsSync( saved_since_date_path ) ? 

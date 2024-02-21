@@ -26,7 +26,7 @@ module.exports = {
 				const beatmaps = await request_beatmaps_by_date({ since_date, limit, gamemode: ruleset.idx });
 
 				if (!beatmaps) break;
-                
+				
 				for ( let beatmap_v1 of beatmaps ) {
 					since_date = beatmap_v1.approved_date;
 					await save_beatmap_info( beatmap_v1 );
@@ -36,7 +36,7 @@ module.exports = {
 					console.log('done updating data');
 					is_continue = false;
 				}
-                
+				
 			} catch (e) {
 				console.error(e);
 				break;
@@ -44,6 +44,6 @@ module.exports = {
 		}
 
 		writeFileSync( saved_since_date_path, JSON.stringify({ since_date }), 'utf8' );
-        
+		
 	}
 };

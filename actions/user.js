@@ -4,6 +4,7 @@ const users = require('../modules/DB/users');
 const { check_gamemode, check_userid, check_score_mode } = require('../tools/misc');
 const { request_user_info } = require('../modules/osu_requests_v1');
 const { text_score_mode, gamemode } = require('../misc/const');
+const { users_header } = require('../misc/text_consts');
 
 const user_actions = [ 
 	{ name: 'add', desc: 'Add/Change', F: users.action_add }, 
@@ -51,8 +52,7 @@ module.exports = {
 					const variants = (await users.list_all()).map( x => ({ name: x.text, value: { userid: x.userid, gamemode: x.gamemode }}));
 
 					if (variants.length > 0){
-						const header = ' UserID\t\tScore Mode\tGamemode\tUsername\r\n';
-						console.log( header );
+						console.log( users_header );
 					}
 
 					if (variants.length > 1) {

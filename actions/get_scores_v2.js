@@ -1,7 +1,7 @@
 
 const get_scores_loop = require('../tools/get_scores_loop');
 const { save_scores_v2 } = require('../modules/scores/v2');
-const { request_beatmap_user_scores } = require('../modules/osu_requests_v2');
+const { request_beatmap_user_scores_v2 } = require('../modules/osu_requests_v2');
 const { gamemode } = require('../misc/const');
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
 
         await get_scores_loop({ args, callback: async ( beatmap, userid ) => {
             try {
-                const data = await request_beatmap_user_scores({ 
+                const data = await request_beatmap_user_scores_v2({ 
                     beatmap_id: beatmap.beatmap_id, 
                     gamemode: gamemode[beatmap.gamemode_int],
                     userid, });

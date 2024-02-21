@@ -1,5 +1,5 @@
 const { save_scores_v1 } = require('../modules/scores/v1');
-const update_scores_by_user_recent = require('../tools/update_scores_by_user_recent');
+const update_user_recent_scores_loop = require('../tools/update_user_recent_scores_loop');
 const { request_user_recent_scores } = require('../modules/osu_requests_v1');
 
 module.exports = {
@@ -7,15 +7,21 @@ module.exports = {
     action: async( args ) => {
         console.log('getting recent scores v1');
 
-        await update_scores_by_user_recent({ args, callback: async ( userid, ruleset ) => {
-            try {
-                const scores = await request_user_recent_scores({ userid, ruleset });
-                if (scores) await save_scores_v1( scores ); 
-                
-            } catch (e) {
-                console.error( e );
-                return;
-            }
+        await update_user_recent_scores_loop({ args, looping: false, 
+            callback: async ({ userid, ruleset }) => {
+                try {
+                    const data = await request_user_recent_scores({ userid, ruleset });
+                    if ( !data ) return false;
+
+                    await save_scores_v1( data ); 
+                    if (data.length)
+                        console.log( `found ${data.length} scores for user ${userid}` );
+                    
+                    return data.length;
+                } catch (e) {
+                    console.error( e );
+                    return false;
+                }
         }});
     }
 }

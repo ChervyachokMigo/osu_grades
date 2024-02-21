@@ -3,7 +3,7 @@ const path = require('path');
 const { folder_prepare } = require("../tools/misc");
 const get_scores_loop = require('../tools/get_scores_loop');
 const { save_scores_v2_to_json } = require('../modules/scores/json');
-const { request_beatmap_user_scores } = require('../modules/osu_requests_v2');
+const { request_beatmap_user_scores_v2 } = require('../modules/osu_requests_v2');
 const { scores_folder_path, gamemode } = require('../misc/const');
 
 module.exports = {
@@ -15,11 +15,10 @@ module.exports = {
             //check scores folder
             const scores_userdata_path = path.join(scores_folder_path, userid.toString());
             folder_prepare(scores_userdata_path);
-            console.log('set scores folder', scores_userdata_path);
-
-        }, callback: async ( beatmap, userid ) => {
+            console.log('set scores folder', scores_userdata_path); }, 
+        callback: async ( beatmap, userid ) => {
             try {
-                const data = await request_beatmap_user_scores({ 
+                const data = await request_beatmap_user_scores_v2({ 
                     beatmap_id: beatmap.beatmap_id, 
                     gamemode: gamemode[beatmap.gamemode_int],
                     userid, });

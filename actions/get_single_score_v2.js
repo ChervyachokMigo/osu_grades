@@ -1,6 +1,6 @@
 const osu_auth = require('../tools/osu_auth');
 const { check_userid } = require('../tools/misc');
-const { request_beatmap_user_scores } = require('../modules/osu_requests_v2');
+const { request_beatmap_user_scores_v2 } = require('../modules/osu_requests_v2');
 
 module.exports = {
     args: ['userid', 'beatmap_id'],
@@ -25,7 +25,7 @@ module.exports = {
         console.log('finding score');
         try {
 
-            const data = await request_beatmap_user_scores({ beatmap_id, userid });
+            const data = await request_beatmap_user_scores_v2({ beatmap_id, userid });
             if (data) {
                 console.log(data);
             }

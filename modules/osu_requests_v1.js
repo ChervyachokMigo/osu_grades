@@ -6,7 +6,7 @@ const { Num } = require('../tools/misc');
 const { api_key } = require('../data/config');
 
 module.exports = {
-    request_user_beatmap_scores: async ({ beatmap, userid }) => {
+    request_beatmap_user_scores: async ({ beatmap, userid }) => {
         const url = `https://osu.ppy.sh/api/get_scores?k=${api_key}&b=${beatmap.beatmap_id}&u=${userid}&m=${beatmap.gamemode}`;
         const res = await axios( url );
         

@@ -23,7 +23,7 @@ module.exports = {
         while ( is_continue ) {
             console.log( 'get beatmaps since', since_date );
             try {
-                const beatmaps = await request_beatmaps_by_date({ since_date, limit, gamemode: ruleset.idx });
+               //asdasd const beatmaps = await request_beatmaps_by_date({ since_date, limit, gamemode: ruleset.idx });
 
                 if (!beatmaps) break;
                 

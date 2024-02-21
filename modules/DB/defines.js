@@ -119,6 +119,20 @@ osu_user_grade.hasMany( osu_score, { foreignKey: 'userid',  foreignKeyConstraint
 beatmaps_md5.hasMany( osu_score_legacy, { foreignKey: 'md5',  foreignKeyConstraints: false });
 beatmaps_md5.hasMany( osu_score, { foreignKey: 'md5',  foreignKeyConstraints: false });
 
+/** 
+* @param {Model} Model Execute model
+* @param {Boolean} all If true get all fields, else get only non-primary keys or only primary keys
+* @param {Boolean} primary If true get only primary keys, else get only non-primary keys
+* @return {Array} Array of fields of Model
+*/
+const get_model_field_list = async ({ model, all = false, primary = false }) => {
+	return await Promise.all(Object.entries(await model.describe())
+		// eslint-disable-next-line no-unused-vars
+		.filter( ([key, value]) => all ? true : primary ? value.primaryKey : !value.primaryKey )
+		// eslint-disable-next-line no-unused-vars
+		.map( ([key, value]) => key ));
+};
+
 const mysql_actions = [
 	{ names: 'beatmaps_md5', model: beatmaps_md5 },
 	{ names: 'beatmap_id', model: osu_beatmap_id },
@@ -128,20 +142,6 @@ const mysql_actions = [
 	{ names: 'osu_score', model: osu_score },
 	{ names: 'osu_user_grade', model: osu_user_grade },
 ];
-
-/** 
-* @param {Model} Model Execute model
-* @param {Boolean} all If true get all fields, else get only non-primary keys or only primary keys
-* @param {Boolean} primary If true get only primary keys, else get only non-primary keys
-* @return {Array} Array of fields of Model
-*/
-const get_model_field_list = async ({ model, all = false, primary = false }) => {
-	return await Promise.all(Object.entries(await model.describe( undefined, {  }))
-		// eslint-disable-next-line no-unused-vars
-		.filter( ([key, value]) => all ? true : primary ? value.primaryKey : !value.primaryKey )
-		// eslint-disable-next-line no-unused-vars
-		.map( ([key, value]) => key ));
-};
 
 const _this = module.exports = {
 	mysql_actions,
@@ -187,11 +187,12 @@ const _this = module.exports = {
 		await osu_scores_mysql.sync( sync_params );
 
 		// eslint-disable-next-line no-unused-vars
-		_this.mysql_actions.forEach( async ({ names, model }, i, a) => {
+		await Promise.all( _this.mysql_actions.map( async ({ names, model }, i, a) => {
+			a[i].attributes = Object.entries(await a[i].model.describe()).map( ([name, attribute ]) => ({ name, attribute }) );
 			a[i].fileds = await get_model_field_list({ model, all: true });
 			a[i].keys = await get_model_field_list({ model, primary: true });
 			a[i].non_keys = a[i].fileds.filter( v =>!a[i].keys.includes( v ) );
-		});
+		}));
         
 		console.log('База данных', 'Подготовка завершена');
 	},

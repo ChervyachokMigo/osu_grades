@@ -15,10 +15,7 @@ module.exports = {
 		return result.shift().getDataValue('id');
 	},
 
-	get_model_fields: ( model_name, fields_name ) => {
-		return mysql_actions.find( x => x.names === model_name )[fields_name];
-	},
-
 	mods_v2_to_string: (mods) => mods && mods.length > 0 ? mods.map( x => x.acronym ).join('+') : 'No Mods',
 
+	get_attributes_types: (tablename) => mysql_actions.find(x=>x.names === tablename).attributes.map( x => x.attribute.type)
 };

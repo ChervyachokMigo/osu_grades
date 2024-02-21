@@ -5,7 +5,7 @@ const find_beatmaps = require('../../tools/find_beatmaps');
 const { save_scores_v1, convert_v2_to_v1 } = require("./v1");
 const { save_scores_v2 } = require("./v2");
 const { folder_prepare, print_processed, util, group_by } = require('../../tools/misc');
-const save_beatmap_info = require('../beatmaps/save_beatmap_info');
+const { save_beatmap_info } = require('../DB/beatmap');
 const { request_beatmap_by_md5, request_beatmap_by_id } = require('../osu_requests_v1');
 
 const { scores_folder_path, scores_backup_path } = require('../../misc/const');

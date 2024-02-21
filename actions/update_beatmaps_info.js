@@ -1,6 +1,6 @@
 const { existsSync, readFileSync, writeFileSync } = require("fs");
 
-const save_beatmap_info = require("../modules/beatmaps/save_beatmap_info");
+const { save_beatmap_info } = require("../modules/DB/beatmap");
 const { request_beatmaps_by_date } = require("../modules/osu_requests_v1");
 
 const { saved_since_date_path } = require("../misc/const");

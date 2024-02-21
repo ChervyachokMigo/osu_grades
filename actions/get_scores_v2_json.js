@@ -1,10 +1,11 @@
 const path = require('path');
 
 const { folder_prepare } = require("../tools/misc");
-const get_scores_loop = require('../tools/get_scores_loop');
+const get_scores_loop = require('../tools/loops/get_scores_loop');
 const { save_scores_v2_to_json } = require('../modules/scores/json');
 const { request_beatmap_user_scores_v2 } = require('../modules/osu_requests_v2');
 const { scores_folder_path, gamemode } = require('../misc/const');
+const { found_new_X_scores_beatmap } = require('../misc/text_templates');
 
 module.exports = {
     args: ['userid', 'gamemode', 'continue_md5'],
@@ -28,7 +29,7 @@ module.exports = {
 
                     const res = save_scores_v2_to_json({ userid, scores });
                     if (res) {
-                        console.log( `found new scores ${res} of beatmap ${beatmap.md5} by user ${userid}` );
+                        console.log( found_new_X_scores_beatmap({ length: res, userid, beatmap }) );
                     }
                 } 
                 

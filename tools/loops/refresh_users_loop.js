@@ -1,5 +1,5 @@
-const osu_auth = require('./osu_auth');
-const { check_gamemode, check_userid } = require("./misc");
+const osu_auth = require('../osu_auth');
+const { check_gamemode, check_userid } = require("../misc");
 
 module.exports = async({ args, looping = false , limit = 100, init = async () => false, callback }) => {
     //check userid
@@ -26,7 +26,7 @@ module.exports = async({ args, looping = false , limit = 100, init = async () =>
     while ( loop.receiving ) {
 
         const res = await callback({ userid, ruleset, offset: loop.offset, limit });
-        console.log( 'res length', res );
+
         if ( !res || res < limit || !looping )
             loop.receiving = false;
         else 

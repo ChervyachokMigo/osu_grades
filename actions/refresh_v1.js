@@ -1,27 +1,48 @@
 const { save_scores_v1 } = require('../modules/scores/v1');
-const update_user_recent_scores_loop = require('../tools/update_user_recent_scores_loop');
+const refresh_users_loop = require('../tools/loops/refresh_users_loop');
 const { request_user_recent_scores } = require('../modules/osu_requests_v1');
+const { gamemode } = require('../misc/const');
+const { found_X_scores_gamemode } = require('../misc/text_templates');
+const { get_ruleset_by_gamemode_int } = require('../tools/misc');
 
 module.exports = {
     args: ['userid', 'gamemode'],
     action: async( args ) => {
         console.log('getting recent scores v1');
 
-        await update_user_recent_scores_loop({ args, looping: false, 
+        await refresh_users_loop({ args, looping: false, 
             callback: async ({ userid, ruleset }) => {
                 try {
-                    const data = await request_user_recent_scores({ userid, ruleset });
-                    if ( !data ) return false;
+                    // count 1 for selected mode from ruleset
+                    // count gamemode.length for all gamemodes
+                    let count = 1;
+                    if ( ruleset.idx < 0 ) {
+                        count = gamemode.length;
+                    }
 
-                    await save_scores_v1( data ); 
-                    if (data.length)
-                        console.log( `found ${data.length} scores for user ${userid}` );
-                    
-                    return data.length;
+                    let data_length = 0;
+                    while ( count > 0 ) {
+                        // ruleset iterator
+                        let gamemode_int = ruleset.idx >= 0 ? ruleset.idx : gamemode.length - count;
+                        let current_ruleset = get_ruleset_by_gamemode_int(gamemode_int);
+
+                        const data = await request_user_recent_scores({ userid, ruleset: current_ruleset });
+                        if ( !data ) return false;
+
+                        await save_scores_v1( data ); 
+                        if (data.length)
+                            console.log( found_X_scores_gamemode({ length: data.length, userid, gamemode_int: current_ruleset.idx }) );
+                        
+                        data_length += data.length;
+                        count--;
+                    }
+                    return data_length;
+
                 } catch (e) {
                     console.error( e );
                     return false;
                 }
+                
         }});
     }
 }

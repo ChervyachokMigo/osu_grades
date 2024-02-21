@@ -15,6 +15,15 @@ const _this = module.exports = {
         }
     },
 
+    get_ruleset_by_gamemode_int: ( val ) => {
+        const idx = isNaN( Number(val)) ? -1 : Number(val);
+
+        return { 
+            name: (idx >= 0 && idx <=3) ? gamemode[idx] : 'all', 
+            idx,
+        };
+    },
+
     check_gamemode: ( val ) => {
         const idx = typeof val === 'undefined' ? -2 : 
             ( isNaN( Number(val) ) || val < -1 || val > 3 ) ? -2 : 

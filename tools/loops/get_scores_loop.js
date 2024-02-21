@@ -1,10 +1,10 @@
 const { RankedStatus } = require('osu-tools');
 
-const osu_auth = require('../tools/osu_auth');
-const find_beatmaps = require('../tools/find_beatmaps');
-const { check_gamemode, print_processed, check_userid } = require("../tools/misc");
+const osu_auth = require('../osu_auth');
+const find_beatmaps = require('../find_beatmaps');
+const { check_gamemode, print_processed, check_userid } = require("../misc");
 
-module.exports = async({ args, init = async () => {}, callback }) => {
+module.exports = async({ args, ranked_status = RankedStatus.ranked, init = async () => {}, callback }) => {
     //check userid
     const userid = check_userid( args.userid );
     if (!userid) return;
@@ -23,7 +23,7 @@ module.exports = async({ args, init = async () => {}, callback }) => {
     await init( userid );
 
     //load beatmaps from DB
-    const beatmaps_db = ( await find_beatmaps({ ranked: RankedStatus.ranked }))
+    const beatmaps_db = ( await find_beatmaps({ ranked: ranked_status }))
         .filter( x => x.beatmap_id > 0 );
     console.log( 'founded', beatmaps_db.length, 'ranked beatmaps' );
 

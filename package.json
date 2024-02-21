@@ -17,5 +17,8 @@
     "mysql2": "^3.9.1",
     "osu-api-extended": "^2.8.1",
     "osu-tools": "github:ChervyachokMigo/osu-tools"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
   }
 }

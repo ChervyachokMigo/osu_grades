@@ -32,21 +32,14 @@ module.exports = {
 	request_beatmaps_by_cursor_v2: async ({ query = undefined, query_strict = false, ruleset, status = 'ranked', cursor_string = null }) => {
 		const query_checked = query_strict ? '"'+query+'"' : query;
 
-		console.log('requesting beatmaps by cursor', cursor_string, 'query: ', query_checked, 'with gamemode', ruleset.name, 'and status:', status );
-		console.log( 'search object', {
+		const search_object = {
 			query: query_checked,
 			mode: ruleset.idx,
 			section: status,
 			cursor_string,
+		};
 
-		} );
-		const res = await v2.beatmaps.search({
-			query: query_checked,
-			mode: ruleset.idx,
-			section: status,
-			cursor_string,
-
-		}).catch( (e) => {
+		const res = await v2.beatmaps.search( search_object ).catch( (e) => {
 			console.error( 'request beatmap error' );
 			throw new Error (e);
 		});

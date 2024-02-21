@@ -39,13 +39,11 @@ module.exports = {
 					console.log('no response from bancho');
 					break; 
 				}
-				if ( res?.total == 0 || cursor_string === null || cursor_string === undefined) {
-					console.log('cursor null, founded maps 0, ended.');
-					break;
-				}
 
-				const beatmaps = res.beatmaps?.beatmapsets;
+				const beatmaps = res?.beatmapsets;
+				
 				count_beatmaps += beatmaps.length;
+
 				if ( !total_beatmaps ) {
 					total_beatmaps = res?.total;
 				}

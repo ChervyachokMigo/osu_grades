@@ -1,5 +1,6 @@
-const { Num, import_beatmap_status } = require('../../tools/misc');
+const { Num, import_beatmap_status, concat_array_of_arrays } = require('../../tools/misc');
 const { MYSQL_SAVE } = require('./base');
+const { osu_beatmap_id, beatmap_info } = require('./defines');
 const { get_md5_id } = require('./tools');
 
 const convert_v1_to_db = ( beatmap_v1 ) => ({
@@ -25,6 +26,10 @@ const convert_v2_to_db = ( beatmapset, beatmap_v2 ) => ({
 	creator: beatmapset.creator || '',
 	difficulty: beatmap_v2.version || ''
 });
+const convert_beatmapsets_v2_to_db = (beatmapset_v2) => 
+	beatmapset_v2.map( beatmapset => 
+		beatmapset.beatmaps.map( beatmap => 
+			( convert_v2_to_db( beatmapset, beatmap ) )));
 
 module.exports = {
 	save_beatmap_info: async ( beatmap_v1 ) => {
@@ -80,5 +85,49 @@ module.exports = {
 				}
 			}}
 	},
+
+	save_beatmapsets_v2: async ( beatmapset_v2 ) => {
+
+		// list of hashes
+		const hashes = [].concat(...beatmapset_v2.map( (beatmapset) => beatmapset.beatmaps.map( beatmap=> beatmap.checksum )));
+
+		const md5_hashes = await Promise.all(hashes.map( async hash => ({id: await get_md5_id(hash), hash}) ));
+		
+		const db_data = concat_array_of_arrays( convert_beatmapsets_v2_to_db ( beatmapset_v2) );
+
+		const ids_data = db_data.map( x => ({
+			md5: md5_hashes.find( v => v.hash === x.md5).id, 
+			beatmap_id: x.beatmap_id, 
+			beatmapset_id: x.beatmapset_id, 
+			gamemode: x.gamemode, 
+			ranked: x.ranked})
+		).filter(x=> x.md5);
+
+		const info_data = db_data.map( x => ({
+			md5: md5_hashes.find( v => v.hash === x.md5).id, 
+			artist: x.artist, 
+			title: x.title, 
+			creator: x.creator, 
+			difficulty: x.difficulty})
+		).filter(x=> x.md5);
+
+		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
+			ignoreDuplicates: true,
+			updateOnDuplicate: ['beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']		
+		})).map( x => x.dataValues );
+
+		const res2 = (await beatmap_info.bulkCreate( info_data, { 
+			ignoreDuplicates: true,
+			updateOnDuplicate: ['artist', 'title', 'creator', 'difficulty']	
+		})).map( x => x.dataValues );
+
+		return { 
+			md5_hashes: md5_hashes.length, 
+			beatmap_ids: res.length, 
+			beatmap_info: res2.length, 
+			is_valid: md5_hashes.length == res2.length && res.length == res2.length,
+		};
+
+	}
 
 };

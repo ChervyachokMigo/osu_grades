@@ -40,7 +40,6 @@ module.exports = async ({
     
 		order: [['md5', 'ASC']],
 
-		logging: false,
 		raw: true, 
 	};
 

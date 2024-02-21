@@ -27,7 +27,7 @@ const _this = module.exports = {
 	// Single score
 	save_score_v2: async ( data ) => {
 		const score = await _this.convert_v2_to_db( data );
-		const res = await osu_score.upsert( score, { logging: false, raw: true });
+		const res = await osu_score.upsert( score, { raw: true });
 		return res.pop();
 	},
 	// Multiple scores
@@ -36,7 +36,7 @@ const _this = module.exports = {
 			data_arr.filter( x => x && x.id ).map ( async x => await _this.convert_v2_to_db( x ))
 		);
         
-		const res = await osu_score.bulkCreate( scores, { ignoreDuplicates: true, logging: false });
+		const res = await osu_score.bulkCreate( scores, { ignoreDuplicates: true });
 		return res.length;
 	},
 };

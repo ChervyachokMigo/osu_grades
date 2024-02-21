@@ -8,18 +8,17 @@ const _this = module.exports = {
 	add: async ({ userid, ruleset, score_mode, username }) => {
 		const exist_record = await _this.find({ userid, gamemode: ruleset.idx });
 		if (exist_record) {
-			await osu_user_grade.destroy({ where: { userid, gamemode: ruleset.idx }, logging: false });
+			await osu_user_grade.destroy({ where: { userid, gamemode: ruleset.idx } });
 		}
 		const res =( await osu_user_grade.upsert(
 			{ userid, gamemode: ruleset.idx, score_mode, username },
-			{ logging: false }
 		)).shift();
 		if (res) console.log( add_user_scoremode_gamemode({ username, userid, score_mode, ruleset }) );
 	},
 
-	find: async (where) => await osu_user_grade.findOne({ where, raw: true, logging: false }),
+	find: async (where) => await osu_user_grade.findOne({ where, raw: true }),
 
-	findAll: async (where) => await osu_user_grade.findAll ({ where, raw: true,  logging: false }),
+	findAll: async (where) => await osu_user_grade.findAll ({ where, raw: true }),
 
 	action_add: async ({ selected_rulesets, userid, score_mode, username }) => {
 		// all modes
@@ -44,7 +43,7 @@ const _this = module.exports = {
 	},
 
 	action_delete: async (where) => {
-		const res = await osu_user_grade.destroy({ where, logging: false });
+		const res = await osu_user_grade.destroy({ where });
 		if (res) console.log( delete_user_gamemode({ userid: where.userid, gamemode_int: where.gamemode }) );
 	},
 

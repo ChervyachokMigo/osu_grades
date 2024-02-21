@@ -50,7 +50,7 @@ const save_scores_v1 = async ( data_arr ) => {
 	const scores = ( await Promise.all( 
 		data_arr.filter( x => x && x.score && x.beatmap ).map( async x => await score_v1_parse( x )))
 	);
-	const res = await osu_score_legacy.bulkCreate( scores, { ignoreDuplicates: true, logging: false });
+	const res = await osu_score_legacy.bulkCreate( scores, { ignoreDuplicates: true });
 	return res.length;
 };
 

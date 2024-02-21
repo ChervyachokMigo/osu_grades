@@ -6,11 +6,11 @@ const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME_BEATMAPS, DB_NAME_SCORES
 const osu_beatmaps_mysql = new Sequelize( DB_NAME_BEATMAPS, DB_USER, DB_PASSWORD, {
 	dialect: 'mysql',
 	host: DB_HOST,
-	port: DB_PORT,
+	port: DB_PORT, logging: false, noTypeValidation: true, 
 	define: {
 		updatedAt: false,
 		createdAt: false,
-		deletedAt: false
+		deletedAt: false, 
 	},
 	pool: {
 		max: 30,
@@ -23,7 +23,8 @@ const osu_beatmaps_mysql = new Sequelize( DB_NAME_BEATMAPS, DB_USER, DB_PASSWORD
 const osu_scores_mysql = new Sequelize( DB_NAME_SCORES, DB_USER, DB_PASSWORD, { 
 	dialect: 'mysql',
 	host: DB_HOST,
-	port: DB_PORT,
+	port: DB_PORT, 
+	logging: false, 
 	define: {
 		updatedAt: false,
 		createdAt: false,
@@ -38,6 +39,7 @@ const osu_scores_mysql = new Sequelize( DB_NAME_SCORES, DB_USER, DB_PASSWORD, {
 });
 
 const beatmaps_md5 = osu_beatmaps_mysql.define ('beatmaps_md5', {
+	id: {type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true, unique: true, index: true },
 	hash: {type: DataTypes.STRING(32), allowNull: false, unique: true, index: true},
 });
 
@@ -47,7 +49,7 @@ const osu_beatmap_id = osu_beatmaps_mysql.define ('beatmap_id', {
 	beatmapset_id: {type: DataTypes.INTEGER, allowNull: false},
 	gamemode: {type: DataTypes.TINYINT.UNSIGNED, allowNull: false},
 	ranked: {type: DataTypes.TINYINT, allowNull: false},
-}, {noPrimaryKey: false});
+});
 
 const beatmap_info = osu_beatmaps_mysql.define ('beatmap_info', {
 	md5: {type: DataTypes.INTEGER,allowNull: false, unique: true, primaryKey: true},
@@ -55,7 +57,7 @@ const beatmap_info = osu_beatmaps_mysql.define ('beatmap_info', {
 	title: {type: DataTypes.STRING, allowNull: false},
 	creator: {type: DataTypes.STRING, allowNull: false},
 	difficulty: {type: DataTypes.STRING, allowNull: false},
-}, {noPrimaryKey: false});
+});
 
 beatmaps_md5.hasOne(osu_beatmap_id, { foreignKey: 'md5', foreignKeyConstraints: false});
 beatmaps_md5.hasOne(beatmap_info, { foreignKey: 'md5',  foreignKeyConstraints: false});
@@ -134,7 +136,7 @@ const mysql_actions = [
 * @return {Array} Array of fields of Model
 */
 const get_model_field_list = async ({ model, all = false, primary = false }) => {
-	return await Promise.all(Object.entries(await model.describe( undefined, { logging: false }))
+	return await Promise.all(Object.entries(await model.describe( undefined, {  }))
 		// eslint-disable-next-line no-unused-vars
 		.filter( ([key, value]) => all ? true : primary ? value.primaryKey : !value.primaryKey )
 		// eslint-disable-next-line no-unused-vars
@@ -155,7 +157,7 @@ const _this = module.exports = {
 	osu_score_legacy,
 	osu_user_grade,
 
-	prepareDB: async () => {
+	prepareDB: async ( alter_db = false ) => {
 		console.log('База данных', 'Подготовка');
 		try {
 			const connection = await createConnection(`mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}`);
@@ -178,8 +180,11 @@ const _this = module.exports = {
 				throw new Error(`ошибка базы: ${e}`);
 			}
 		}
-		await osu_beatmaps_mysql.sync({ logging: false });
-		await osu_scores_mysql.sync({ logging: false });
+		
+		const sync_params = alter_db ? { alter: true } : { alter: false };
+
+		await osu_beatmaps_mysql.sync( sync_params );
+		await osu_scores_mysql.sync( sync_params );
 
 		// eslint-disable-next-line no-unused-vars
 		_this.mysql_actions.forEach( async ({ names, model }, i, a) => {

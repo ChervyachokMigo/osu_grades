@@ -4,8 +4,7 @@ const { select_mysql_model } = require('./defines.js');
 function updateAll(Model, condition, values ){
 	return Model.update(
 		values, {
-			where: condition, 
-			logging: false
+			where: condition
 		});
 }
 
@@ -15,8 +14,7 @@ module.exports = {
 
 		try {
 			return await MysqlModel.findOne({ 
-				where: condition, 
-				logging: false, 
+				where: condition,
 				raw: true
 			});
 		} catch (e){
@@ -34,8 +32,7 @@ module.exports = {
 		const MysqlModel = select_mysql_model(action);
 		try{
 			return await MysqlModel.findAll ({ 
-				where: params? params : {}, 
-				logging: false, 
+				where: params? params : {},
 				raw: true, 
 				attributes 
 			});//order: [['id', 'DESC']] 
@@ -68,7 +65,6 @@ module.exports = {
 		try{
 			return await MysqlModel.destroy({
 				where: condition, 
-				logging: false,
 			});
 		} catch (e){
 			if (e.code === 'ECONNREFUSED' || e.name === 'SequelizeConnectionRefusedError'){
@@ -88,9 +84,9 @@ module.exports = {
 
 		try {
 			if (typeof values.length !== 'undefined' && values.length > 0){
-				return await MysqlModel.bulkCreate( values, { logging: false, ignoreDuplicates: true });
+				return await MysqlModel.bulkCreate( values, { ignoreDuplicates: true });
 			} else {
-				return (await MysqlModel.upsert( values, { where: keys, logging: false, raw: true }))
+				return (await MysqlModel.upsert( values, { where: keys, raw: true }))
 					.shift();
 			}
 		} catch (e){

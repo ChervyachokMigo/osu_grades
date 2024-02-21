@@ -106,6 +106,27 @@ const _this = module.exports = {
 			memo[x[property]].push(x);
 			return memo;
 		}, {});
+	},
+
+	concat_array_of_arrays: ( arr ) => [].concat(...arr),
+
+	split_array_on_chunks: (arr, len = null) => {
+		if (typeof len === 'undefined' || len === null || len === 0) {
+			return arr;
+		}
+
+		if (typeof arr !== 'object'){
+			throw new Error('split_array > array is not the object');
+		}
+
+		let chunks = [];
+		let i = 0;
+
+		while (i < arr.length) {
+			chunks.push(arr.slice(i, i += len));
+		}
+
+		return chunks;
 	}
 
 };

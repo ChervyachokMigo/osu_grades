@@ -9,7 +9,6 @@ module.exports = {
         
 		const result = await beatmaps_md5.findOrCreate({ 
 			where: { hash },
-			logging: false,
 			ignoreDuplicates: true,
 		});
     

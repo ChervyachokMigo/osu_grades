@@ -23,7 +23,7 @@ module.exports = {
 		` ${userid}\t${text_score_mode[score_mode]}\t\t${gamemode[gamemode_int]}\t\t${username}\t`,
 	
 	getting_beatmaps_progress: ({ beatmaps_length, count_beatmaps, total_beatmaps }) =>
-		`getting ${beatmaps_length} beatmaps (${count_beatmaps}/${total_beatmaps}) ${(count_beatmaps/total_beatmaps).toFixed(2)} %`,
+		`getting ${beatmaps_length} beatmaps (${count_beatmaps}/${total_beatmaps}) ${(count_beatmaps/total_beatmaps*100).toFixed(2)} %`,
 
    
 };

@@ -1,35 +1,61 @@
 const { v2 } = require('osu-api-extended');
 
 module.exports = {
-    request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = undefined, 
-        sort_condition = 'total_score', notice_miss = false, best_only = false }) => {
+	request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = undefined, 
+		sort_condition = 'total_score', notice_miss = false, best_only = false }) => {
 
-        const data = await v2.scores.user.beatmap( beatmap_id, userid, { mode: gamemode, best_only });
+		const data = await v2.scores.user.beatmap( beatmap_id, userid, { mode: gamemode, best_only });
 
-        if (data && typeof data == 'object' && data.length > 0){
-            data.sort( (a, b) => b[sort_condition] - a[sort_condition] );            
-            return data;
-        }
+		if (data && typeof data == 'object' && data.length > 0){
+			data.sort( (a, b) => b[sort_condition] - a[sort_condition] );            
+			return data;
+		}
 
-        if (notice_miss) {
-            console.error('warning: no scores for beatmap', beatmap_id, 'for user', userid );
-        }
+		if (notice_miss) {
+			console.error('warning: no scores for beatmap', beatmap_id, 'for user', userid );
+		}
 
-        return null;
-    },
+		return null;
+	},
 
-    request_user_recent_scores_v2: async ({ userid, ruleset, offset = 0, limit = 100 }) => {
-        const data = await v2.scores.user.category( userid, 'recent', { mode: ruleset.name, offset, limit });
+	request_user_recent_scores_v2: async ({ userid, ruleset, offset = 0, limit = 100 }) => {
+		const data = await v2.scores.user.category( userid, 'recent', { mode: ruleset.name, offset, limit });
 
-        if (data && typeof data == 'object' && data.length > 0){
-            return data.map( x => ({...x, beatmap_md5: x.beatmap.checksum }));;
-        }
+		if (data && typeof data == 'object' && data.length > 0){
+			return data.map( x => ({...x, beatmap_md5: x.beatmap.checksum }));
+		}
 
-        console.error( 'warning! not found scores for user', userid, 'with gamemode', ruleset.name );
-        return null;
-    },
+		console.error( 'warning! not found scores for user', userid, 'with gamemode', ruleset.name );
+		return null;
+	},
 
-    request_beatmaps_by_cursor: async ({ userid, ruleset, offset = 0, limit = 100 }) => {
+	request_beatmaps_by_cursor_v2: async ({ query = undefined, query_strict = false, ruleset, status = 'ranked', cursor_string = null }) => {
+		const query_checked = query_strict ? '"'+query+'"' : query;
 
-    },
-}
+		console.log('requesting beatmaps by cursor', cursor_string, 'query: ', query_checked, 'with gamemode', ruleset.name, 'and status:', status );
+		console.log( 'search object', {
+			query: query_checked,
+			mode: ruleset.idx,
+			section: status,
+			cursor_string,
+
+		} );
+		const res = await v2.beatmaps.search({
+			query: query_checked,
+			mode: ruleset.idx,
+			section: status,
+			cursor_string,
+
+		}).catch( (e) => {
+			console.error( 'request beatmap error' );
+			throw new Error (e);
+		});
+
+		if (!res || res.error ){
+			console.error( 'Request beatmaps error: ', res?.error );
+			return null;
+		}
+
+		return res;
+	},
+};

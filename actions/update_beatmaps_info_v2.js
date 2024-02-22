@@ -59,7 +59,7 @@ module.exports = {
 					total_beatmaps = bancho_res?.total;
 				}
 				
-				print_processed({ current: count_beatmaps, size: count_beatmaps, initial: beatmaps.length, frequency: 50 });
+				print_processed({ current: count_beatmaps, size: total_beatmaps, initial: beatmaps.length, frequency: 50 });
 				//console.log( getting_beatmaps_progress({ ruleset, approved_date, beatmaps_length: beatmaps.length, count_beatmaps, total_beatmaps }));
 
 				if ( beatmaps && beatmaps.length > 0 ) {

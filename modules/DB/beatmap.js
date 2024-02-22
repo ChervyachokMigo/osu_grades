@@ -26,12 +26,68 @@ const convert_v2_to_db = ( beatmapset, beatmap_v2 ) => ({
 	creator: beatmapset.creator || '',
 	difficulty: beatmap_v2.version || ''
 });
-const convert_beatmapsets_v2_to_db = (beatmapset_v2) => 
+
+const convert_beatmapsets_v1_to_db = ( beatmaps_v1 ) => 
+	beatmaps_v1.map( beatmap => 
+		( convert_v1_to_db( beatmap ) ));
+
+const convert_beatmapsets_v2_to_db = ( beatmapset_v2 ) => 
 	beatmapset_v2.map( beatmapset => 
 		beatmapset.beatmaps.map( beatmap => 
 			( convert_v2_to_db( beatmapset, beatmap ) )));
 
 module.exports = {
+
+	save_beatmapsets_v1: async ( beatmapset_v1 ) => {
+
+		if ( !beatmapset_v1 || !beatmapset_v1.length ) return null;
+
+		// list of hashes
+		const hashes = ( beatmapset_v1.map( (beatmap) => beatmap.file_md5 ) );
+	
+		const since_date = beatmapset_v1[beatmapset_v1.length-1].approved_date;
+
+		// get md5 id from db
+		const md5_hashes = await Promise.all( hashes.map( async hash => ({ id: await get_md5_id(hash), hash }) ));
+		
+		const db_data = convert_beatmapsets_v1_to_db ( beatmapset_v1 );
+
+		const ids_data = db_data.map( x => ({
+			md5: md5_hashes.find( v => v.hash === x.md5).id, 
+			beatmap_id: x.beatmap_id, 
+			beatmapset_id: x.beatmapset_id, 
+			gamemode: x.gamemode, 
+			ranked: x.ranked})
+		).filter(x=> x.md5);
+
+		const info_data = db_data.map( x => ({
+			md5: md5_hashes.find( v => v.hash === x.md5).id, 
+			artist: x.artist, 
+			title: x.title, 
+			creator: x.creator, 
+			difficulty: x.difficulty})
+		).filter(x=> x.md5);
+
+		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
+			ignoreDuplicates: true,
+			updateOnDuplicate: [ 'beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']		
+		})).map( x => x.dataValues );
+
+		const res2 = (await beatmap_info.bulkCreate( info_data, { 
+			ignoreDuplicates: true,
+			updateOnDuplicate: [ 'artist', 'title', 'creator', 'difficulty']	
+		})).map( x => x.dataValues );
+
+		return { 
+			md5_hashes: md5_hashes.length, 
+			beatmap_ids: res.length, 
+			beatmap_info: res2.length, 
+			is_valid: md5_hashes.length == res2.length && res.length == res2.length,
+			since_date,
+		};
+
+	},
+
 	save_beatmap_info: async ( beatmap_v1 ) => {
 		const beatmap_md5_id = await get_md5_id( beatmap_v1.file_md5 );
 		const beatmap = convert_v1_to_db( beatmap_v1 );

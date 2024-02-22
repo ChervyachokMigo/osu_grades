@@ -41,7 +41,7 @@ module.exports = {
 	osu_token_path: path.join('data', 'osu_token.json'),
 	grades_results_path: 'results',
 	scores_backup_path: path.join('data', 'scores_backup'),
-	saved_since_date_path: path.join( 'data', 'update_beatmaps_since_date.json' ),
+	saved_since_date_path: path.join( 'data', 'update_beatmaps_since_date' ),
 	saved_beatmaps_cursor_v2_path: path.join( 'data', 'beatmaps_cursor_v2.json' ),
 };
 

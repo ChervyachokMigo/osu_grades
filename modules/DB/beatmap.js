@@ -89,7 +89,7 @@ module.exports = {
 	save_beatmapsets_v2: async ( beatmapset_v2 ) => {
 
 		// list of hashes
-		const hashes = [].concat(...beatmapset_v2.map( (beatmapset) => beatmapset.beatmaps.map( beatmap=> beatmap.checksum )));
+		const hashes = concat_array_of_arrays( beatmapset_v2.map( (beatmapset) => beatmapset.beatmaps.map( beatmap=> beatmap.checksum )));
 
 		const md5_hashes = await Promise.all(hashes.map( async hash => ({id: await get_md5_id(hash), hash}) ));
 		

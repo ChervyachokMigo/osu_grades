@@ -29,7 +29,9 @@ module.exports = {
 		return null;
 	},
 
-	request_beatmaps_by_cursor_v2: async ({ query = undefined, query_strict = false, ruleset, status = 'ranked', cursor_string = null }) => {
+	request_beatmaps_by_cursor_v2: async ({ query = null, query_strict = false, 
+		ruleset, status = 'ranked', cursor_string = null }) => {
+		
 		const query_checked = query_strict ? '"'+query+'"' : query;
 
 		const search_object = {
@@ -38,6 +40,8 @@ module.exports = {
 			section: status,
 			cursor_string,
 		};
+
+		console.log(search_object);
 
 		const res = await v2.beatmaps.search( search_object ).catch( (e) => {
 			console.error( 'request beatmap error' );

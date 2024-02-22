@@ -1,5 +1,5 @@
 
-const { check_gamemode, check_score_mode } = require('../tools/misc');
+const { check_gamemode, check_score_mode, concat_array_of_arrays } = require('../tools/misc');
 const { text_score_mode, gamemode } = require('../misc/const');
 const users = require('../modules/DB/users');
 
@@ -24,7 +24,7 @@ module.exports = {
 		// else => find users with all gamemodes
 		const users_play_options = ruleset.idx >= 0 && ruleset.idx < gamemode.length ? 
 			await users.findAll({ score_mode, gamemode: ruleset.idx }) :
-			[].concat( ...await Promise.all( 
+			concat_array_of_arrays( await Promise.all( 
 				gamemode.map( async (x, mode_idx) => await users.findAll({ score_mode, gamemode: mode_idx }) )));
 		
 		if (!users_play_options || users_play_options.length == 0) {

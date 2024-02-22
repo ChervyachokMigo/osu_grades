@@ -1,2 +1,2 @@
-node index.js update_beatmaps_info -2
+node index.js update_beatmaps_info -1
 pause

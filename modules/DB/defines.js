@@ -157,7 +157,9 @@ const _this = module.exports = {
 	osu_score_legacy,
 	osu_user_grade,
 
-	prepareDB: async ({ alter_db = false }) => {
+	prepareDB: async ( args ) => {
+		const alter_db = args?.alter_db || false;
+		
 		console.log('База данных', 'Подготовка');
 		try {
 			const connection = await createConnection(`mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}`);

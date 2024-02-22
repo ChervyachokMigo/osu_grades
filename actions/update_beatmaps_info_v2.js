@@ -9,8 +9,8 @@ module.exports = {
 	action: async( args ) => {
 		console.log( 'update beatmaps info, v2 api');
 		console.log( 'args', args );
-		console.log( 'authing to osu' );
 
+		console.log( 'authing to osu' );
 		await osu_auth();
 
 		//check gamemode

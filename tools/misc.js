@@ -67,14 +67,15 @@ const _this = module.exports = {
 	print_processed: ({ current, size, initial = 0, 
 		frequency = print_progress_frequency, force = false, name, percent_precition = 2, show_percent = true, show_values = true }) => {
         
-		const space = ( v ) => v ? v + ' ' : '';
+		const spaceAfter = ( v ) => v ? v + ' ' : '';
 
 		const percent = Math.trunc( (1 / frequency) * size) || 1;
 		const print_current = initial == 0 ? Number(current) + 1 : current;
+		
 		if ( force || print_current % percent == 0 || current == initial || print_current == size ) {
-			let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * percent ).toFixed(percent_precition) + '%' : '';
+			let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * 100 ).toFixed(percent_precition) + '%' : '';
 			let value_text = show_values ? `(${print_current}/${size})` : '';
-			console.log( 'processed ' + space(name) + space(percent_text) + value_text );
+			console.log( 'processed ' + spaceAfter(name) + spaceAfter(percent_text) + value_text );
 		}
 	},
 

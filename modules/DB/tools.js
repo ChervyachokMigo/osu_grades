@@ -10,12 +10,18 @@ module.exports = {
 		const result = await beatmaps_md5.findOrCreate({ 
 			where: { hash },
 			ignoreDuplicates: true,
+			updateOnDuplicate: [ 'hash']
 		});
-    
-		return result.shift().getDataValue('id');
+	
+		const res = result.shift().getDataValue('id');
+		if (!res){
+			console.error( 'beatmap_md5 error', result );
+		}
+
+		return res;
 	},
 
 	mods_v2_to_string: (mods) => mods && mods.length > 0 ? mods.map( x => x.acronym ).join('+') : 'No Mods',
 
-	get_attributes_types: (tablename) => mysql_actions.find(x=>x.names === tablename).attributes.map( x => x.attribute.type)
+	get_attributes_types: (tablename) => (mysql_actions.find(x=>x.names === tablename))?.attributes.map( x => x.attribute.type)
 };

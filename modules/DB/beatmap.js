@@ -113,12 +113,12 @@ module.exports = {
 
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
-			updateOnDuplicate: ['beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']		
+			updateOnDuplicate: [ 'beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']		
 		})).map( x => x.dataValues );
 
 		const res2 = (await beatmap_info.bulkCreate( info_data, { 
 			ignoreDuplicates: true,
-			updateOnDuplicate: ['artist', 'title', 'creator', 'difficulty']	
+			updateOnDuplicate: [ 'artist', 'title', 'creator', 'difficulty']	
 		})).map( x => x.dataValues );
 
 		return { 

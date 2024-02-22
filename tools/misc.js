@@ -72,7 +72,7 @@ const _this = module.exports = {
 		const percent = Math.trunc( (1 / frequency) * size) || 1;
 		const print_current = initial == 0 ? Number(current) + 1 : current;
 		if ( force || print_current % percent == 0 || current == initial || print_current == size ) {
-			let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * 100 ).toFixed(percent_precition) + '%' : '';
+			let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * percent ).toFixed(percent_precition) + '%' : '';
 			let value_text = show_values ? `(${print_current}/${size})` : '';
 			console.log( 'processed ' + space(name) + space(percent_text) + value_text );
 		}
@@ -127,6 +127,10 @@ const _this = module.exports = {
 		}
 
 		return chunks;
-	}
+	},
+
+	boolean_from_string: (val) => {
+		return val === 'true' || val === '1' || val === 1 ? true : false;
+	},
 
 };

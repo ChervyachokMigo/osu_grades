@@ -1,2 +1,2 @@
-node index.js import_csv_table
+node index.js table_import_csv
 pause

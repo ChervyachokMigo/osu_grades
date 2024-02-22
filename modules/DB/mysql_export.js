@@ -1,39 +1,15 @@
+
+const { writeFileSync } = require('fs');
 const path = require('path');
+
 const { csv_folder_path } = require('../../misc/const');
 const { spawnSync } = require('child_process');
 const { MYSQL_GET_ALL } = require('./base');
 const { prepareDB } = require('./defines');
-const { writeFileSync } = require('fs');
 
-const save_csv = (values, filename) => {
-	if (values.length > 0){
-		let data = [];
-
-		data.push( Object.keys(values[0]).map( x => `"${x}"` ).join(';') );
-
-		for (let record of values){
-			data.push( Object.values(record).map( x => typeof x === 'string'? `"${x}"` : x ).join(';') );
-		}
-        
-		writeFileSync(path.join( csv_folder_path, filename), data.join('\r\n'), {encoding: 'utf8'});
-	}
-};
-
-const export_any_table_csv = async (tablename) => {
-	if (!tablename){
-		throw new Error('no tablename');
-	}
-    
-	await prepareDB();
-
-	console.log('exporting >', tablename);
-
-	const mysql_values = await MYSQL_GET_ALL( tablename );
-    
-	save_csv(mysql_values, `${tablename}.csv`);
-
-	console.log('export complete.');
-};
+const { folder_prepare, print_processed } = require('../../tools/misc');
+const { get_attributes_types } = require('../../modules/DB/tools');
+const { mysql_actions } = require('../../modules/DB/defines');
 
 const pack = async (tablename = 'mysql_backups') => {
 
@@ -58,8 +34,61 @@ const pack = async (tablename = 'mysql_backups') => {
 	console.log(stdout, stderr);
 };
 
-module.exports = {
-	export_any_table_csv,
-	export_osu_beatmap_pp_csv,
+const _this = module.exports = {
 	pack,
+
+	export_table_csv: async ( tablename ) => {
+		if (!tablename || mysql_actions.find( x => x.names === tablename) === -1) {
+			console.error('tablename invalid', tablename);
+			return false;
+		}
+		
+		await prepareDB();
+
+		console.log('geting all data');
+		const mysql_values = await MYSQL_GET_ALL( tablename );
+		console.log('reciving', mysql_values.length, 'rows');
+		_this.save_csv(mysql_values, tablename);
+
+	},
+
+	save_csv: (values = null, tablename) => {
+
+		folder_prepare (csv_folder_path);
+
+		if (!tablename || mysql_actions.find( x => x.names === tablename) === -1) {
+			console.error('tablename invalid', tablename);
+			return false;
+		}
+
+		if (values && values.length > 0){
+			console.log('preparing data');
+			const now = new Date();
+			const filename =  `${tablename}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-` +
+				`${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
+
+			const header = Object.keys(values[0]).map( x => `"${x}"` ).join(';');
+			const types = get_attributes_types(tablename).join(';');
+
+			let data = [];
+
+			data.push( header );
+			data.push( types );
+
+			for ( let i in values ){
+				data.push( Object.values(values[i]).map( x => typeof x === 'string'? `"${x}"` : x ).join(';') );
+				print_processed({ current: i, size: values.length, name: 'rows' });
+			}
+
+			try {
+				console.log('saving csv');
+				writeFileSync(path.join( csv_folder_path, filename + '.csv' ), data.join('\r\n'), { encoding: 'utf8' });
+			} catch (e) {
+				console.error(e);
+			}
+		} else {
+			console.error('save_csv > no values');
+		}
+	},
+
 };

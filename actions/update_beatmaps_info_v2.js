@@ -1,13 +1,8 @@
-const { existsSync, readFileSync, writeFileSync } = require('fs');
-
 const osu_auth = require('../tools/osu_auth');
 const { save_beatmapsets_v2 } = require('../modules/DB/beatmap');
-const { check_gamemode } = require('../tools/misc');
+const { check_gamemode, print_processed } = require('../tools/misc');
 const { request_beatmaps_by_cursor_v2 } = require('../modules/osu_requests_v2');
-const { getting_beatmaps_progress } = require('../misc/text_templates');
-const { saved_beatmaps_cursor_v2_path, beatmap_status_bancho_text } = require('../misc/const');
-
-const save_cursor = (cursor_string) => writeFileSync( saved_beatmaps_cursor_v2_path, JSON.stringify({ cursor_string }), 'utf8' );
+const { beatmap_status_bancho_text } = require('../misc/const');
 
 module.exports = {
 	args: ['gamemode', 'status', 'cursor'],
@@ -21,47 +16,51 @@ module.exports = {
 		//check gamemode
 		const ruleset = check_gamemode( args.gamemode );
 
-		let cursor_string = args.cursor || existsSync( saved_beatmaps_cursor_v2_path ) ? 
-			JSON.parse( readFileSync( saved_beatmaps_cursor_v2_path, 'utf8' )).cursor_string : 
-			null;
-
+		//check cursor string
+		let cursor_string = args.cursor || null;
 		if (cursor_string?.length !== 60){
 			cursor_string = null;
 		}
 
-		let old_cursor = cursor_string;
-
+		// check status, default 1 (ranked)
 		const status = beatmap_status_bancho_text[args.status] || '1';
 
+		// changeble in loop variables
 		let is_continue = true;
 		let total_beatmaps = 0;
 		let count_beatmaps = 0;
+		let approved_date = null;
 
 		while ( is_continue ) {
 			try {
-				console.log('requesting beatmaps by cursor', cursor_string );
+				
+
 				const bancho_res = await request_beatmaps_by_cursor_v2({ ruleset, status, cursor_string });
 				if ( !bancho_res ) {
 					console.log('no response from bancho');
 					break; 
 				}
 
+				if ( approved_date === null && bancho_res.cursor && bancho_res.cursor.approved_date ) {
+					approved_date = bancho_res.cursor.approved_date;
+					console.log('requesting beatmaps by date', approved_date ?? 'now' );
+				}
+
+				if ( !bancho_res.cursor || bancho_res.cursor.approved_date === null ){
+					approved_date = null;
+					is_continue = false;
+				}
+
 				const beatmaps = bancho_res?.beatmapsets;
 				
 				count_beatmaps += beatmaps.length;
 
-				if ( !total_beatmaps ) {
+				if (!total_beatmaps){
 					total_beatmaps = bancho_res?.total;
 				}
-
-				console.log( getting_beatmaps_progress(
-					{ beatmaps_length: beatmaps.length, count_beatmaps, total_beatmaps }));
-
-				if ( old_cursor !== cursor_string ){
-					save_cursor( old_cursor );
-				}
-
-				old_cursor = cursor_string;
+				
+				print_processed({ current: count_beatmaps, size: count_beatmaps, initial: beatmaps.length, frequency: 50 });
+				//console.log( getting_beatmaps_progress({ ruleset, approved_date, beatmaps_length: beatmaps.length, count_beatmaps, total_beatmaps }));
 
 				if ( beatmaps && beatmaps.length > 0 ) {
 					cursor_string = bancho_res.cursor_string;
@@ -70,17 +69,11 @@ module.exports = {
 					console.log('founded maps 0, ended.');
 					break;
 				}
-
-				//await save_beatmaps_info_v2( beatmaps );		
+	
 				const res = await save_beatmapsets_v2( beatmaps );
 				
 				if ( !res.is_valid ) {
 					console.error('Не удалось сохранить все данные одной из карт.');
-				}
-
-				if (cursor_string === old_cursor && cursor_string !== null) {
-					console.log('last cursor. ended.');
-					break;
 				}
 				
 			} catch (e) {
@@ -88,9 +81,8 @@ module.exports = {
 				break;
 			}
 
-			console.log('done updating data');
 		}
 
-		
+		console.log('done updating data');
 	}
 };

@@ -41,15 +41,6 @@ module.exports = {
 				if ( !res.is_valid ) {
 					console.error('Не удалось сохранить все данные одной из карт.');
 				}
-
-				/*for ( let beatmap_v1 of beatmaps ) {
-					since_date = beatmap_v1.approved_date;
-					await save_beatmap_info( beatmap_v1 );
-				}
-
-				if ( beatmaps.length !== limit ){
-					is_continue = false;
-				}*/
                 
 			} catch (e) {
 				console.error(e);

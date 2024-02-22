@@ -69,8 +69,8 @@ const _this = module.exports = {
         
 		const spaceAfter = ( v ) => v ? v + ' ' : '';
 
-		const percent = Math.trunc( (1 / frequency) * size) || 1;
 		const print_current = initial == 0 ? Number(current) + 1 : current;
+		const percent = Math.trunc( (1 / frequency) * size) || 1;
 		
 		if ( force || print_current % percent == 0 || current == initial || print_current == size ) {
 			let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * 100 ).toFixed(percent_precition) + '%' : '';

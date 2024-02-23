@@ -5,6 +5,7 @@ const { Num } = require('../tools/misc');
 
 const { api_key, is_use_caching } = require('../data/config');
 const { get_cache, set_cache } = require('./cache');
+const { beatmaps_v1_request_limit } = require('../misc/const');
 
 module.exports = {
 	request_beatmap_user_scores: async ({ beatmap, userid }) => {
@@ -41,7 +42,7 @@ module.exports = {
 
 	// for v1
 	request_beatmaps_by_date: async ( params ) => {
-		const this_params = { since_date: params.since_date || null, limit: params.limit || 500, gamemode: params.gamemode || 0 };
+		const this_params = { since_date: params.since_date || null, limit: params.limit || beatmaps_v1_request_limit, gamemode: params.gamemode || 0 };
 
 		if (is_use_caching) {
 			const cache_data = get_cache('beatmaps_v1', this_params );

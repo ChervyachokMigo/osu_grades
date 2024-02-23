@@ -27,7 +27,7 @@ module.exports = {
 			JSON.parse( readFileSync( saved_since_date_gamemode_path, 'utf8' )).since_date : 
 			since_date_start;
 
-		let since_data_to_save = null
+		let since_data_to_save = null;
 
 		while ( is_continue ) {
 			console.log( 'get beatmaps since', since_date );
@@ -36,6 +36,8 @@ module.exports = {
 				const beatmaps = get_cache('beatmaps_v1', params ) || await request_beatmaps_by_date(params);
 				
 				if (!beatmaps || beatmaps === null || beatmaps.length == 0) break;
+
+				if (beatmaps.length < beatmaps_v1_request_limit ) is_continue = false;
 
 				const res = await save_beatmapsets_v1( beatmaps );
 

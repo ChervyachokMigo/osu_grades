@@ -26,7 +26,15 @@ module.exports = {
 		`getting ${ruleset.name} ${beatmaps_length} beatmaps (${count_beatmaps}/${total_beatmaps}) ${(count_beatmaps/total_beatmaps*100).toFixed(2)} %`,*/
 
 	cache_beatmap_v1_filename: ( params ) => 
-		`${params.since_date}_${params.limit}_${params.gamemode}.json`,
+		`${params?.since_date}_`+
+		`${params?.limit}_`+
+		`${params?.gamemode}.json`,
+
+	cache_beatmap_v2_filename: ( params ) => 
+		`${params?.cursor_string ? params.cursor_string : 'null'}_` +
+		`${params.sort}_`+
+		`${params.mode}_`+
+		`${params.section}.json`,
 
 
 };

@@ -66,7 +66,7 @@ const _this = module.exports = {
 	},
 
 	print_processed: ({ current, size, initial = 0, 
-		frequency = print_progress_frequency, force = false, name, percent_precition = 2, show_percent = true, show_values = true }) => {
+		frequency = print_progress_frequency, force = false, name, percent_precition = 2, show_percent = true, show_values = true, multiplier = 1 }) => {
         
 		const spaceAfter = ( v ) => v ? v + ' ' : '';
 
@@ -75,7 +75,7 @@ const _this = module.exports = {
 		
 		if ( force || print_current % percent == 0 || current == initial || print_current == size ) {
 			let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * 100 ).toFixed(percent_precition) + '%' : '';
-			let value_text = show_values ? `(${print_current}/${size})` : '';
+			let value_text = show_values ? `(${print_current * multiplier}/${size * multiplier})` : '';
 			console.log( 'processed ' + spaceAfter(name) + spaceAfter(percent_text) + value_text );
 		}
 	},

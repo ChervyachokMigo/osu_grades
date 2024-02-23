@@ -1,6 +1,6 @@
 const { v2 } = require('osu-api-extended');
 const { is_use_caching } = require('../data/config');
-const { get_cache } = require('./cache');
+const { get_cache, set_cache } = require('./cache');
 
 module.exports = {
 	request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = null, 
@@ -69,8 +69,8 @@ module.exports = {
 			sort: params?.sort || 'ranked_asc',
 		};
 
-		if (is_use_caching) {
-			const cache_data = get_cache('beatmaps_v1', search_object );
+		if (is_use_caching && search_object.sort === 'ranked_asc' && !search_object?.query) {
+			const cache_data = get_cache('beatmaps_v2', search_object );
 			if (cache_data) return cache_data;
 		}
 
@@ -82,6 +82,10 @@ module.exports = {
 		if (!res || res.error ){
 			console.error( 'Request beatmaps error: ', res?.error );
 			return null;
+		}
+		
+		if (is_use_caching) {
+			set_cache('beatmaps_v2', search_object, res);
 		}
 
 		return res;

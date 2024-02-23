@@ -2,7 +2,7 @@ const osu_auth = require('../tools/osu_auth');
 const { save_beatmapsets_v2 } = require('../modules/DB/beatmap');
 const { check_gamemode, print_processed } = require('../tools/misc');
 const { request_beatmaps_by_cursor_v2 } = require('../modules/osu_requests_v2');
-const { beatmap_status_bancho_text } = require('../misc/const');
+const { beatmap_status_bancho_text, beatmaps_v2_request_limit } = require('../misc/const');
 
 module.exports = {
 	args: ['gamemode', 'status', 'cursor'],
@@ -49,13 +49,19 @@ module.exports = {
 
 				const beatmaps = bancho_res?.beatmapsets;
 				
-				count_beatmaps += beatmaps.length;
+				count_beatmaps++;
 
 				if (!total_beatmaps){
 					total_beatmaps = bancho_res?.total;
 				}
 				
-				print_processed({ current: count_beatmaps, size: total_beatmaps, initial: beatmaps.length, frequency: 50 });
+				print_processed({ 
+					current: count_beatmaps, 
+					size: total_beatmaps / beatmaps_v2_request_limit, 
+					initial: 1, 
+					frequency: 50, 
+					multiplier: beatmaps_v2_request_limit, 
+				});
 				//console.log( getting_beatmaps_progress({ ruleset, approved_date, beatmaps_length: beatmaps.length, count_beatmaps, total_beatmaps }));
 
 				if ( beatmaps && beatmaps.length > 0 ) {

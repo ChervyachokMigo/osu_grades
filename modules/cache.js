@@ -1,6 +1,6 @@
 const { is_use_caching, cache_expire_time_hours, is_delete_cache } = require('../data/config');
-const { cache_path, beatmaps_v1_request_limit } = require('../misc/const');
-const { cache_beatmap_v1_filename } = require('../misc/text_templates');
+const { cache_path, beatmaps_v1_request_limit, beatmaps_v2_request_limit } = require('../misc/const');
+const { cache_beatmap_v1_filename, cache_beatmap_v2_filename } = require('../misc/text_templates');
 const { folder_prepare, escape_windows_special_chars, delete_files_in_folder } = require('../tools/misc');
 
 const { existsSync, readFileSync, writeFileSync, readdirSync, lstatSync, rmSync } = require('fs');
@@ -68,6 +68,7 @@ const _this = module.exports = {
 
 		if (is_delete_cache) _this.check_cache_date();
 
+		// ========================= BEATMAP V1 =========================
 		if (cache_type === 'beatmaps_v1') {
 			const filename = escape_windows_special_chars( cache_beatmap_v1_filename( params ) );
 			const request_filepath = path.join( cache_beatmaps_v1, filename );
@@ -83,8 +84,23 @@ const _this = module.exports = {
 
 			return JSON.parse( data );
 
+		// ========================= BEATMAP V2 =========================
 		} else if (cache_type === 'beatmaps_v2') {
-			
+			const filename = escape_windows_special_chars( cache_beatmap_v2_filename( params ) );
+			const request_filepath = path.join( cache_beatmaps_v2, filename );
+
+			if (!existsSync( request_filepath ))
+				return false;
+
+			const data = readFileSync( request_filepath ,'utf8' );
+			if ( !data )
+				return false;
+
+			console.log( 'found cache data, returning', data.length, 'bytes' );
+
+			return JSON.parse( data );
+
+
 		}
 	},
 
@@ -94,9 +110,17 @@ const _this = module.exports = {
 
 		if (is_delete_cache) _this.check_cache_date();
 
+		// ========================= BEATMAP V1 =========================
 		if (cache_type === 'beatmaps_v1' && data.length === beatmaps_v1_request_limit ) {
-			const filename = escape_windows_special_chars( cache_beatmap_v1_filename( params) );
+			const filename = escape_windows_special_chars( cache_beatmap_v1_filename( params ) );
 			const request_filepath = path.join( cache_beatmaps_v1, filename );
+			const stringify_data = JSON.stringify( data );
+			writeFileSync( request_filepath, stringify_data , { encoding: 'utf8' });
+
+			console.log( 'wrote cache data, saved', stringify_data.length, 'bytes' );
+		} else if (cache_type === 'beatmaps_v2' && data.beatmapsets.length === beatmaps_v2_request_limit ) {
+			const filename = escape_windows_special_chars( cache_beatmap_v2_filename( params ) );
+			const request_filepath = path.join( cache_beatmaps_v2, filename );
 			const stringify_data = JSON.stringify( data );
 			writeFileSync( request_filepath, stringify_data , { encoding: 'utf8' });
 

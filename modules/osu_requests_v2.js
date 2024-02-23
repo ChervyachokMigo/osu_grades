@@ -1,4 +1,6 @@
 const { v2 } = require('osu-api-extended');
+const { is_use_caching } = require('../data/config');
+const { get_cache } = require('./cache');
 
 module.exports = {
 	request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = null, 
@@ -45,17 +47,32 @@ module.exports = {
 		return null;
 	},
 
-	request_beatmaps_by_cursor_v2: async ({ query = null, query_strict = false, 
-		ruleset, status = 'ranked', cursor_string = null }) => {
+	/**
+	 * Returns request beatmapsets results from api v2 by cursor or other params
+	 * @param {*} query string of search query 
+	 * @param {*} query_strict true or false for double quotes in search query
+	 * @param {*} ruleset ruleset object
+	 * @param {*} status status beatmapsets, defaults ranked
+	 * @param {*} cursor_string encoded date to cursor_string
+	 * @param {*} sort sort_condition, defaults ranked_asc
+	 * @returns request results
+	 */
+	request_beatmaps_by_cursor_v2: async ( params ) => {
 		
-		const query_checked = query_strict ? '"'+query+'"' : query;
+		const query_strict = params?.query_strict || false;
 
-		const search_object = {
-			query: query_checked,
-			mode: ruleset.idx,
-			section: status,
-			cursor_string,
+		const search_object = { 
+			query: query_strict && params?.query ? ('"' + params.query + '"') : null,
+			mode: params?.ruleset?.idx >= 0 ? params.ruleset.name : 'osu',
+			section: params?.status || 'ranked', 
+			cursor_string: params?.cursor_string || null, 
+			sort: params?.sort || 'ranked_asc',
 		};
+
+		if (is_use_caching) {
+			const cache_data = get_cache('beatmaps_v1', search_object );
+			if (cache_data) return cache_data;
+		}
 
 		const res = await v2.beatmaps.search( search_object ).catch( (e) => {
 			console.error( 'request beatmap error' );

@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
 	gamemode: [ 'osu', 'taiko', 'fruits', 'mania' ],
+	
 	beatmap_status_to_db: {
 		'-2': 2,  // graveyard
 		'-1': 9,  // wip

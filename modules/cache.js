@@ -8,27 +8,37 @@ const { existsSync, readFileSync, writeFileSync, readdirSync, lstatSync, rmSync 
 const path = require('path');
 
 const cache_beatmaps_v1 = path.join( cache_path, 'beatmaps', 'v1' );
+const cache_beatmaps_v2 = path.join( cache_path, 'beatmaps', 'v2' );
 
 const cache_expire_time_ms = cache_expire_time_hours * 60 * 60 * 1000;
+
+const check_cache_folder_for_expire_files = ( folder , file ) => {
+	const filepath = path.join( folder, file );
+	const filetime = lstatSync( filepath ).mtime.getTime();
+	const now = new Date().getTime();
+
+	if ( now - filetime > cache_expire_time_ms ) {
+		console.log( 'cache expired for', filepath );
+		rmSync( filepath );
+	}
+};
 
 const _this = module.exports = {
 	clear_cache: () => {
 		delete_files_in_folder(cache_beatmaps_v1);
+		delete_files_in_folder(cache_beatmaps_v2);
 	},
 
 	check_cache_date: () => {
 		if ( is_use_caching == false )
 			return;
 
-		readdirSync( cache_beatmaps_v1, {encoding: 'utf8'}).forEach( file => {
-			const filetime = (lstatSync( path.join( cache_beatmaps_v1, file ) )).mtime.getTime();
-			const now = new Date().getTime();
+		readdirSync( cache_beatmaps_v1, {encoding: 'utf8'}).forEach( file => 
+			check_cache_folder_for_expire_files( cache_beatmaps_v1, file ));
 
-			if ( now - filetime > cache_expire_time_ms ) {
-				console.log( 'cache expired for', file );
-				rmSync( path.join( cache_beatmaps_v1, file ) );
-			}
-		});
+		readdirSync( cache_beatmaps_v2, {encoding: 'utf8'}).forEach( file => 
+			check_cache_folder_for_expire_files( cache_beatmaps_v2, file ));
+
 	},
 
 	init_cache: () => {
@@ -39,6 +49,7 @@ const _this = module.exports = {
 		console.warn( ' CACHE SWITCHED ON, POSSIBLE REQUEST OLD DATA ^.^ ');
 
 		folder_prepare( cache_beatmaps_v1 );
+		folder_prepare( cache_beatmaps_v2 );
 
 		if (is_delete_cache) _this.check_cache_date();
 
@@ -46,8 +57,9 @@ const _this = module.exports = {
 
 	/**
 	 * Returns request results from cache
-	 * @param {*} cache_type 'beatmaps_v1
+	 * @param {*} cache_type 'beatmaps_v1', 'beatmaps_v2'
 	 * @param {*} params since_date, limit, gamemode
+	 * @param {*} params query, query_strict, ruleset, status, cursor_string, sort
 	 * @returns request results
 	 */
 	get_cache: ( cache_type, params ) => {
@@ -71,6 +83,8 @@ const _this = module.exports = {
 
 			return JSON.parse( data );
 
+		} else if (cache_type === 'beatmaps_v2') {
+			
 		}
 	},
 
@@ -85,7 +99,7 @@ const _this = module.exports = {
 			const request_filepath = path.join( cache_beatmaps_v1, filename );
 			const stringify_data = JSON.stringify( data );
 			writeFileSync( request_filepath, stringify_data , { encoding: 'utf8' });
-			
+
 			console.log( 'wrote cache data, saved', stringify_data.length, 'bytes' );
 		}
 	},

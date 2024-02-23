@@ -42,7 +42,11 @@ module.exports = {
 
 	// for v1
 	request_beatmaps_by_date: async ( params ) => {
-		const this_params = { since_date: params.since_date || null, limit: params.limit || beatmaps_v1_request_limit, gamemode: params.gamemode || 0 };
+		const this_params = { 
+			since_date: params.since_date || null, 
+			limit: params.limit || beatmaps_v1_request_limit, 
+			gamemode: params.gamemode || 0 
+		};
 
 		if (is_use_caching) {
 			const cache_data = get_cache('beatmaps_v1', this_params );

@@ -18,9 +18,6 @@ module.exports = {
 
 		//check cursor string
 		let cursor_string = args.cursor || null;
-		if (cursor_string?.length !== 60){
-			cursor_string = null;
-		}
 
 		// check status, default 1 (ranked)
 		const status = beatmap_status_bancho_text[args.status] || '1';
@@ -34,7 +31,6 @@ module.exports = {
 		while ( is_continue ) {
 			try {
 				
-
 				const bancho_res = await request_beatmaps_by_cursor_v2({ ruleset, status, cursor_string });
 				if ( !bancho_res ) {
 					console.log( 'no response from bancho' );

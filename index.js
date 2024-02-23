@@ -3,6 +3,7 @@ const path = require('path');
 
 const { folder_prepare } = require('./tools/misc');
 const { prepareDB } = require('./modules/DB/defines');
+const { init_cache } = require('./modules/cache');
 
 const args = process.argv.slice(2);
 
@@ -21,6 +22,7 @@ const command_exec = async () => {
 
 	folder_prepare('data');
 
+	init_cache();
 	await prepareDB();
 
 	for ( let { name, _args, F } of actions ) {
@@ -39,14 +41,13 @@ const command_exec = async () => {
 
 command_exec();
 
-// посчитать количество карт по статусам 
+// посчитать количество карт по статусам
 // при запуске запустить beatmap check
 // фильтровать грейды по md5_int
-// разделение на в1 в2 джсон (по конфигу мб) и убрать osu_auth, не нужен для в1
+// разделение на в1 в2 джсон (по конфигу мб)
 // каунтинг грейдов для дб
 // сделать config editor
 // сделать лаунчер
 // сделать апи для вывода подсчитанных результатов с автообновлением
-// сделать экспорт базы
-// поиск карт v2
 // MYSQL_SAVE fix сохранение 
+// починить импорт базы

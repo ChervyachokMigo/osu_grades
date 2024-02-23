@@ -37,7 +37,7 @@ module.exports = {
 
 				const bancho_res = await request_beatmaps_by_cursor_v2({ ruleset, status, cursor_string });
 				if ( !bancho_res ) {
-					console.log('no response from bancho');
+					console.log( 'no response from bancho' );
 					break; 
 				}
 

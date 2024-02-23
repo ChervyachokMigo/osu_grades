@@ -23,7 +23,7 @@ module.exports = {
 				try {
 					const data = await request_beatmap_user_scores_v2({ 
 						beatmap_id: beatmap.beatmap_id, 
-						gamemode: gamemode[beatmap.gamemode_int],
+						gamemode: gamemode[beatmap.gamemode],
 						userid, });
 					
 					if (data){

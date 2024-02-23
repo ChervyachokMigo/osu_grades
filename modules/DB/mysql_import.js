@@ -1,20 +1,18 @@
 const fs = require('fs');
 const input = require('input');
 
-
 const { MYSQL_SAVE } = require('./base.js');
 const { split_array_on_chunks, print_processed } = require('../../tools/misc.js');
 const { prepareDB } = require('./defines.js');
 
+
 const strict = true;
 
 const _this = module.exports = {
-	load_csv: async ({ filepath, skip_errors = false, delimiter = ';', strings_quotes = '"' }) => {
+	load_csv: async ({ filepath, skip_errors = false, delimiter = ';'}) => {
 
 		let errors_count = 0;
 		let errors = [];
-
-		let clear_pattern = new RegExp( strings_quotes + '\r﻿', 'gi');
 
 		if ( !fs.existsSync(filepath)){
 			throw new Error('no csv file at '+filepath);
@@ -23,15 +21,14 @@ const _this = module.exports = {
 
 			const data = fs.readFileSync( filepath, {encoding: 'utf8'}).split('\n')
 				// eslint-disable-next-line no-irregular-whitespace
-				.map( x => !x ? x : x.replace( clear_pattern, '' )).filter(x => x!== null);
-
-			console.log(data);
+				.map( x => !x ? x : x.replace( /["\r﻿]/gi, '' )).filter(x => x!== null);
 
 			const data_splitted = Array.from(new Set(data)).map( x => x.split(delimiter));
 
 			const header = data_splitted.shift();
 			const types = data_splitted.shift();
 
+			// parse content
 			const content = data_splitted.map ( (x, k) => {
 				
 				if (x.length !== types.length){
@@ -49,7 +46,7 @@ const _this = module.exports = {
 
 				return x.map ( (y, i) => {
 
-					if (types[i]?.startsWith('INT') || types[i]?.startsWith('FLOAT')) {
+					if (types[i]?.startsWith('INT') || types[i]?.startsWith('FLOAT') || types[i]?.startsWith('TINYINT')) {
 						return isNaN(y)? y: Number(y);
 					} else {
 						//if (types[i].startsWith('VARCHAR')
@@ -62,6 +59,7 @@ const _this = module.exports = {
 
 			let approved_errors = [];
 
+			// manual fix errors
 			if (!skip_errors && errors_count > 0){
 				console.log('Errors count:', errors_count);
 
@@ -87,7 +85,8 @@ const _this = module.exports = {
 
 					}
 					
-					const yes = await input.confirm( `Продолжить?\n${error.values.map( (x, i)  => `[${i}]: ${x}`).join('\n')}`, {default: true} );
+					const yes = await input.confirm( 
+						`Продолжить?\n${error.values.map( (x, i)  => `[${i}]: ${x}`).join('\n')}`, {default: true} );
 					if (yes) {
 						approved_errors.push( error );
 					}
@@ -96,16 +95,19 @@ const _this = module.exports = {
 
 			}
 
-			return [...approved_errors.map( x => x.values), ...content].map( x => Object.fromEntries( x.map( (y, i) => [header[i], y] ) ));
+			return [ ...approved_errors.map( x => x.values), ...content]
+				.map( x => Object.fromEntries( x.map( (y, i) => [header[i], y] ) ));
+
 		} catch (e){
 			throw new Error(e);
 		}
 	},
 
-	import_table_csv: async ({ filepath, tablename, chunk_size = 500, skip_errors = false, delimiter = ';', strings_quotes = '"' }) => {
+	import_table_csv: async ({ filepath, tablename, chunk_size = 500, skip_errors = false, delimiter = ';'}) => {
 		await prepareDB();
 
-		const content_objects = await _this.load_csv({ filepath, skip_errors, delimiter, strings_quotes });
+		const content_objects = await _this.load_csv({ filepath, skip_errors, delimiter });
+
 		const chunks = split_array_on_chunks( content_objects, chunk_size);
 
 		let count = 0;
@@ -116,7 +118,7 @@ const _this = module.exports = {
 			print_processed({
 				current: count, 
 				size: chunks.length * chunk_size, 
-				initial: count, 
+				initial: chunk.length, 
 				frequency: 100, 
 				name: tablename
 			});

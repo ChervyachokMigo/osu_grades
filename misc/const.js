@@ -43,5 +43,6 @@ module.exports = {
 	scores_backup_path: path.join('data', 'scores_backup'),
 	saved_since_date_path: path.join( 'data', 'update_beatmaps_since_date' ),
 	saved_beatmaps_cursor_v2_path: path.join( 'data', 'beatmaps_cursor_v2.json' ),
+	cache_path: path.join( 'data', 'cache' ),
 };
 

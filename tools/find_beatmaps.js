@@ -12,8 +12,10 @@ module.exports = async ({
 	const md5_condition = beatmap_md5 ? { hash: beatmap_md5 } : {};
 
 	const beatmap_id_condition = {};
-	if (gamemode)
+	if (gamemode && gamemode >=0 )
 		beatmap_id_condition.gamemode = gamemode;
+	else 
+		beatmap_id_condition.gamemode = 0;
 	if (ranked)
 		beatmap_id_condition.ranked = ranked;
 	if (beatmap_id) 

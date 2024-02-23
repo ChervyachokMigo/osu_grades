@@ -1,6 +1,7 @@
-const { existsSync, mkdirSync } = require('fs');
+const { existsSync, mkdirSync, readdirSync, unlinkSync } = require('fs');
 
 const { gamemode, print_progress_frequency, beatmap_status_to_db, beatmap_status_from_db } = require('../misc/const');
+const path = require('path');
 
 const _this = module.exports = {
 	folder_prepare: ( path ) =>{
@@ -111,7 +112,7 @@ const _this = module.exports = {
 
 	concat_array_of_arrays: ( arr ) => [].concat(...arr),
 
-	split_array_on_chunks: (arr, len = null) => {
+	split_array_on_chunks: ( arr, len = null ) => {
 		if (typeof len === 'undefined' || len === null || len === 0) {
 			return arr;
 		}
@@ -130,8 +131,28 @@ const _this = module.exports = {
 		return chunks;
 	},
 
-	boolean_from_string: (val) => {
+	boolean_from_string: ( val ) => {
 		return val === 'true' || val === '1' || val === 1 ? true : false;
 	},
+
+	escape_windows_special_chars( input ) {
+		// eslint-disable-next-line no-control-regex
+		const special_chars = /[\x00-\x1f\\:*?"<>|]/g;
+
+		return input.replace( special_chars, '_' );
+	},
+
+	delete_files_in_folder: (folder_path) => {
+		try {
+			const files = readdirSync(folder_path);
+
+			files.for_each(file => {
+				const file_path = path.join(folder_path, file);
+				unlinkSync(file_path);
+			});
+		} catch ( err ) {
+			console.error( 'error deleting files:', err );
+		}
+	}
 
 };

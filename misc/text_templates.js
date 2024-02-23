@@ -2,10 +2,10 @@ const { gamemode, text_score_mode } = require('./const');
 
 module.exports = {
 	found_X_scores_beatmap: ({ length, userid, beatmap }) =>
-		`found ${length} scores of beatmap ${beatmap.md5} for user ${userid} with gamemode ${gamemode[beatmap.gamemode_int]}`,
+		`found ${length} scores of beatmap ${beatmap.md5} for user ${userid} with gamemode ${gamemode[beatmap.gamemode]}`,
 
 	found_new_X_scores_beatmap: ({ length, beatmap, userid }) =>
-		`found new ${length} scores of beatmap ${beatmap.md5} for user ${userid} with gamemode ${gamemode[beatmap.gamemode_int]}`,
+		`found new ${length} scores of beatmap ${beatmap.md5} for user ${userid} with gamemode ${gamemode[beatmap.gamemode]}`,
 
 	found_X_scores_gamemode: ({ length, userid, gamemode_int }) =>
 		`found ${length} scores for user ${userid} with gamemode ${gamemode[gamemode_int]}`,
@@ -25,5 +25,8 @@ module.exports = {
 	/*getting_beatmaps_progress: ({ ruleset, beatmaps_length, count_beatmaps, total_beatmaps }) =>
 		`getting ${ruleset.name} ${beatmaps_length} beatmaps (${count_beatmaps}/${total_beatmaps}) ${(count_beatmaps/total_beatmaps*100).toFixed(2)} %`,*/
 
-   
+	cache_beatmap_v1_filename: ( params ) => 
+		`${params.since_date}_${params.limit}_${params.gamemode}.json`,
+
+
 };

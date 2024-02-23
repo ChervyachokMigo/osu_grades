@@ -20,8 +20,7 @@ module.exports = {
 			filepath: args.filepath || path.join( csv_folder_path, await input.select('Select csv file', files )), 
 			tablename: args.tablename || await input.select('Select table name', tables),
 			skip_errors: boolean_from_string(args.skip_errors) || false, 
-			delimiter: args.delimiter || ';',
-			strings_quotes: args.strings_quotes || '"',
+			delimiter: args.delimiter || ';'
 		});
 		
 		console.log('import complete');

@@ -23,7 +23,7 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 	await init( userid );
 
 	//load beatmaps from DB
-	const beatmaps_db = ( await find_beatmaps({ ranked: ranked_status }))
+	const beatmaps_db = ( await find_beatmaps({ ranked: ranked_status, gamemode: ruleset.idx }))
 		.filter( x => x.beatmap_id > 0 );
 	console.log( 'founded', beatmaps_db.length, 'ranked beatmaps' );
 

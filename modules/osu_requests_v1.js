@@ -3,7 +3,8 @@ const axios = require('axios');
 const find_beatmaps = require('../tools/find_beatmaps');
 const { Num } = require('../tools/misc');
 
-const { api_key } = require('../data/config');
+const { api_key, is_use_caching } = require('../data/config');
+const { get_cache } = require('./cache');
 
 module.exports = {
 	request_beatmap_user_scores: async ({ beatmap, userid }) => {
@@ -38,7 +39,13 @@ module.exports = {
 		return null;
 	},
 
+	// for v1
 	request_beatmaps_by_date: async ({ since_date = null, limit = 500, gamemode }) => {
+		if (is_use_caching) {
+			const cache_data = get_cache('beatmaps_v1', { since_date, limit, gamemode });
+			if (cache_data) return cache_data;
+		}
+		
 		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=${limit}`;
 		const res = await axios( url );
 
@@ -49,6 +56,7 @@ module.exports = {
 		return null;
 	},
 
+	// for jsons
 	request_beatmap_by_md5: async ({ md5 }) => {
 		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&h=${md5}&limit=1`;
 		const res = await axios( url );
@@ -66,6 +74,7 @@ module.exports = {
      * @param beatmap set required
      * @param gamemode optional
      */
+	// for jsons
 	request_beatmap_by_id: async ({ beatmap, gamemode }) => {
 		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=1`;
 		const res = await axios( url );

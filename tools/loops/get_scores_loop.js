@@ -51,7 +51,7 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 		}
 
 		//skip gamemodes if setted game mode 0 - 3
-		if ( ruleset.idx > -1 && beatmap.gamemode !== ruleset.idx ){
+		if ( ruleset.idx >= 0 && beatmap.gamemode !== ruleset.idx ){
 			continue;
 		}
 

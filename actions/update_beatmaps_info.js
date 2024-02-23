@@ -3,7 +3,7 @@ const { existsSync, readFileSync, writeFileSync } = require('fs');
 const { save_beatmapsets_v1 } = require('../modules/DB/beatmap');
 const { request_beatmaps_by_date } = require('../modules/osu_requests_v1');
 
-const { saved_since_date_path } = require('../misc/const');
+const { saved_since_date_path, beatmaps_v1_request_limit } = require('../misc/const');
 const { check_gamemode, boolean_from_string } = require('../tools/misc');
 const path = require('path');
 const { get_cache } = require('../modules/cache');
@@ -27,6 +27,8 @@ module.exports = {
 			JSON.parse( readFileSync( saved_since_date_gamemode_path, 'utf8' )).since_date : 
 			since_date_start;
 
+		let since_data_to_save = null
+
 		while ( is_continue ) {
 			console.log( 'get beatmaps since', since_date );
 			try {
@@ -44,6 +46,9 @@ module.exports = {
 				if ( !res.is_valid ) {
 					console.error('Не удалось сохранить все данные одной из карт.');
 				}
+
+				if ( beatmaps.length >= beatmaps_v1_request_limit )
+					since_data_to_save = { since_date };
                 
 			} catch (e) {
 				console.error(e);
@@ -51,8 +56,11 @@ module.exports = {
 			}
 		}
 
+		if ( since_data_to_save ) {
+			writeFileSync( saved_since_date_gamemode_path, JSON.stringify( since_data_to_save ), 'utf8' );
+		}
+
 		console.log('done updating data');
-		writeFileSync( saved_since_date_gamemode_path, JSON.stringify({ since_date }), 'utf8' );
         
 	}
 };

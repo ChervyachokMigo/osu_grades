@@ -36,6 +36,8 @@ const _this = module.exports = {
 			return;
 		}
 
+		console.warn( ' CACHE SWITCHED ON, POSSIBLE REQUEST OLD DATA ^.^ ');
+
 		folder_prepare( cache_beatmaps_v1 );
 
 		if (is_delete_cache) _this.check_cache_date();
@@ -64,8 +66,9 @@ const _this = module.exports = {
 			const data = readFileSync( request_filepath ,'utf8' );
 			if ( !data )
 				return false;
-
+			console.log( 'found cache data, returning', data.length, 'bytes' );
 			return JSON.parse( data );
+
 		}
 	},
 
@@ -80,6 +83,7 @@ const _this = module.exports = {
 			const request_filepath = path.join( cache_beatmaps_v1, filename );
 
 			writeFileSync( request_filepath, JSON.stringify( data ), { encoding: 'utf8' });
+			console.log( 'wrote cache data, saved', data.length, 'bytes' );
 		}
 	},
 };

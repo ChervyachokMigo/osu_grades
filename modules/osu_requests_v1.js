@@ -4,7 +4,7 @@ const find_beatmaps = require('../tools/find_beatmaps');
 const { Num } = require('../tools/misc');
 
 const { api_key, is_use_caching } = require('../data/config');
-const { get_cache } = require('./cache');
+const { get_cache, set_cache } = require('./cache');
 
 module.exports = {
 	request_beatmap_user_scores: async ({ beatmap, userid }) => {
@@ -40,17 +40,25 @@ module.exports = {
 	},
 
 	// for v1
-	request_beatmaps_by_date: async ({ since_date = null, limit = 500, gamemode }) => {
+	request_beatmaps_by_date: async ( params ) => {
+		const this_params = { since_date: params.since_date || null, limit: params.limit || 500, gamemode: params.gamemode || 0 };
+
 		if (is_use_caching) {
-			const cache_data = get_cache('beatmaps_v1', { since_date, limit, gamemode });
+			const cache_data = get_cache('beatmaps_v1', this_params );
 			if (cache_data) return cache_data;
 		}
 		
-		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${since_date}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=${limit}`;
+		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&since=${this_params.since_date}` +
+			`${ this_params.gamemode >= 0 ? `&m=${this_params.gamemode}` : '' }&limit=${this_params.limit}`;
+			
 		const res = await axios( url );
 
-		if ( res && res.data && typeof res.data == 'object' )
+		if ( res && res.data && typeof res.data == 'object' ){
+			if (is_use_caching) {
+				set_cache('beatmaps_v1', this_params, res.data);
+			}
 			return res.data;
+		}
 
 		console.error('bancho not response beatmaps');
 		return null;
@@ -76,7 +84,7 @@ module.exports = {
      */
 	// for jsons
 	request_beatmap_by_id: async ({ beatmap, gamemode }) => {
-		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode > 0 ? `&m=${gamemode}` : '' }&limit=1`;
+		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode >= 0 ? `&m=${gamemode}` : '' }&limit=1`;
 		const res = await axios( url );
 
 		if ( res && res.data && typeof res.data == 'object' && res.data.length > 0 ) {

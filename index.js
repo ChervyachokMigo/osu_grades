@@ -23,6 +23,7 @@ const command_exec = async () => {
 	folder_prepare('data');
 
 	init_cache();
+	
 	await prepareDB();
 
 	for ( let { name, _args, F } of actions ) {

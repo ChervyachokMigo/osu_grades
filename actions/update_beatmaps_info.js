@@ -6,7 +6,7 @@ const { request_beatmaps_by_date } = require('../modules/osu_requests_v1');
 const { saved_since_date_path } = require('../misc/const');
 const { check_gamemode, boolean_from_string } = require('../tools/misc');
 const path = require('path');
-const { get_cache, set_cache } = require('../modules/cache');
+const { get_cache } = require('../modules/cache');
 
 const since_date_start = '2007-01-01';
 const limit = 500;
@@ -34,8 +34,6 @@ module.exports = {
 				const beatmaps = get_cache('beatmaps_v1', params ) || await request_beatmaps_by_date(params);
 				
 				if (!beatmaps || beatmaps === null || beatmaps.length == 0) break;
-
-				set_cache('beatmaps_v1', params, beatmaps);
 
 				const res = await save_beatmapsets_v1( beatmaps );
 

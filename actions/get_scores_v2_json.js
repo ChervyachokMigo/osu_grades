@@ -28,7 +28,6 @@ module.exports = {
 					
 					if (data){
 						const scores = data.map( score => ({ ...score, beatmap_md5: beatmap.md5 }));
-
 						const res = save_scores_v2_to_json({ userid, scores });
 						if (res) {
 							console.log( found_new_X_scores_beatmap({ length: res, userid, beatmap }) );

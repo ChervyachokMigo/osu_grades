@@ -19,8 +19,8 @@ module.exports = {
 	delete_user_gamemode: ({ userid, gamemode_int }) =>
 		`delete user id ${userid} with gamemode: ${gamemode[gamemode_int]}`,
 
-	user_row_record: ({ userid, score_mode, gamemode_int, username }) =>
-		` ${userid}\t${text_score_mode[score_mode]}\t\t${gamemode[gamemode_int]}\t\t${username}\t`,
+	user_row_record: ({ userid, score_mode, ruleset, username }) =>
+		` ${userid}\t${text_score_mode[score_mode]}\t\t${ruleset.name}\t\t${username}\t`,
 	
 	/*getting_beatmaps_progress: ({ ruleset, beatmaps_length, count_beatmaps, total_beatmaps }) =>
 		`getting ${ruleset.name} ${beatmaps_length} beatmaps (${count_beatmaps}/${total_beatmaps}) ${(count_beatmaps/total_beatmaps*100).toFixed(2)} %`,*/

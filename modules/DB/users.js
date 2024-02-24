@@ -6,13 +6,19 @@ const { get_ruleset_by_gamemode_int } = require('../../tools/misc');
 
 const _this = module.exports = {
 	add: async ({ userid, ruleset, score_mode, username }) => {
-		const exist_record = await _this.find({ userid, gamemode: ruleset.idx });
+		/*const exist_record = await _this.find({ userid, gamemode: ruleset.idx });
+
 		if (exist_record) {
 			await osu_user_grade.destroy({ where: { userid, gamemode: ruleset.idx } });
-		}
-		const res =( await osu_user_grade.upsert(
-			{ userid, gamemode: ruleset.idx, score_mode, username },
-		)).shift();
+		}*/
+
+		const res = (await osu_user_grade.upsert({ 
+			userid, 
+			gamemode: ruleset.idx, 
+			score_mode, 
+			username,
+		})).shift();
+
 		if (res) console.log( add_user_scoremode_gamemode({ username, userid, score_mode, ruleset }) );
 	},
 
@@ -27,7 +33,7 @@ const _this = module.exports = {
 				const ruleset = get_ruleset_by_gamemode_int(idx);
 				await _this.add({ userid, score_mode, username, ruleset });
 			}
-			// selected mods
+		// selected mods
 		} else {
 			for (let ruleset of selected_rulesets) {
 				await _this.add({ userid, score_mode, username, ruleset });
@@ -35,12 +41,10 @@ const _this = module.exports = {
 		}
 	},
 
-	list_all: async () => {
-		return (await _this.findAll({})).map( ({userid, score_mode, gammode, username}) => ({
-			text: user_row_record ({userid, score_mode, gamemode_int: gammode, username}),
-			userid, score_mode, gamemode, username,
-		}));
-	},
+	list_all: async () => (await _this.findAll({})).map(({ userid, score_mode, gamemode, username}) => ({
+		text: user_row_record ({userid, score_mode, ruleset: get_ruleset_by_gamemode_int(gamemode), username}),
+		userid, score_mode, gamemode, username,
+	})),
 
 	action_delete: async (where) => {
 		const res = await osu_user_grade.destroy({ where });
@@ -50,5 +54,9 @@ const _this = module.exports = {
 	action_list: async () => {
 		const res = await _this.list_all();
 		return { text: users_header + res.map( x => x.text + '\r\n' ).join(''), length: res.length };
-	}
+	},
+	count_grades: async ( params ) => {
+		
+
+	},
 };

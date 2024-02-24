@@ -1,9 +1,10 @@
 
 const { osu_score } = require('../DB/defines');
-const { Num } = require('../../tools/misc');
+const { Num, util } = require('../../tools/misc');
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 
 const { rank_to_int } = require('../../misc/const');
+const users = require('../DB/users');
 
 const _this = module.exports = {
 	convert_v2_to_db: async ( score ) => ({
@@ -38,5 +39,18 @@ const _this = module.exports = {
         
 		const res = await osu_score.bulkCreate( scores, { ignoreDuplicates: true });
 		return res.length;
+	},
+	count_grades_v2: async ({ userid, gamemode }) => {
+		//const user = await users.find({ userid, gamemode, score_mode: 2 });
+		const result = {};
+
+		
+		for ( let rank of Object.entries(rank_to_int)) {
+			const res = await osu_score.findAndCountAll({ raw: true, attributes: ['rank'], where: { userid, gamemode, ranked: true, rank: rank[1] }, 
+				benchmark: true, logging:true });
+			const count = res?.count || 0;
+			result[rank[1]] = { rank, count };
+		}
+		return result;
 	},
 };

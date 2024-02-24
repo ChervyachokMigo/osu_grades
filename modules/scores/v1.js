@@ -58,4 +58,15 @@ module.exports = {
 	convert_v2_to_v1,
 	score_v1_parse,
 	save_scores_v1,
+	count_grades_v1: async ({ userid, gamemode }) => {
+		//const user = await users.find({ userid, gamemode, score_mode: 2 });
+		const result = {};
+		for ( let rank of Object.entries(rank_to_int)) {
+			const res = await osu_score_legacy.findAndCountAll({ raw: true, attributes: ['rank'], where: { userid, gamemode, ranked: true, rank: rank[1] }, 
+				benchmark: true, logging:true });
+			const count = res?.count || 0;
+			result[rank[1]] = { rank, count };
+		}
+		return result;
+	},
 };

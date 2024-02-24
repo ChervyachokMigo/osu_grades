@@ -76,6 +76,7 @@ const osu_score_legacy = osu_scores_mysql.define ('osu_score_legacy', {
 	max_combo: {type: DataTypes.INTEGER, allowNull: false},
 	pp: {type: DataTypes.FLOAT, allowNull: false},
 	mods: {type: DataTypes.STRING, allowNull: false},
+	best: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
 }, { noPrimaryKey: false });
 
 const osu_score = osu_scores_mysql.define ('osu_score', {
@@ -95,12 +96,13 @@ const osu_score = osu_scores_mysql.define ('osu_score', {
 	mods: {type: DataTypes.STRING, defaultValue: 'No Mods', allowNull: false},
 	passed: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
 	ranked: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+	best: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
 }, { noPrimaryKey: false });
 
 const osu_user_grade = osu_scores_mysql.define ('osu_user_grade', {
 	userid: {type: DataTypes.INTEGER, allowNull: false, key: 'user', unique: 'user' },
 	gamemode: {type: DataTypes.TINYINT, allowNull: false, key: 'user', unique: 'user' },
-	score_mode: {type: DataTypes.TINYINT, allowNull: false },
+	score_mode: {type: DataTypes.TINYINT, allowNull: false, key: 'user', unique: 'user' },
 	username: {type: DataTypes.STRING, allowNull: false, defaultValue: '' },
 	F: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},
 	D: {type: DataTypes.INTEGER, defaultValue: 0, allowNull: false},

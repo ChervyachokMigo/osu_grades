@@ -55,8 +55,9 @@ const _this = module.exports = {
 		const res = await _this.list_all();
 		return { text: users_header + res.map( x => x.text + '\r\n' ).join(''), length: res.length };
 	},
-	count_grades: async ( params ) => {
-		
 
-	},
+	update_grades: async ( where, grades ) => await osu_user_grade.update( grades, { where }),
+		
+	
+
 };

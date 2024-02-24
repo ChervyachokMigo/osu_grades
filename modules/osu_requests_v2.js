@@ -80,19 +80,15 @@ module.exports = {
 			throw new Error (e);
 		});
 
-		if (res === null) {
-			return null;
+		if ( res && !res.error && res?.beatmapsets && res?.beatmapsets.length > 0 ){
+			if (is_use_caching && res?.beatmapsets && res?.beatmapsets.length >= beatmaps_v2_request_limit) {
+				set_cache('beatmaps_v2', search_object, res);
+			}
+			return res;
 		}
 
-		if (!res || res.error ){
-			console.error( 'Request beatmaps error: ', res?.error );
-			return null;
-		}
-		
-		if ( is_use_caching && res?.beatmapsets && res?.beatmapsets.length > beatmaps_v2_request_limit ) {
-			set_cache('beatmaps_v2', search_object, res);
-		}
-
-		return res;
+		console.error('bancho not response beatmaps');
+		res?.error ?? console.error( 'Error:', res?.error );
+		return null;
 	},
 };

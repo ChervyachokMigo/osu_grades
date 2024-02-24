@@ -99,8 +99,8 @@ const _this = module.exports = {
 		return beatmap_status_from_db[status] ?? 0;
 	},
 
-	util: (args) => {
-		console.log( require('util').inspect( args, {showHidden: true, depth: null, colors: true }) );
+	util: (...args) => {
+		console.log( require('util').inspect( args, {showHidden: true, depth: null, colors: false }) );
 	},
 	group_by(array, property) {
 		return array.reduce((memo, x) => {

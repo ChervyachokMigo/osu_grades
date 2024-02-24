@@ -149,7 +149,7 @@ module.exports = {
 
 		const md5_hashes = await Promise.all(hashes.map( async hash => ({id: await get_md5_id(hash), hash}) ));
 		
-		const db_data = concat_array_of_arrays( convert_beatmapsets_v2_to_db ( beatmapset_v2) );
+		const db_data = concat_array_of_arrays( convert_beatmapsets_v2_to_db ( beatmapset_v2 ));
 
 		const ids_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 

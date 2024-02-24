@@ -58,7 +58,7 @@ module.exports = {
 			
 		const res = await axios( url );
 
-		if ( res && res.data && typeof res.data == 'object' ){
+		if ( res && res.data && typeof res.data == 'object' && res.data.length > beatmaps_v1_request_limit ){
 			if (is_use_caching) {
 				set_cache('beatmaps_v1', this_params, res.data);
 			}

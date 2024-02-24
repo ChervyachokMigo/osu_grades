@@ -43,7 +43,7 @@ module.exports = {
 	grades_results_path: 'results',
 	scores_backup_path: path.join('data', 'scores_backup'),
 	saved_since_date_path: path.join( 'data', 'update_beatmaps_since_date' ),
-	saved_beatmaps_cursor_v2_path: path.join( 'data', 'beatmaps_cursor_v2.json' ),
+	saved_cursor_v2_beatmaps_path: path.join( 'data', 'update_beatmaps_cursor_v2' ),
 	cache_path: path.join( 'data', 'cache' ),
 	beatmaps_v1_request_limit: 500,
 	beatmaps_v2_request_limit: 50,

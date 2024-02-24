@@ -32,9 +32,8 @@ module.exports = {
 
 	cache_beatmap_v2_filename: ( params ) => 
 		`${params?.cursor_string ? params.cursor_string : 'null'}_` +
-		`${params.sort}_`+
 		`${params.mode}_`+
-		`${params.section}.json`,
+		`${params.sort}.json`,
 
 
 };

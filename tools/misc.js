@@ -132,7 +132,9 @@ const _this = module.exports = {
 	},
 
 	boolean_from_string: ( val ) => {
-		return val === 'true' || val === '1' || val === 1 ? true : false;
+		return !(typeof val === 'boolean') ?
+			val === 'true' || val === '1' || val === 1 ? true : false : 	// not a boolean
+			val;	//is boolean
 	},
 
 	escape_windows_special_chars( input ) {

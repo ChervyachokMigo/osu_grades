@@ -1,6 +1,7 @@
 const { v2 } = require('osu-api-extended');
 const { is_use_caching } = require('../data/config');
 const { get_cache, set_cache } = require('./cache');
+const { beatmaps_v2_request_limit } = require('../misc/const');
 
 module.exports = {
 	request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = null, 
@@ -63,9 +64,9 @@ module.exports = {
 
 		const search_object = { 
 			query: query_strict && params?.query ? ('"' + params.query + '"') : null,
-			mode: params?.ruleset?.idx >= 0 ? params.ruleset.name : 'osu',
-			section: params?.status || 'ranked', 
-			cursor_string: params?.cursor_string || null, 
+			cursor_string: params?.cursor_string === 'false' ? null : params?.cursor_string || null, 
+			mode: params?.ruleset?.idx >= 0 ? params.ruleset.name : 'std',
+			//section: params?.status || 'ranked',
 			sort: params?.sort || 'ranked_asc',
 		};
 
@@ -79,12 +80,16 @@ module.exports = {
 			throw new Error (e);
 		});
 
+		if (res === null) {
+			return null;
+		}
+
 		if (!res || res.error ){
 			console.error( 'Request beatmaps error: ', res?.error );
 			return null;
 		}
 		
-		if (is_use_caching) {
+		if ( is_use_caching && res?.beatmapsets && res?.beatmapsets.length > beatmaps_v2_request_limit ) {
 			set_cache('beatmaps_v2', search_object, res);
 		}
 

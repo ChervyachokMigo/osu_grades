@@ -32,12 +32,13 @@ module.exports = {
 						if (res) {
 							console.log( found_new_X_scores_beatmap({ length: res, userid, beatmap }) );
 						}
-					} 
-					
+						return res;
+					}
+
+					return false;
 				} catch (e) {
-					console.log( 'beatmap', beatmap );
-					console.error( e );
-					return true;
+					console.log( 'Error get scores beatmap', beatmap );
+					throw new Error( e );
 				}
 			}});
 	}};

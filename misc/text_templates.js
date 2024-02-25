@@ -32,8 +32,9 @@ module.exports = {
 
 	cache_beatmap_v2_filename: ( params ) => 
 		`${params?.cursor_string ? params.cursor_string : 'null'}_` +
-		`${params.mode}_`+
-		`${params.sort}.json`,
+		`${params?.mode}_`+
+		`${params?.sort}.json`,
 
-
+	get_scores_load_filename: ( params ) => 
+		`get_scores_${params?.userid}_${params.score_mode}_${params.ruleset.idx}_${params.ranked_status}.json`,
 };

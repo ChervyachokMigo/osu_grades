@@ -47,5 +47,6 @@ module.exports = {
 	cache_path: path.join( 'data', 'cache' ),
 	beatmaps_v1_request_limit: 500,
 	beatmaps_v2_request_limit: 50,
+	load_path: path.join( 'data', 'load' ),
 };
 

@@ -1,8 +1,13 @@
+const { existsSync, readFileSync, writeFileSync } = require('fs');
+
 const { RankedStatus } = require('osu-tools');
 
 const osu_auth = require('../osu_auth');
 const find_beatmaps = require('../find_beatmaps');
-const { check_gamemode, print_processed, check_userid } = require('../misc');
+const { check_gamemode, print_processed, check_userid, folder_prepare } = require('../misc');
+const { get_scores_load_filename } = require('../../misc/text_templates');
+const { load_path } = require('../../misc/const');
+const path = require('path');
 
 module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, init = async () => {}, callback }) => {
 	//check userid
@@ -14,9 +19,15 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 
 	//check continue
 	let continue_md5 = args.continue_md5 || null;
+	const load_filename = path.join( load_path, get_scores_load_filename({ userid, score_mode, ruleset, ranked_status }));
+	folder_prepare( load_path );
 	if ( continue_md5 && continue_md5.length !==32 ){
-		console.error( '[continue_md5] > wrong md5 hash' );
-		return;
+		if ( continue_md5 === 'load' ) {
+			continue_md5 = existsSync( load_filename ) ? JSON.parse(readFileSync( load_filename, 'utf8' )).continue_md5 : null;
+		} else {
+			console.error( '[continue_md5] > wrong md5 hash' );
+			return;
+		}
 	}
 	let is_continue = continue_md5 ? true : false;
 
@@ -55,8 +66,8 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 			continue;
 		}
 
-		if ( await callback( beatmap, userid ) ){
-			break;
+		if ( await callback( beatmap, userid ) && continue_md5 !== beatmap.md5 ){
+			writeFileSync( load_filename, JSON.stringify({ continue_md5: beatmap.md5 }), 'utf8' );			
 		}
 
 	}

@@ -37,6 +37,9 @@ module.exports = {
 
 	print_progress_frequency: 4,
 
+	beatmaps_v1_request_limit: 500,
+	beatmaps_v2_request_limit: 50,
+
 	csv_folder_path: path.join('data', 'csv'),
 	scores_folder_path: path.join('data', 'scores'),
 	osu_token_path: path.join('data', 'osu_token.json'),
@@ -45,8 +48,6 @@ module.exports = {
 	saved_since_date_name: 'update_beatmaps_since_date',
 	saved_cursor_v2_beatmaps_name: 'update_beatmaps_cursor_v2',
 	cache_path: path.join( 'data', 'cache' ),
-	beatmaps_v1_request_limit: 500,
-	beatmaps_v2_request_limit: 50,
 	load_path: path.join( 'data', 'load' ),
 };
 

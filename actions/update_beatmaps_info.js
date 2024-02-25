@@ -3,7 +3,7 @@ const { existsSync, readFileSync, writeFileSync } = require('fs');
 const { save_beatmapsets_v1 } = require('../modules/DB/beatmap');
 const { request_beatmaps_by_date } = require('../modules/osu_requests_v1');
 
-const { saved_since_date_path, beatmaps_v1_request_limit } = require('../misc/const');
+const { beatmaps_v1_request_limit, saved_since_date_name, load_path } = require('../misc/const');
 const { check_gamemode, boolean_from_string } = require('../tools/misc');
 const path = require('path');
 
@@ -20,7 +20,7 @@ module.exports = {
 		//check gamemode
 		const ruleset = check_gamemode( args.gamemode );
 
-		const saved_since_date_gamemode_path = path.join( saved_since_date_path + `_${ruleset.idx}.json` );
+		const saved_since_date_gamemode_path = path.join( load_path, saved_since_date_name + `_${ruleset.idx}.json` );
 
 		let since_date = !boolean_from_string( args.from_begin || null ) && existsSync( saved_since_date_gamemode_path ) ? 
 			JSON.parse( readFileSync( saved_since_date_gamemode_path, 'utf8' )).since_date : 

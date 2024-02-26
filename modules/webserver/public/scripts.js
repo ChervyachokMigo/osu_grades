@@ -1,11 +1,19 @@
 
 let SOCKET_PORT = null;
 
+
+
 $( document ).ready( async () => {
 	
 	SOCKET_PORT = $( '.SOCKET_PORT' ).text();
+
+	const socket_connect = async () => {
+		return new WebSocket( `ws://localhost:${SOCKET_PORT}` );
+	};
+
 	try {
-		let connection = new WebSocket( `ws://localhost:${SOCKET_PORT}` );
+		
+		let connection = await socket_connect();
 
 		connection.onopen = () => {
 			connection.onclose = ( async ev => {

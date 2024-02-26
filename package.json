@@ -12,13 +12,18 @@
   "dependencies": {
     "@sequelize/core": "^7.0.0-alpha.37",
     "axios": "^1.6.7",
+    "body-parser": "^1.20.2",
     "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "input": "^1.0.1",
     "mysql2": "^3.9.1",
     "osu-api-extended": "^2.8.1",
-    "osu-tools": "github:ChervyachokMigo/osu-tools"
+    "osu-tools": "github:ChervyachokMigo/osu-tools",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
-    "eslint": "^8.56.0"
+    "eslint": "^8.56.0",
+    "eslint-plugin-jquery": "^1.5.1"
   }
 }

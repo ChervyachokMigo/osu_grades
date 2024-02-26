@@ -17,4 +17,5 @@ module.exports = {
 	is_use_caching: true,
 	is_delete_cache: true,
 	cache_expire_time_hours: 24,
+	
 };

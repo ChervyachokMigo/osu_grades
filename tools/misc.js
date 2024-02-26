@@ -155,6 +155,14 @@ const _this = module.exports = {
 		} catch ( err ) {
 			console.error( 'error deleting files:', err );
 		}
-	}
+	},
+
+	isJSON: ( str ) => {
+		try { 
+			JSON.parse( str.toString() ); } 
+		catch (e) { 
+			return false; }
+		return true;
+	},
 
 };

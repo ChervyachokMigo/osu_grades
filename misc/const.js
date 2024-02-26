@@ -49,5 +49,6 @@ module.exports = {
 	saved_cursor_v2_beatmaps_name: 'update_beatmaps_cursor_v2',
 	cache_path: path.join( 'data', 'cache' ),
 	load_path: path.join( 'data', 'load' ),
+	webserver_config_path: path.join('data','webserver_config.json'),
 };
 

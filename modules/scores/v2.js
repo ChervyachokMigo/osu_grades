@@ -86,6 +86,6 @@ const _this = module.exports = {
 
 		await update_grades ({ userid, gamemode, score_mode: 2 }, grades);
 
-		console.log('test', grades )
+		//console.log('test', grades )
 	},
 };

@@ -3,6 +3,7 @@ const { gamemode } = require('../../misc/const');
 const { users_header } = require('../../misc/text_consts');
 const { delete_user_gamemode, add_user_scoremode_gamemode, user_row_record } = require('../../misc/text_templates');
 const { get_ruleset_by_gamemode_int } = require('../../tools/misc');
+const { Op } = require('@sequelize/core');
 
 const _this = module.exports = {
 	add: async ({ userid, ruleset, score_mode, username }) => {
@@ -24,7 +25,12 @@ const _this = module.exports = {
 
 	find: async (where) => await osu_user_grade.findOne({ where, raw: true }),
 
-	findAll: async (where) => await osu_user_grade.findAll ({ where, raw: true }),
+	findAll: async (where) => {
+		if (where.gamemode < 0) {
+			where.gamemode = {[Op.between]: [0, 3]};
+		}
+		return await osu_user_grade.findAll ({ where, raw: true });
+	},
 
 	action_add: async ({ selected_rulesets, userid, score_mode, username }) => {
 		// all modes

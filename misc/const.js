@@ -34,7 +34,7 @@ module.exports = {
 
 	rank_to_int: { 'F': 0, 'D': 1, 'C': 2, 'B': 3, 'A': 4, 'S': 5, 'X': 6, 'SH': 7, 'XH': 8 },
 	text_score_mode: Array(1).concat([ 'v1', 'v2', 'v2 json' ]),
-
+	rank_sort_methods: [ 'D_SS', 'SS_D', 'count_asc', 'count_desc' ],
 	print_progress_frequency: 4,
 
 	beatmaps_v1_request_limit: 500,

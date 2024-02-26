@@ -7,8 +7,6 @@ const config = require('./config');
 const users = require('../DB/users');
 const { rank_to_int } = require('../../misc/const');
 
-let clients = [];
-
 const client_send = async ( client, action, response_data ) => 
 	await client.send( JSON.stringify({ action, response_data }) );
 
@@ -24,65 +22,80 @@ const refresh_grades = async ({ userid, gamemode }) => {
 };
 
 let interval = null;
+let clients = [];
 
-const refresh_grades_action = async ({ clients, userid, gamemode, sort_method }) => {
-
-	await refresh_grades({ userid, gamemode }).finally( async () => {
-
-		let grades_sum = {};
-		const grades_names = Object.keys(rank_to_int);
-		grades_names.forEach( x => grades_sum[x] = 0 );
-		const grades_db = (await users.findAll({ userid, gamemode, score_mode: 2 }));
-		grades_db.forEach( x => grades_names.forEach( y => grades_sum[y] += x[y] ));
-		delete grades_sum.F;
-
-		for (let client of clients){
-			await client_send( client, 'refresh_grades', { userid, gamemode, grades: grades_sum, sort_method });
+const _this = module.exports = {
+	clients_terminate: async () => {
+		for ( let i in clients ) {
+			await clients[i].terminate();
 		}
+	},
 
-	});
-};
+	check_grades: async ({ clients }) => {
+		const userid = config.get_value( 'web_selected_userid' );
+		const gamemode = config.get_value( 'web_selected_gamemode' );
 
-const check_grades = async ({ clients }) => {
-	const userid = config.get_value( 'web_selected_userid' );
-	const gamemode = config.get_value( 'web_selected_gamemode' );
+		const sort_method = config.get_value('sort_method' );
+		const is_web_autoupdating = config.get_value( 'is_web_autoupdating' );
+		const autoupdate_time_sec = config.get_value( 'web_autoupdate_time_sec' );
+		if (is_web_autoupdating && !interval ) {
+			interval = setInterval( _this.refresh_grades_action, autoupdate_time_sec * 1000, { clients, userid, gamemode, sort_method });
+		}
+		_this.refresh_grades_action({ clients, userid, gamemode, sort_method });
+	},
 
-	const sort_method = config.get_value('sort_method' );
-	const is_web_autoupdating = config.get_value( 'is_web_autoupdating' );
-	const autoupdate_time_sec = config.get_value( 'web_autoupdate_time_sec' );
+	refresh_grades_action: async ({ clients, userid, gamemode, sort_method }) => {
+		if ( clients.length > 0 ){
+			await refresh_grades({ userid, gamemode }).finally( async () => {
 
-	if (is_web_autoupdating && !interval) {
-		interval = setInterval( refresh_grades_action, autoupdate_time_sec * 1000, { clients, userid, gamemode, sort_method });
-	}
-	refresh_grades_action({ clients, userid, gamemode, sort_method });
-};
+				let grades_sum = {};
+				const grades_names = Object.keys(rank_to_int);
+				grades_names.forEach( x => grades_sum[x] = 0 );
+				const grades_db = (await users.findAll({ userid, gamemode, score_mode: 2 }));
+				grades_db.forEach( x => grades_names.forEach( y => grades_sum[y] += x[y] ));
+				delete grades_sum.F;
 
-module.exports = {
+				for (let client of clients){
+					await client_send( client, 'refresh_grades', { userid, gamemode, grades: grades_sum, sort_method });
+				}
+
+			});
+		}
+	},
 
 	init_socket_server: () => {
 		const GRADES_SOCKET_PORT = config.get_value( 'GRADES_SOCKET_PORT' );
 
-		let SOCKET_SERVER = new WebSocket.WebSocketServer({ port: GRADES_SOCKET_PORT });
+		_this.SOCKET_SERVER = new WebSocket.WebSocketServer({ port: GRADES_SOCKET_PORT });
+		
+		_this.SOCKET_SERVER.on('close', async () => {
+			console.log('socket server closed');
+			if (interval) {
+				clearInterval( interval );
+				interval = null;
+			}
+		});
 
-		SOCKET_SERVER.on('connection',  async (client) => {
+		_this.SOCKET_SERVER.on('connection',  async (client) => {
 			client.id = new Date().getTime();
-			clients.push(client);
+			clients.push(client); 
 
-			await check_grades({ clients });
+			await _this.check_grades({ clients });
 
 			console.log('new connection');
             
-			client.on('error', console.error);
+			client.on('error', () => console.error);
             
 			client.on('close', () => {
 				console.log('connection closed');
-				for (let i in clients){
-					if (clients[i].id === client.id){
+				for ( let i in clients ) {
+					if ( clients[i].id === client.id ){
 						clients.splice(i, 1);
 					}
 				}
-				if (clients.length === 0){
-					if (interval) clearInterval(interval);
+				if (clients.length == 0 && interval) {
+					clearInterval( interval );
+					interval = null;
 				}
 			});
 
@@ -110,7 +123,7 @@ module.exports = {
 
 		});
 
-		return SOCKET_SERVER;
+		return _this.SOCKET_SERVER;
 	},
 
 	clients_send: async (action, data) => {

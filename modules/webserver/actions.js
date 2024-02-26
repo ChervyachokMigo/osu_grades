@@ -2,7 +2,7 @@ const child_process = require('child_process');
 
 
 const webserver = require('./webserver.js');
-const { init_socket_server } = require('./socket_server.js');
+const { init_socket_server, clients_terminate } = require('./socket_server.js');
 const config = require('./config.js');
 
 const _this = module.exports =  {
@@ -16,8 +16,10 @@ const _this = module.exports =  {
 	},
 
 	stop: async () => {
-		if (_this.SOCKET_SERVER)
+		if (_this.SOCKET_SERVER){
 			await _this.SOCKET_SERVER.close();
+			await clients_terminate();
+		}
 		if (_this.WEB_SERVER)
 			await _this.WEB_SERVER.close();
 	},

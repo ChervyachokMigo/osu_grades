@@ -22,4 +22,4 @@ module.exports =  () => {
 			</div>
 		</body>
 	</html>` : 'Error: Socket port is not defined in config';
-}
+};

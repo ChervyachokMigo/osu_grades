@@ -23,10 +23,10 @@ module.exports = {
 				[{ name: 'Open webpage', value: 3 }, { name: 'Stop webserver', value: 0 }, { name: 'Restart webserver', value: 2}];
 
 			const selected = start_action || await input.select('Webserver menu', [
+				{ name: '< Back', value: -1 },
 				...webserser_variants,
 				{ name: 'Edit config', value: 4 },
 				{ name: 'Reset config', value: 5 },
-				{ name: 'Exit', value: -1 } 
 			]);
 			
 			try {

@@ -1,51 +1,51 @@
-const { readdirSync } = require('fs');
-const path = require('path');
+const input = require('input');
 
 const { folder_prepare } = require('./tools/misc');
 const { prepareDB } = require('./modules/DB/defines');
 const { init_cache } = require('./modules/cache');
 
-const args = process.argv.slice(2);
+const laucher_presets = require('./misc/laucher-presets');
+const command_start = require('./command_start');
 
-const action_modules = readdirSync('actions', { encoding: 'utf8' });
+const process_args = process.argv.slice(2);
 
-const actions = action_modules.map( filename => ({ 
-	name: path.basename( filename, '.js' ),
-	_args: require( `./actions/${filename}` ).args,
-	F: require( `./actions/${filename}` ).action,
-}));
+const select_action = async ( selected_action ) => {
+	if (selected_action.category){
+		const selected_item = await input.select( laucher_presets.get_category(selected_action.category) );
 
-const command_exec = async () => {
-	console.log('preparing commands');
+		if (selected_item?.category){
+			await select_action( selected_item );
+		} else if (selected_item?.action){
+			if (selected_item.action === 'exit') {
+				console.log( 'launcher is close');
+				process.exit(0);
+			} else if (selected_item.action === 'back') {
+				await select_action({ category: selected_item.back_category });
+			} else if (selected_item.action !== 'exit' && selected_item.action!== 'back') {
+				await command_start( [selected_item.action, ...selected_item.args ] );
+			}
+		}
+	}
+};
 
-	const action = args.shift();
-
+const launcher_start = async() => {
 	folder_prepare('data');
 
 	init_cache();
 	
 	await prepareDB();
 
-	for ( let { name, _args, F } of actions ) {
-		if ( name === action ){
-			console.log( 'executting command:', action );
-			const parsed_args = Object.assign( {}, ...args.map( (v, i) => ({ [ _args[i] ? _args[i] : i ] : v })));
-			await F( parsed_args );
-			console.log( 'complete\n' );
-			process.exit();
-			return;
+	if (process_args.length > 0)
+		await command_start( process_args );
+	else {
+		// eslint-disable-next-line no-constant-condition
+		while(true) {
+			if ( await select_action({ category: 'main' })) {
+				break;
+			}
 		}
 	}
 
-	console.error(`undefined action: ${action}\navailable actions:`, actions.map( v => v.name).join(', '));
 };
 
-command_exec();
-
-// посчитать количество карт по статусам
-// при запуске запустить beatmap check
-// разделение на в1 в2 джсон (по конфигу мб)
-// сделать config editor
-// сделать лаунчер
-// починить импорт базы
-// make get scores all
+launcher_start();

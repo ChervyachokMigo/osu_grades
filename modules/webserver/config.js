@@ -99,13 +99,16 @@ const _this = module.exports = {
 
 				if ( users.length > 1 ) {
 					const new_value = await input.select( users.map( x=> ({ name: x.username, value: x.userid })));
+					console.log(`Added user ${new_value} ${users.find( x => x.userid == new_value).username}`);
 					_this.set_value( 'web_selected_userid', new_value );
 				} else if ( users.length == 1 ) {
 					_this.data.web_selected_userid = users[0].userid;
 					_this.save();
+					console.log(`Added user ${users[0].userid} ${users[0].username}`);
 				} else if ( users.length == 0) {
 					this.console.log( 'No user selected' );
 				}
+				
 			}
 			console.log('done' );
 		}

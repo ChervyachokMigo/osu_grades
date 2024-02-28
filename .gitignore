@@ -2,5 +2,6 @@
 /data/
 /results/
 /.trunk/
+/unusedbats/
 test.js
 osu_api_v2_test.js

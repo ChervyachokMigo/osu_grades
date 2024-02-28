@@ -1,17 +1,19 @@
+const { get_is_loaded } = require('../actions/webserver');
+const config = require('../modules/webserver/config');
 
 const back_categories = {
-	test1: 'main',
-	test4: 'test1',
 	users: 'main',
-
 	update_beatmaps: 'main',
 	refresh_scores: 'main',
 	db_tools: 'main',
 	import_jsons: 'main',
+	webserver: 'main',
+
 };
 
 module.exports = {
 	get_category: ( name ) => {
+		let category = module.exports[name];
 		let res = [];
 
 		const back = name !== 'main' && back_categories[name] ? 
@@ -21,8 +23,32 @@ module.exports = {
 			res.push(back);
 		}
 
-		return [...res, ...module.exports[name]];
+		if (name === 'webserver') {
+			const selected_userid = config.get_value( 'web_selected_userid');
+			const is_stopped = 0;
+			const is_loaded = 1;
+			
+			category = [
+				...category.variants[ 
+					get_is_loaded() == false ? is_stopped : is_loaded ]
+					.map( x => ({ ...x, disabled: selected_userid == 0 }) ),
+				...category.values,
+			];
+			delete category.variants;
+		}
+
+		return [...res, ...category];
 	},
+
+	main: [
+		{ name: 'Users menu >', value: { category: 'users' }},
+		{ name: 'Update beatmaps >', value: { category: 'update_beatmaps' }},
+		{ name: 'Refresh scores >', value: { category: 'refresh_scores' }},
+		{ name: 'DB Tools >', value: { category: 'db_tools' }},
+		{ name: 'Import json scores to DB >', value: { category: 'import_jsons' }},
+		{ name: 'Webserver >', value: { category: 'webserver' }},
+		{ name: 'Exit', value: { action: 'exit', args: [] } }
+	],
 
 	users: [
 		{ name: 'Add/Change user', value: { action: 'user', args: ['add'] } },
@@ -85,26 +111,17 @@ module.exports = {
 		{ name: 'Import jsons to scores v2', value: { action: 'import_jsons_to_db', args: [2] } },
 	],
 
-	test4: [
-		{ name: 'test5', value: { action: 'test5', args: [1] } },
-		{ name: 'test6', value: { action: 'test6', args: [2] } },
-	],
-
-	test1: [
-		{ name: 'test2', value: { action: 'test2', args: [1] } },
-		{ name: 'test3', value: { action: 'test3', args: [2] } },
-		{ name: 'test4 >', value: { category: 'test4' }},
-	],
-
-	main: [
-		{ name: 'Test 1 >', value: { category: 'test1' }},
-		{ name: 'Users menu >', value: { category: 'users' }},
-		{ name: 'Update beatmaps >', value: { category: 'update_beatmaps' }},
-		{ name: 'Refresh scores >', value: { category: 'refresh_scores' }},
-		{ name: 'DB Tools >', value: { category: 'db_tools' }},
-		{ name: 'Import json scores to DB >', value: { category: 'import_jsons' }},
-		{ name: 'Webserver >', value: { action: 'webserver', args: [] }},
-		{ name: 'Exit', value: { action: 'exit', args: [] } }
-	],
+	webserver: { 
+		variants: [[
+			{ name: 'Start webserver', value: { action: 'webserver', args: [1] }},
+		],[
+			{ name: 'Open webpage', value: { action: 'webserver', args: [3] }},
+			{ name: 'Stop webserver', value: { action: 'webserver', args: [0] }},
+			{ name: 'Restart webserver', value: { action: 'webserver', args: [2] }},
+		]],
+		values: [
+			{ name: 'Edit config', value: { action: 'webserver', args: [4] }},
+			{ name: 'Reset config', value: { action: 'webserver', args: [5] }},
+		]},
 
 };

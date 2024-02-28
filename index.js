@@ -6,6 +6,7 @@ const { init_cache } = require('./modules/cache');
 
 const laucher_presets = require('./misc/laucher-presets');
 const command_start = require('./command_start');
+const webconfig = require('./modules/webserver/config');
 
 const process_args = process.argv.slice(2);
 
@@ -34,6 +35,8 @@ const launcher_start = async() => {
 	init_cache();
 	
 	await prepareDB();
+
+	await webconfig.init();
 
 	if (process_args.length > 0)
 		await command_start( process_args );

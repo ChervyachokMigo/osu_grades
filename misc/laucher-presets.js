@@ -8,7 +8,8 @@ const back_categories = {
 	db_tools: 'main',
 	import_jsons: 'main',
 	webserver: 'main',
-
+	get_scores: 'main',
+	V2_JSON_RECOUNT: 'main',
 };
 
 module.exports = {
@@ -43,10 +44,12 @@ module.exports = {
 	main: [
 		{ name: 'Users menu >', value: { category: 'users' }},
 		{ name: 'Update beatmaps >', value: { category: 'update_beatmaps' }},
+		{ name: 'Get scores >', value: { category: 'get_scores' }},
 		{ name: 'Refresh scores >', value: { category: 'refresh_scores' }},
+		{ name: 'V2_JSON_RECOUNT >', value: { category: 'V2_JSON_RECOUNT' }},
+		{ name: 'Webserver >', value: { category: 'webserver' }},
 		{ name: 'DB Tools >', value: { category: 'db_tools' }},
 		{ name: 'Import json scores to DB >', value: { category: 'import_jsons' }},
-		{ name: 'Webserver >', value: { category: 'webserver' }},
 		{ name: 'Exit', value: { action: 'exit', args: [] } }
 	],
 
@@ -78,6 +81,11 @@ module.exports = {
 		{ name: 'Update beatmaps v2 [MANIA] continue', value: { action: 'update_beatmaps_info_v2', args: [3, 1, 'false'] } },
 	],
 
+	get_scores: [
+		{ name: 'From begin', value: { action: 'get_scores_select', args: [] } },
+		{ name: 'Continue', value: { action: 'get_scores_select', args: ['load'] } }
+	],
+
 	refresh_scores: [
 		{ name: 'Refresh all v1', value: { action:'refresh_all', args: [1, -2] } },
 
@@ -99,6 +107,10 @@ module.exports = {
 		{ name: 'Refresh [TAIKO] v2 JSON', value: { action:'refresh_all', args: [3, 1] } },
 		{ name: 'Refresh [FRUITS] v2 JSON', value: { action:'refresh_all', args: [3, 2] } },
 		{ name: 'Refresh [MANIA] v2 JSON', value: { action:'refresh_all', args: [3, 3] } },
+	],
+
+	V2_JSON_RECOUNT: [
+		{ name: 'Recount ALL', value: { action: 'recount_all_v2_json', args: [] } },
 	],
 
 	db_tools: [

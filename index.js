@@ -22,7 +22,7 @@ const select_action = async ( selected_action ) => {
 				process.exit(0);
 			} else if (selected_item.action === 'back') {
 				await select_action({ category: selected_item.back_category });
-			} else if (selected_item.action !== 'exit' && selected_item.action!== 'back') {
+			} else {
 				await command_start( [selected_item.action, ...selected_item.args ] );
 				await select_action({ category: selected_action.category });
 			}

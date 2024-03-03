@@ -8,6 +8,7 @@ const { check_gamemode, print_processed, check_userid, folder_prepare } = requir
 const { get_scores_load_filename } = require('../../misc/text_templates');
 const { load_path } = require('../../misc/const');
 const path = require('path');
+const { Op } = require('@sequelize/core');
 
 module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, init = async () => {}, callback }) => {
 	//check userid
@@ -33,8 +34,10 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 
 	await init( userid );
 
+	// ranked + approved
+	const ranked_where = ranked_status == RankedStatus.ranked ? { [Op.in]: [ RankedStatus.ranked, RankedStatus.approved ] } : ranked_status;
 	//load beatmaps from DB
-	const beatmaps_db = ( await find_beatmaps({ ranked: ranked_status, gamemode: ruleset.idx }))
+	const beatmaps_db = ( await find_beatmaps({ ranked: ranked_where, gamemode: ruleset.idx }))
 		.filter( x => x.beatmap_id > 0 );
 	console.log( 'founded', beatmaps_db.length, 'ranked beatmaps' );
 

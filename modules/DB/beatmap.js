@@ -1,3 +1,4 @@
+const { RankedStatus } = require('osu-tools');
 const { Num, import_beatmap_status, concat_array_of_arrays } = require('../../tools/misc');
 const { MYSQL_SAVE } = require('./base');
 const { osu_beatmap_id, beatmap_info } = require('./defines');
@@ -41,15 +42,12 @@ module.exports = {
 	save_beatmapsets_v1: async ( beatmapset_v1 ) => {
 
 		if ( !beatmapset_v1 || !beatmapset_v1.length ) return null;
-
+		
 		// list of hashes
 		const hashes = ( beatmapset_v1.map( (beatmap) => beatmap.file_md5 ) );
-	
-		const since_date = beatmapset_v1[beatmapset_v1.length-1].approved_date;
-
 		// get md5 id from db
 		const md5_hashes = await Promise.all( hashes.map( async hash => ({ id: await get_md5_id(hash), hash }) ));
-		
+
 		const db_data = convert_beatmapsets_v1_to_db ( beatmapset_v1 );
 
 		const ids_data = db_data.map( x => ({
@@ -57,8 +55,8 @@ module.exports = {
 			beatmap_id: x.beatmap_id, 
 			beatmapset_id: x.beatmapset_id, 
 			gamemode: x.gamemode, 
-			ranked: x.ranked})
-		).filter(x=> x.md5);
+			ranked: x.ranked }))
+			.filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
 
 		const info_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
@@ -66,7 +64,7 @@ module.exports = {
 			title: x.title, 
 			creator: x.creator, 
 			difficulty: x.difficulty})
-		).filter(x=> x.md5);
+		).filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
 
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
@@ -77,6 +75,8 @@ module.exports = {
 			ignoreDuplicates: true,
 			updateOnDuplicate: [ 'artist', 'title', 'creator', 'difficulty']	
 		})).map( x => x.dataValues );
+
+		const since_date = beatmapset_v1[beatmapset_v1.length-1].approved_date;
 
 		return { 
 			md5_hashes: md5_hashes.length, 
@@ -157,7 +157,7 @@ module.exports = {
 			beatmapset_id: x.beatmapset_id, 
 			gamemode: x.gamemode, 
 			ranked: x.ranked})
-		).filter(x=> x.md5);
+		).filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
 
 		const info_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
@@ -165,7 +165,7 @@ module.exports = {
 			title: x.title, 
 			creator: x.creator, 
 			difficulty: x.difficulty})
-		).filter(x=> x.md5);
+		).filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
 
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,

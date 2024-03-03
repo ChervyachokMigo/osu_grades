@@ -30,12 +30,9 @@ module.exports = async (args) => {
 
 // посчитать количество карт по статусам
 // при запуске запустить beatmap check
-// разделение на в1 в2 джсон (по конфигу мб)
+// разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
 // сделать config editor
-// сделать лаунчер
 // починить импорт базы
-// make get scores all
 // сделать upadate beatmaps all
 // update beatmaps qualified, loved, approved and scores
-//  * убрать квалифаед, прибавить скоры с апроведами
 // коллекции с оценками

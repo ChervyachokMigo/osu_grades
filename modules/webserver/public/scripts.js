@@ -101,7 +101,7 @@ const create_grades = ( grades, sort_method = 'D_SS') => {
 	is_created = true;
 };
 
-const  refresh_grades = ( data_json, sort_method ) => {
+const  refresh_grades = ( data_json ) => {
 	create_grades( data_json.grades, data_json.sort_method );
 	Object.entries( data_json.grades ).forEach( ([rank, count]) => $( '.grade_' + rank + '_count' ).text( count ) );
 };

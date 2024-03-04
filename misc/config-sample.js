@@ -18,4 +18,5 @@ module.exports = {
 	is_delete_cache: true,
 	cache_expire_time_hours: 24,
 	
+	osu_path: 'C:\\osu!',
 };

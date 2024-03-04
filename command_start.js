@@ -35,4 +35,3 @@ module.exports = async (args) => {
 // починить импорт базы
 // сделать upadate beatmaps all
 // update beatmaps qualified, loved, approved and scores
-// коллекции с оценками

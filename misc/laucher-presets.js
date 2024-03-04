@@ -50,6 +50,7 @@ module.exports = {
 		{ name: 'Webserver >', value: { category: 'webserver' }},
 		{ name: 'DB Tools >', value: { category: 'db_tools' }},
 		{ name: 'Import json scores to DB >', value: { category: 'import_jsons' }},
+		{ name: 'Update collections', value: { action: 'update_collections', args: [] } },
 		{ name: 'Exit', value: { action: 'exit', args: [] } }
 	],
 

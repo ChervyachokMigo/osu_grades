@@ -165,4 +165,6 @@ const _this = module.exports = {
 		return true;
 	},
 
+	get_key_by_value: ( obj, value ) => Object.keys(obj).find(key => obj[key] === value),
+
 };

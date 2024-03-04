@@ -11,6 +11,8 @@ module.exports = {
 
 		await export_table_csv( 
 			args.tablename || await input.select('Select table name', tables),
+			await input.text('Enter string quotes', { default: '"' }),
+			await input.text('Enter separator', { default: ';' }),
 		);
 		
 		console.log('export complete');

@@ -9,7 +9,7 @@ const { mysql_actions } = require('../modules/DB/defines');
 const { boolean_from_string } = require('../tools/misc');
 
 module.exports = {
-	args: ['filepath', 'tablename', 'skip_errors', 'delimiter', 'strings_quotes' ],
+	args: ['filepath', 'tablename', 'skip_errors', 'strings_quotes' ],
 	action: async( args ) => {
 		console.log('importing csv');
 
@@ -19,8 +19,7 @@ module.exports = {
 		await import_table_csv({
 			filepath: args.filepath || path.join( csv_folder_path, await input.select('Select csv file', files )), 
 			tablename: args.tablename || await input.select('Select table name', tables),
-			skip_errors: boolean_from_string(args.skip_errors) || false, 
-			delimiter: args.delimiter || ';'
+			skip_errors: boolean_from_string(args.skip_errors) || false
 		});
 		
 		console.log('import complete');

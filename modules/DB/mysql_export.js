@@ -37,7 +37,7 @@ const pack = async (tablename = 'mysql_backups') => {
 const _this = module.exports = {
 	pack,
 
-	export_table_csv: async ( tablename ) => {
+	export_table_csv: async ( tablename, string_quotes = '"', separator = ';' ) => {
 		if (!tablename || mysql_actions.find( x => x.names === tablename) === -1) {
 			console.error('tablename invalid', tablename);
 			return false;
@@ -48,11 +48,11 @@ const _this = module.exports = {
 		console.log('geting all data');
 		const mysql_values = await MYSQL_GET_ALL( tablename );
 		console.log('reciving', mysql_values.length, 'rows');
-		_this.save_csv(mysql_values, tablename);
+		_this.save_csv( mysql_values, tablename, string_quotes, separator );
 
 	},
 
-	save_csv: (values = null, tablename) => {
+	save_csv: (values = null, tablename, string_quotes = '"', separator = ';' ) => {
 
 		folder_prepare (csv_folder_path);
 
@@ -67,16 +67,19 @@ const _this = module.exports = {
 			const filename =  `${tablename}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-` +
 				`${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
 
-			const header = Object.keys(values[0]).map( x => `"${x}"` ).join(';');
-			const types = get_attributes_types(tablename).join(';');
+			const header = Object.keys(values[0]).map( x => `"${x}"` ).join(separator);
+			const types = get_attributes_types(tablename).join(separator);
 
 			let data = [];
-
+			data.push( 'string_quotes:' + string_quotes );
+			data.push( 'separator:' + separator );
 			data.push( header );
 			data.push( types );
 
 			for ( let i in values ){
-				data.push( Object.values(values[i]).map( x => typeof x === 'string'? `"${x}"` : x ).join(';') );
+				data.push( Object.values(values[i]).map( x => 
+					typeof x === 'string' ? `${string_quotes}${x}${string_quotes}` : x ).join(separator) );
+
 				print_processed({ current: i, size: values.length, name: 'rows' });
 			}
 

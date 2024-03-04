@@ -9,7 +9,7 @@ const { prepareDB } = require('./defines.js');
 const strict = true;
 
 const _this = module.exports = {
-	load_csv: async ({ filepath, skip_errors = false, delimiter = ';'}) => {
+	load_csv: async ({ filepath, skip_errors = false }) => {
 
 		let errors_count = 0;
 		let errors = [];
@@ -19,23 +19,26 @@ const _this = module.exports = {
 		}
 		try{
 
-			const data = fs.readFileSync( filepath, {encoding: 'utf8'}).split('\n')
-				// eslint-disable-next-line no-irregular-whitespace
-				.map( x => !x ? x : x.replace( /["\r﻿]/gi, '' )).filter(x => x!== null);
+			const data = fs.readFileSync( filepath, { encoding: 'binary' }).toString().split('\r\n')
+				.filter( x => x!== null );
 
-			const data_splitted = Array.from(new Set(data)).map( x => x.split(delimiter));
+			const string_quotes = data.shift().replace('string_quotes:', '');
+			const separator = data.shift().replace('separator:', '');
+			const header = data.shift().replace('"', '').split(separator);
+			const types = data.shift().split(separator);
 
-			const header = data_splitted.shift();
-			const types = data_splitted.shift();
+			const string_reg = new RegExp( `(\\d+)|${string_quotes}(.*?)${string_quotes}`, 'gui');
+			const replace_reg = new RegExp( string_quotes, 'gui');
+
+			const data_splitted = data.map( x => x.match( string_reg ).map( y => y.replace( replace_reg , '' )));
 
 			// parse content
 			const content = data_splitted.map ( (x, k) => {
 				
 				if (x.length !== types.length){
-					
 
 					if (strict){
-						console.error( ` > row ${k} error: ${data_splitted[k].join(delimiter)}` );
+						console.error( ` > row ${k} error: ${data_splitted[k].join(separator)}` );
 						//console.error('rows', x);
 						errors.push({ num: k, values: x });
 						errors_count++;
@@ -73,14 +76,14 @@ const _this = module.exports = {
 					while (error.values.length !== types.length){
 					
 						let res = await input.select( 
-							`Error string (${error.num}): ${data_splitted[error.num].join(delimiter)}\n${error.values.map( (x, i)  => `[${i}]: ${x}`).join('\n')}`,
+							`Error string (${error.num}): ${data_splitted[error.num].join(separator)}\n${error.values.map( (x, i)  => `[${i}]: ${x}`).join('\n')}`,
 							error.values.map( (x, i, a)  => 
 								i < a.length -1
 									? {name:`compare ${i} with ${Number(i)+1}`, value: i }
 									: null).filter( x => x!== null)
 						);
 
-						error.values[res] = error.values[res] + delimiter + error.values[res + 1];
+						error.values[res] = error.values[res] + separator + error.values[res + 1];
 						error.values.splice(res + 1, 1);
 
 					}
@@ -103,10 +106,10 @@ const _this = module.exports = {
 		}
 	},
 
-	import_table_csv: async ({ filepath, tablename, chunk_size = 500, skip_errors = false, delimiter = ';'}) => {
+	import_table_csv: async ({ filepath, tablename, chunk_size = 500, skip_errors = false}) => {
 		await prepareDB();
 
-		const content_objects = await _this.load_csv({ filepath, skip_errors, delimiter });
+		const content_objects = await _this.load_csv({ filepath, skip_errors });
 
 		const chunks = split_array_on_chunks( content_objects, chunk_size);
 

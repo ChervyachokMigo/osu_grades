@@ -6,13 +6,14 @@ const path = require('path');
 const { import_table_csv } = require('../modules/DB/mysql_import');
 const { csv_folder_path } = require('../misc/const');
 const { mysql_actions } = require('../modules/DB/defines');
-const { boolean_from_string } = require('../tools/misc');
+const { boolean_from_string, folder_prepare } = require('../tools/misc');
 
 module.exports = {
 	args: ['filepath', 'tablename', 'skip_errors', 'strings_quotes' ],
 	action: async( args ) => {
 		console.log('importing csv');
-
+		folder_prepare( csv_folder_path );
+		
 		const files = fs.readdirSync( csv_folder_path );
 		const tables = mysql_actions.map( x => x.names );
 

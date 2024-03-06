@@ -3,7 +3,7 @@ const path = require('path');
 
 const osu_auth = require('../tools/osu_auth');
 const { save_beatmapsets_v2 } = require('../modules/DB/beatmap');
-const { check_gamemode, print_processed } = require('../tools/misc');
+const { check_gamemode, print_processed, folder_prepare } = require('../tools/misc');
 const { request_beatmaps_by_cursor_v2 } = require('../modules/osu_requests_v2');
 const { beatmap_status_bancho_text, beatmaps_v2_request_limit, load_path, saved_cursor_v2_beatmaps_name } = require('../misc/const');
 
@@ -18,6 +18,8 @@ module.exports = {
 
 		//check gamemode
 		const ruleset = check_gamemode( args.gamemode );
+
+		folder_prepare(load_path);
 
 		const saved_cursor_v2_beatmaps_gamemode_path = path.join( load_path, saved_cursor_v2_beatmaps_name + `_${ruleset.idx}.json` );
 		// check cursor string

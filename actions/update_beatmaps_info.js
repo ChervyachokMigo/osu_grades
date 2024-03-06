@@ -4,7 +4,7 @@ const { save_beatmapsets_v1 } = require('../modules/DB/beatmap');
 const { request_beatmaps_by_date } = require('../modules/osu_requests_v1');
 
 const { beatmaps_v1_request_limit, saved_since_date_name, load_path } = require('../misc/const');
-const { check_gamemode, boolean_from_string } = require('../tools/misc');
+const { check_gamemode, boolean_from_string, folder_prepare } = require('../tools/misc');
 const path = require('path');
 
 const since_date_start = '2007-01-01';
@@ -19,6 +19,8 @@ module.exports = {
 
 		//check gamemode
 		const ruleset = check_gamemode( args.gamemode );
+
+		folder_prepare(load_path);
 
 		const saved_since_date_gamemode_path = path.join( load_path, saved_since_date_name + `_${ruleset.idx}.json` );
 

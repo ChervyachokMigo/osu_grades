@@ -18,9 +18,9 @@ module.exports = async (args) => {
 		if ( name === action ){
 			console.log( 'executting command:', action );
 			const parsed_args = Object.assign( {}, ...args.map( (v, i) => ({ [ _args[i] ? _args[i] : i ] : v })));
-			await F( parsed_args );
+			const res = await F( parsed_args );
 			console.log( 'complete\n' );
-			return;
+			return res;
 		}
 	}
 
@@ -28,7 +28,7 @@ module.exports = async (args) => {
 };
 
 
-// посчитать количество карт по статусам
+// посчитать количество пройденых карт по гейммоду, и общее количество
 // при запуске запустить beatmap check
 // разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
 // сделать config editor

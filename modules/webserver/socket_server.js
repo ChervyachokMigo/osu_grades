@@ -6,11 +6,12 @@ const refresh_v2 = require('../../actions/refresh_v2');
 const config = require('./config');
 const users = require('../DB/users');
 const { rank_to_int } = require('../../misc/const');
+const { count_scores_by_gamemode } = require('../DB/scores');
 
 const client_send = async ( client, action, response_data ) => 
 	await client.send( JSON.stringify({ action, response_data }) );
 
-const refresh_grades = async ({ userid, gamemode }) => {
+const refresh_scores = async ({ userid, gamemode }) => {
 	const is_all = gamemode < 0;
 	if (is_all){
 		for ( let i = 0; i < 4; i++ ){
@@ -24,10 +25,45 @@ const refresh_grades = async ({ userid, gamemode }) => {
 let interval = null;
 let clients = [];
 
+const client_change_type = (client_id, type) => {
+	const idx = clients.findIndex( x => x.id === client_id);
+	if ( idx > -1 ){
+		clients[idx].type = type;
+	}
+};
+
 const _this = module.exports = {
 	clients_terminate: async () => {
 		for ( let i in clients ) {
 			await clients[i].terminate();
+		}
+	},
+
+	refresh_grades_action: async ({ clients, userid, gamemode, sort_method }) => {
+		if ( clients.length > 0 ){
+			await refresh_scores({ userid, gamemode }).finally( async () => {
+	
+				let grades_sum = {};
+				const grades_names = Object.keys(rank_to_int);
+				grades_names.forEach( x => grades_sum[x] = 0 );
+				const grades_db = (await users.findAll({ userid, gamemode, score_mode: 2 }));
+				grades_db.forEach( x => grades_names.forEach( y => grades_sum[y] += x[y] ));
+				delete grades_sum.F;
+
+				const count_scores = await count_scores_by_gamemode({ userid, gamemode });
+
+				for (let client of clients){
+
+					if (client.type === 'grades'){
+						await client_send( client, 'refresh_grades', { userid, gamemode, grades: grades_sum, sort_method });
+					} else if (client.type === 'beatmaps') {
+						await client_send( client, 'refresh_beatmaps', count_scores );
+					} else {
+						console.error('undefined client type:', client?.type );
+					}
+				}
+
+			});
 		}
 	},
 
@@ -41,26 +77,7 @@ const _this = module.exports = {
 		if (is_web_autoupdating && !interval ) {
 			interval = setInterval( _this.refresh_grades_action, autoupdate_time_sec * 1000, { clients, userid, gamemode, sort_method });
 		}
-		_this.refresh_grades_action({ clients, userid, gamemode, sort_method });
-	},
-
-	refresh_grades_action: async ({ clients, userid, gamemode, sort_method }) => {
-		if ( clients.length > 0 ){
-			await refresh_grades({ userid, gamemode }).finally( async () => {
-
-				let grades_sum = {};
-				const grades_names = Object.keys(rank_to_int);
-				grades_names.forEach( x => grades_sum[x] = 0 );
-				const grades_db = (await users.findAll({ userid, gamemode, score_mode: 2 }));
-				grades_db.forEach( x => grades_names.forEach( y => grades_sum[y] += x[y] ));
-				delete grades_sum.F;
-
-				for (let client of clients){
-					await client_send( client, 'refresh_grades', { userid, gamemode, grades: grades_sum, sort_method });
-				}
-
-			});
-		}
+		await _this.refresh_grades_action({ clients, userid, gamemode, sort_method });
 	},
 
 	init_socket_server: () => {
@@ -78,12 +95,10 @@ const _this = module.exports = {
 
 		_this.SOCKET_SERVER.on('connection',  async (client) => {
 			client.id = new Date().getTime();
-			clients.push(client); 
-
-			await _this.check_grades({ clients });
+			client.type = null;
 
 			console.log('new connection');
-            
+
 			client.on('error', () => console.error);
             
 			client.on('close', () => {
@@ -103,6 +118,7 @@ const _this = module.exports = {
 				console.log('received: ' + data);
 
 				if (isJSON(data)){
+					
 					// eslint-disable-next-line no-unused-vars
 					const {action, request_data} = JSON.parse(data);
 
@@ -111,15 +127,24 @@ const _this = module.exports = {
 					switch (action) {
 					case 'connect':
 						response_data = 'connection success';
+						if (request_data && request_data.script_type) {
+							client_change_type(client.id, request_data.script_type);
+						}
+						
 						break;
 					default:
-						console.log('unknown action');
+						console.error('unknown action');
 					}
+					
 					await client_send( client, action, response_data );
 				} else {
 					console.error( '"data" is not in JSON format!' );
 				}
 			});
+
+			clients.push(client); 
+
+			await _this.check_grades({ clients });
 
 		});
 

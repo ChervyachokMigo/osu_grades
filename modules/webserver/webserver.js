@@ -3,8 +3,10 @@ const cors = require('cors');
 const express = require('express');
 const path = require('path');
 
-
 const index_js = require('./templates/index.js');
+const grades_count_js = require('./templates/grades_count.js');
+const beatmaps_complete_js = require('./templates/beatmaps_complete.js');
+
 const config = require('./config.js');
 
 const public_path = path.join(__dirname, 'public');
@@ -29,6 +31,14 @@ module.exports = {
 			
 			app.get( '/', async (req, res) => res.send( 
 				index_js()
+			));
+
+			app.get( '/grades_count', async (req, res) => res.send( 
+				grades_count_js()
+			));
+
+			app.get( '/beatmaps_complete', async (req, res) => res.send( 
+				beatmaps_complete_js()
 			));
 			
 			

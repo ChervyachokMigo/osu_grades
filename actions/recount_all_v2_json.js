@@ -8,6 +8,7 @@ const { scores_folder_path } = require('../misc/const');
 
 module.exports = {
 	args: [],
+	// eslint-disable-next-line no-unused-vars
 	action: async( args ) => {
 		//check scores folder
 		folder_prepare(scores_folder_path);

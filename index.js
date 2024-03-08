@@ -39,9 +39,10 @@ const launcher_start = async() => {
 
 	await webconfig.init();
 
-	if (process_args.length > 0)
+	if (process_args.length > 0) {
 		await command_start( process_args );
-	else {
+		process.exit(0);
+	} else {
 		// eslint-disable-next-line no-constant-condition
 		while(true) {
 			if ( await select_action({ category: 'main' })) {
@@ -50,7 +51,6 @@ const launcher_start = async() => {
 		}
 		
 	}
-
 };
 
 launcher_start();

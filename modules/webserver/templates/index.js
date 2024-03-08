@@ -1,25 +1,17 @@
 
-const config = require('../config');
-
 module.exports =  () => {
-	const GRADES_SOCKET_PORT = config.get_value( 'GRADES_SOCKET_PORT');
-
-	return GRADES_SOCKET_PORT && GRADES_SOCKET_PORT > 0 ?
-		`<!DOCTYPE html>
+	return `<!DOCTYPE html>
 		<html lang="ru">
 		<head>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<title>Discord Bot Dashboard Status</title>
-			<link rel="stylesheet" href="styles.css">
-			<script src="jquery-3.7.1.min.js"></script>
-			<script src="scripts.js"></script>
+			<title>Index</title>
 		</head>
 		<body>
-			<div class="SOCKET_PORT" id="SOCKET_PORT" style="display: none;">${ GRADES_SOCKET_PORT }</div>
 			<div class="content">
-				
+				<a href="/grades_count">Grades count</a><br>
+				<a href="/beatmaps_complete">Beatmaps complete</a>
 			</div>
 		</body>
-	</html>` : 'Error: Socket port is not defined in config';
+	</html>`;
 };

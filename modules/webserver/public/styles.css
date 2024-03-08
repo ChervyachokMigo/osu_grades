@@ -18,3 +18,28 @@ body {
 	padding: 10px;
 	background-color: rgba(85,85,85,1);
 }
+
+.content > .scores_0, .content > .scores_1, 
+.content > .scores_2, .content > .scores_3 {
+	display: inline-flex;
+}
+
+.gamemode_image_div_0, .gamemode_image_div_1,
+.gamemode_image_div_2, .gamemode_image_div_3 {
+	margin-left: 5px;
+	display: flex;
+}
+
+.gamemode_image_0, .gamemode_image_1, 
+.gamemode_image_2, .gamemode_image_3 {
+	width: 24px;
+    padding: 0;
+    height: 24px;
+}
+
+.scores_0_count, .scores_1_count, 
+.scores_2_count, .scores_3_count {
+	font-size: 20px;
+    margin-right: 5px;
+    margin-left: 10px;
+}

@@ -153,11 +153,13 @@ module.exports = {
 
 		const md5_hashes = await Promise.all(hashes.map( async hash => ({id: await get_md5_id(hash), hash}) ));
 		
-		const db_data = concat_array_of_arrays( convert_beatmapsets_v2_to_db ( beatmapset_v2 ));
-
 		const allowed_status = (ranked) => ranked === RankedStatus.ranked ||
 			ranked === RankedStatus.loved  ||
 			ranked === RankedStatus.approved;
+			
+		const db_data = concat_array_of_arrays( convert_beatmapsets_v2_to_db ( beatmapset_v2 ))
+			.filter( x => allowed_status ( x.ranked ));
+
 
 		const ids_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
@@ -165,7 +167,7 @@ module.exports = {
 			beatmapset_id: x.beatmapset_id, 
 			gamemode: x.gamemode, 
 			ranked: x.ranked})
-		).filter( x => x.md5 && allowed_status ( x.ranked ));
+		).filter( x => x.md5 );
 
 		const info_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
@@ -177,12 +179,12 @@ module.exports = {
 
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
-			updateOnDuplicate: [ 'beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']		
+			updateOnDuplicate: [ 'beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']
 		})).map( x => x.dataValues );
 
 		const res2 = (await beatmap_info.bulkCreate( info_data, { 
 			ignoreDuplicates: true,
-			updateOnDuplicate: [ 'artist', 'title', 'creator', 'difficulty']	
+			updateOnDuplicate: [ 'artist', 'title', 'creator', 'difficulty']
 		})).map( x => x.dataValues );
 
 		return { 

@@ -32,5 +32,4 @@ module.exports = async (args) => {
 // при запуске запустить beatmap check
 // разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
 // сделать config editor
-// сделать опцию upadate beatmaps all
 // update beatmaps qualified, loved, approved and scores

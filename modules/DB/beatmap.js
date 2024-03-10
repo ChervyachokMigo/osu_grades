@@ -50,13 +50,17 @@ module.exports = {
 
 		const db_data = convert_beatmapsets_v1_to_db ( beatmapset_v1 );
 
+		const allowed_status = (ranked) => ranked === RankedStatus.ranked && 
+			ranked === RankedStatus.loved  && 
+			ranked === RankedStatus.approved;
+
 		const ids_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
 			beatmap_id: x.beatmap_id, 
 			beatmapset_id: x.beatmapset_id, 
 			gamemode: x.gamemode, 
 			ranked: x.ranked }))
-			.filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
+			.filter( x => x.md5 && allowed_status( x.ranked ));
 
 		const info_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
@@ -64,7 +68,7 @@ module.exports = {
 			title: x.title, 
 			creator: x.creator, 
 			difficulty: x.difficulty})
-		).filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
+		).filter( x => x.md5 && allowed_status( x.ranked ));
 
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
@@ -82,7 +86,7 @@ module.exports = {
 			md5_hashes: md5_hashes.length, 
 			beatmap_ids: res.length, 
 			beatmap_info: res2.length, 
-			is_valid: md5_hashes.length == res2.length && res.length == res2.length,
+			is_valid: res.length == res2.length,
 			since_date,
 		};
 
@@ -151,13 +155,17 @@ module.exports = {
 		
 		const db_data = concat_array_of_arrays( convert_beatmapsets_v2_to_db ( beatmapset_v2 ));
 
+		const allowed_status = (ranked) => ranked === RankedStatus.ranked && 
+			ranked === RankedStatus.loved  && 
+			ranked === RankedStatus.approved;
+
 		const ids_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
 			beatmap_id: x.beatmap_id, 
 			beatmapset_id: x.beatmapset_id, 
 			gamemode: x.gamemode, 
 			ranked: x.ranked})
-		).filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
+		).filter( x => x.md5 && allowed_status ( x.ranked ));
 
 		const info_data = db_data.map( x => ({
 			md5: md5_hashes.find( v => v.hash === x.md5).id, 
@@ -165,7 +173,7 @@ module.exports = {
 			title: x.title, 
 			creator: x.creator, 
 			difficulty: x.difficulty})
-		).filter( x => x.md5 && x.ranked !== RankedStatus.qualified );
+		).filter( x => x.md5 && allowed_status( x.ranked ));
 
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
@@ -181,7 +189,7 @@ module.exports = {
 			md5_hashes: md5_hashes.length, 
 			beatmap_ids: res.length, 
 			beatmap_info: res2.length, 
-			is_valid: md5_hashes.length == res2.length && res.length == res2.length,
+			is_valid: res.length == res2.length,
 		};
 
 	},

@@ -28,9 +28,9 @@ module.exports = async (args) => {
 };
 
 
-// посчитать количество пройденых карт по гейммоду, и общее количество
+// посчитать количество пройденых карт по гейммоду, и общее количество (в легаси)
 // при запуске запустить beatmap check
 // разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
 // сделать config editor
-// сделать upadate beatmaps all
+// сделать опцию upadate beatmaps all
 // update beatmaps qualified, loved, approved and scores

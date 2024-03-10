@@ -31,8 +31,6 @@ const _this = module.exports = {
 				Number(val);
 
 		if ( idx >= 0 && idx <= 3 ){
-
-			console.log('gamemode:', gamemode[idx]);
 			return { 
 				name: gamemode[idx], 
 				idx,
@@ -55,6 +53,8 @@ const _this = module.exports = {
 			};
 		}
 	},
+
+	is_gamemode: (idx) => idx >= 0 && idx <=3,
 
 	check_score_mode: ( val ) => {
 		const res = _this.Num( val, 2 );

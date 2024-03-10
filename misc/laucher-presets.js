@@ -61,20 +61,28 @@ module.exports = {
 	],
 
 	update_beatmaps: [
+		{ name: 'Update beatmaps v1 [ALL] from begin', value: { action: 'update_beatmaps_info', args: [-1, 'true'] } },
+
 		{ name: 'Update beatmaps v1 [OSU] from begin', value: { action: 'update_beatmaps_info', args: [0, 'true'] } },
 		{ name: 'Update beatmaps v1 [TAIKO] from begin', value: { action: 'update_beatmaps_info', args: [1, 'true'] } },
 		{ name: 'Update beatmaps v1 [FRUITS] from begin', value: { action: 'update_beatmaps_info', args: [2, 'true'] } },
 		{ name: 'Update beatmaps v1 [MANIA] from begin', value: { action: 'update_beatmaps_info', args: [3, 'true'] } },
+
+		{ name: 'Update beatmaps v1 [ALL] continue', value: { action: 'update_beatmaps_info', args: [-1] } },
 
 		{ name: 'Update beatmaps v1 [OSU] continue', value: { action: 'update_beatmaps_info', args: [0] } },
 		{ name: 'Update beatmaps v1 [TAIKO] continue', value: { action: 'update_beatmaps_info', args: [1] } },
 		{ name: 'Update beatmaps v1 [FRUITS] continue', value: { action: 'update_beatmaps_info', args: [2] } },
 		{ name: 'Update beatmaps v1 [MANIA] continue', value: { action: 'update_beatmaps_info', args: [3] } },
 
+		{ name: 'Update beatmaps v2 [ALL] from begin', value: { action: 'update_beatmaps_info_v2', args: [-1, 1, 'true'] } },
+
 		{ name: 'Update beatmaps v2 [OSU] from begin', value: { action: 'update_beatmaps_info_v2', args: [0, 1, 'true'] } },
 		{ name: 'Update beatmaps v2 [TAIKO] from begin', value: { action: 'update_beatmaps_info_v2', args: [1, 1, 'true'] } },
 		{ name: 'Update beatmaps v2 [FRUITS] from begin', value: { action: 'update_beatmaps_info_v2', args: [2, 1, 'true'] } },
 		{ name: 'Update beatmaps v2 [MANIA] from begin', value: { action: 'update_beatmaps_info_v2', args: [3, 1, 'true'] } },
+
+		{ name: 'Update beatmaps v2 [ALL] continue', value: { action: 'update_beatmaps_info_v2', args: [-1, 1, 'false'] } },
 
 		{ name: 'Update beatmaps v2 [OSU] continue', value: { action: 'update_beatmaps_info_v2', args: [0, 1, 'false'] } },
 		{ name: 'Update beatmaps v2 [TAIKO] continue', value: { action: 'update_beatmaps_info_v2', args: [1, 1, 'false'] } },

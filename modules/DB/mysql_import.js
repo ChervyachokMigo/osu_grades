@@ -27,7 +27,7 @@ const _this = module.exports = {
 			const header = data.shift().replace('"', '').split(separator);
 			const types = data.shift().split(separator);
 
-			const string_reg = new RegExp( `(\\d+)|${string_quotes}(.*?)${string_quotes}`, 'gui');
+			const string_reg = new RegExp( `([0-9.,]+)|${string_quotes}(.*?)${string_quotes}`, 'gui');
 			const replace_reg = new RegExp( string_quotes, 'gui');
 
 			const data_splitted = data.map( x => x.match( string_reg ).map( y => y.replace( replace_reg , '' )));
@@ -51,6 +51,9 @@ const _this = module.exports = {
 
 					if (types[i]?.startsWith('INT') || types[i]?.startsWith('FLOAT') || types[i]?.startsWith('TINYINT')) {
 						return isNaN(y)? y: Number(y);
+					} else if (types[i]?.startsWith('BIGINT')) {
+						y = y.replace( replace_reg , '' );
+						return BigInt(y);
 					} else {
 						//if (types[i].startsWith('VARCHAR')
 						return y;

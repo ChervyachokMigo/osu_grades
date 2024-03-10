@@ -77,6 +77,13 @@ const osu_score_legacy = osu_scores_mysql.define ('osu_score_legacy', {
 	pp: {type: DataTypes.FLOAT, allowNull: false},
 	mods: {type: DataTypes.STRING, allowNull: false},
 	best: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+	count_50: {type: DataTypes.INTEGER, defaultValue:0, allowNull: false},
+	count_100: {type: DataTypes.INTEGER, defaultValue:0, allowNull: false},
+	count_300: {type: DataTypes.INTEGER, defaultValue:0, allowNull: false},
+	count_katu: {type: DataTypes.INTEGER, defaultValue:0, allowNull: false},
+	count_geki: {type: DataTypes.INTEGER, defaultValue:0, allowNull: false},
+	count_miss: {type: DataTypes.INTEGER, defaultValue:0, allowNull: false},
+	is_fc: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
 }, { noPrimaryKey: false });
 
 const osu_score = osu_scores_mysql.define ('osu_score', {

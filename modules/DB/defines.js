@@ -97,6 +97,13 @@ const osu_score = osu_scores_mysql.define ('osu_score', {
 	passed: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
 	ranked: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
 	best: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+	count_meh: {type: DataTypes.INTEGER, allowNull: false},
+	count_ok: {type: DataTypes.INTEGER, allowNull: false},
+	count_great: {type: DataTypes.INTEGER, allowNull: false},
+	count_miss: {type: DataTypes.INTEGER, allowNull: false},
+	is_fc: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+	legacy_is_fc: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+
 }, { noPrimaryKey: false });
 
 const osu_user_grade = osu_scores_mysql.define ('osu_user_grade', {

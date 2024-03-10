@@ -19,11 +19,17 @@ const _this = module.exports = {
 		date: score.ended_at,
 		total_score: score.total_score,
 		legacy_total_score: BigInt(score.legacy_total_score ? score.legacy_total_score : 0),
-		max_combo: score.max_combo,
+		max_combo: score.max_combo || 0,
 		pp: Num(score.pp),
 		mods: mods_v2_to_string( score.mods ),
 		passed: score.passed,
-		ranked: score.ranked
+		ranked: score.ranked,
+		count_meh: score.statistics.meh || 0,
+		count_ok: score.statistics.ok || 0,
+		count_great: score.statistics.great || 0,
+		count_miss: score.statistics.miss || 0,
+		is_fc: score.is_perfect_combo || false,
+		legacy_is_fc: score.legacy_perfect || false,
 	}),
 	// Single score
 	save_score_v2: async ( data ) => {

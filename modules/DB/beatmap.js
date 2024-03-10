@@ -50,8 +50,8 @@ module.exports = {
 
 		const db_data = convert_beatmapsets_v1_to_db ( beatmapset_v1 );
 
-		const allowed_status = (ranked) => ranked === RankedStatus.ranked && 
-			ranked === RankedStatus.loved  && 
+		const allowed_status = (ranked) => ranked === RankedStatus.ranked ||
+			ranked === RankedStatus.loved  || 
 			ranked === RankedStatus.approved;
 
 		const ids_data = db_data.map( x => ({
@@ -68,8 +68,8 @@ module.exports = {
 			title: x.title, 
 			creator: x.creator, 
 			difficulty: x.difficulty})
-		).filter( x => x.md5 && allowed_status( x.ranked ));
-
+		).filter( x => x.md5 );
+		
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
 			updateOnDuplicate: [ 'beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']		
@@ -155,8 +155,8 @@ module.exports = {
 		
 		const db_data = concat_array_of_arrays( convert_beatmapsets_v2_to_db ( beatmapset_v2 ));
 
-		const allowed_status = (ranked) => ranked === RankedStatus.ranked && 
-			ranked === RankedStatus.loved  && 
+		const allowed_status = (ranked) => ranked === RankedStatus.ranked ||
+			ranked === RankedStatus.loved  ||
 			ranked === RankedStatus.approved;
 
 		const ids_data = db_data.map( x => ({
@@ -173,7 +173,7 @@ module.exports = {
 			title: x.title, 
 			creator: x.creator, 
 			difficulty: x.difficulty})
-		).filter( x => x.md5 && allowed_status( x.ranked ));
+		).filter( x => x.md5 );
 
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,

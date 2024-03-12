@@ -27,8 +27,6 @@ module.exports = async (args) => {
 	console.error(`undefined action: ${action}\navailable actions:`, actions.map( v => v.name).join(', '));
 };
 
-
-// в1 посчитать количество пройденых карт по гейммоду, и общее количество (в легаси)
 // при запуске запустить beatmap check
 // разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
 // сделать config editor

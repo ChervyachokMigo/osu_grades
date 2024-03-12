@@ -5,6 +5,7 @@ const default_webconfig = require('../../misc/default_webconfig');
 const { webserver_config_path } = require('../../misc/const');
 const { Num } = require('../../tools/misc');
 const { findAll } = require('../DB/users');
+const { Op } = require('@sequelize/core');
 
 const config_keys = Object.keys(default_webconfig);
 
@@ -45,10 +46,10 @@ const _this = module.exports = {
 				{ name: 'Autoupdate', value: 'autoupdate' }, 
 				{ name: 'User', value: 'user' }, 
 				{ name: 'Gamemode', value: 'gamemode' }, 
+				{ name: 'Score Mode', value: 'score_mode' }, 
 				{ name: 'Sort method', value:'sort_method' },
 				{ name: 'Exit', value: -1 }
 			] );
-
 			
 			if (selected_option === -1) {
 				break;
@@ -93,8 +94,14 @@ const _this = module.exports = {
 					{ name: 'by count descending', value: 'count_desc' }, 
 				]);
 				_this.set_value( 'sort_method', new_value );
+			} else if (selected_option ==='score_mode') {
+				const new_value = await input.select([ 
+					{ name: 'v1', value: 1 }, 
+					{ name: 'v2', value: 2 }, 
+				]);
+				_this.set_value( 'web_selected_score_mode', new_value );
 			} else if (selected_option === 'user') {
-				const users = (await findAll({ score_mode: 2 }))
+				const users = (await findAll({ score_mode: { [Op.or]: [ 1, 2 ] }}))
 					.filter(( v, i, a ) => a.findIndex( x => x.userid === v.userid ) === i );
 
 				if ( users.length > 1 ) {

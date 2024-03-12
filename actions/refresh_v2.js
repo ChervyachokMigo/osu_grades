@@ -15,7 +15,7 @@ module.exports = {
 					if ( !data ) {
 						await update_grades_v2( { userid, gamemode: ruleset.idx } );
 						return false;
-					} 
+					}
 
 					await save_scores_v2( data );
 

@@ -48,10 +48,10 @@ const _this = module.exports = {
 	},
 	
 	update_grades_v2: async ({ userid, gamemode }) => {
-		console.log( 'count_grades_v2', userid, gamemode );
+		console.log( 'update_grades_v2', userid, gamemode );
 
 		const scores = await osu_score.findAll({ raw: true, 
-			attributes: ['id', 'total_score', 'rank', 'best', 'beatmap_id',], 
+			attributes: ['id', 'total_score', 'rank', 'best', 'beatmap_id'], 
 			where: { userid, gamemode, ranked: true }});
 
 		const grouped_scores = group_by( scores, 'beatmap_id' );
@@ -92,6 +92,5 @@ const _this = module.exports = {
 
 		await update_grades ({ userid, gamemode, score_mode: 2 }, grades);
 
-		//console.log('test', grades )
 	},
 };

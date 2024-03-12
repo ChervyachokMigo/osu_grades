@@ -1,4 +1,4 @@
-const { save_scores_v1 } = require('../modules/scores/v1');
+const { save_scores_v1, update_grades_v1 } = require('../modules/scores/v1');
 const refresh_users_loop = require('../tools/loops/refresh_users_loop');
 const { request_user_recent_scores } = require('../modules/osu_requests_v1');
 const { gamemode } = require('../misc/const');
@@ -24,18 +24,24 @@ module.exports = {
 					while ( count > 0 ) {
 						// ruleset iterator
 						let gamemode_int = ruleset.idx >= 0 ? ruleset.idx : gamemode.length - count;
-						let current_ruleset = get_ruleset_by_gamemode_int(gamemode_int);
+						let current_ruleset = get_ruleset_by_gamemode_int( gamemode_int );
 
 						const data = await request_user_recent_scores({ userid, ruleset: current_ruleset });
-						if ( !data ) return false;
+						if ( !data ) {
+							await update_grades_v1({ userid, gamemode: current_ruleset.idx });
+							return false;
+						}
 
 						await save_scores_v1( data ); 
 						if (data.length)
 							console.log( found_X_scores_gamemode({ length: data.length, userid, gamemode_int: current_ruleset.idx }) );
 						
+						await update_grades_v1({ userid, gamemode: current_ruleset.idx });
+
 						data_length += data.length;
 						count--;
 					}
+
 					return data_length;
 
 				} catch (e) {

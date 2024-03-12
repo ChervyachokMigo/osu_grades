@@ -7,18 +7,30 @@ const config = require('./config');
 const users = require('../DB/users');
 const { rank_to_int } = require('../../misc/const');
 const { count_scores_by_gamemode } = require('../DB/scores');
+const refresh_v1 = require('../../actions/refresh_v1');
 
 const client_send = async ( client, action, response_data ) => 
 	await client.send( JSON.stringify({ action, response_data }) );
 
-const refresh_scores = async ({ userid, gamemode }) => {
+const refresh_scores = async ({ userid, gamemode, score_mode }) => {
+
+	const score_mode_action = {
+		'1': refresh_v1.action,
+		'2': refresh_v2.action
+	};
+
+	if (Object.keys(score_mode_action).indexOf(score_mode.toString()) === -1){
+		throw new Error('invalid score_mode', score_mode);
+	}
+
 	const is_all = gamemode < 0;
+
 	if (is_all){
-		for ( let i = 0; i < 4; i++ ){
-			await refresh_v2.action({ userid, gamemode: i });
+		for ( let i = 0; i <= 3; i++ ){
+			await score_mode_action[score_mode]({ userid, gamemode: i });
 		}
 	} else {
-		await refresh_v2.action({ userid, gamemode });
+		await score_mode_action[score_mode]({ userid, gamemode });
 	}
 };
 
@@ -39,18 +51,18 @@ const _this = module.exports = {
 		}
 	},
 
-	refresh_grades_action: async ({ clients, userid, gamemode, sort_method }) => {
+	refresh_grades_action: async ({ clients, userid, gamemode, score_mode, sort_method }) => {
 		if ( clients.length > 0 ){
-			await refresh_scores({ userid, gamemode }).finally( async () => {
+			await refresh_scores({ userid, gamemode, score_mode }).finally( async () => {
 	
 				let grades_sum = {};
 				const grades_names = Object.keys(rank_to_int);
 				grades_names.forEach( x => grades_sum[x] = 0 );
-				const grades_db = (await users.findAll({ userid, gamemode, score_mode: 2 }));
+				const grades_db = (await users.findAll({ userid, gamemode, score_mode }));
 				grades_db.forEach( x => grades_names.forEach( y => grades_sum[y] += x[y] ));
 				delete grades_sum.F;
 
-				const count_scores = await count_scores_by_gamemode({ userid, gamemode });
+				const count_scores = await count_scores_by_gamemode({ userid, gamemode, score_mode });
 
 				for (let client of clients){
 
@@ -70,14 +82,18 @@ const _this = module.exports = {
 	check_grades: async ({ clients }) => {
 		const userid = config.get_value( 'web_selected_userid' );
 		const gamemode = config.get_value( 'web_selected_gamemode' );
-
+		const score_mode = config.get_value( 'web_selected_score_mode' );
 		const sort_method = config.get_value('sort_method' );
 		const is_web_autoupdating = config.get_value( 'is_web_autoupdating' );
 		const autoupdate_time_sec = config.get_value( 'web_autoupdate_time_sec' );
+
+		const args = { clients, userid, gamemode, score_mode, sort_method };
+
 		if (is_web_autoupdating && !interval ) {
-			interval = setInterval( _this.refresh_grades_action, autoupdate_time_sec * 1000, { clients, userid, gamemode, sort_method });
+			interval = setInterval( _this.refresh_grades_action, autoupdate_time_sec * 1000, args );
 		}
-		await _this.refresh_grades_action({ clients, userid, gamemode, sort_method });
+
+		await _this.refresh_grades_action( args );
 	},
 
 	init_socket_server: () => {

@@ -9,6 +9,7 @@ const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 const { rank_to_int } = require('../../misc/const');
 const { osu_path } = require('../../data/config');
 const { request_user_info } = require('../osu_requests_v1');
+const { copyFileSync, rmSync } = require('fs');
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
 	score: {
@@ -97,6 +98,14 @@ const _this = module.exports = {
 	}),
 
 	update_osu_scores_db: async ({ userid }) => {
+		const old_scores_path = path.join( osu_path , 'scores.db' );
+		const temp_scores_path = path.join( osu_path, 'temp_scores.db' );
+
+		const backup_name = 'scores-' + 
+			new Date().toISOString().replace(/[T.:]+/gui, '-').replace('Z', '') + 
+			'.db.bak';
+		const backup_path = path.join( osu_path, backup_name );
+
 		const scores_osu = scores_db_load(path.join(osu_path, 'scores.db'), all_score_properties);
 		const scores_db = await osu_score_legacy.findAll({ 
 			raw: true, 
@@ -134,7 +143,13 @@ const _this = module.exports = {
 				scores_osu.beatmaps_scores.push({ beatmap_md5, scores: converted_scores });
 			}
 		});
-		scores_db_save( scores_osu, 'changed_scores.db' );
+
+		copyFileSync( old_scores_path, backup_path  );
+		scores_db_save( scores_osu, temp_scores_path );
+
+		copyFileSync ( temp_scores_path, old_scores_path );
+		rmSync( temp_scores_path, { force: true } );
+		
 		console.log( 'scores saved' );
 	}
 };

@@ -21,7 +21,6 @@ module.exports = {
 			new Date().toISOString().replace(/[T.:]+/gui, '-').replace('Z', '') + 
 			'.db.bak';
 		const backup_path = path.join( osu_path, backup_name );
-		copyFileSync( old_collection_path, backup_path  );
 
 		let collections = collection_db_load( old_collection_path );
 
@@ -67,6 +66,7 @@ module.exports = {
 			
 		});
 
+		copyFileSync( old_collection_path, backup_path  );
 		collection_db_save ( collections, temp_collection_path );
 
 		copyFileSync ( temp_collection_path, old_collection_path );

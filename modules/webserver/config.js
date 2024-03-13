@@ -113,7 +113,7 @@ const _this = module.exports = {
 					_this.save();
 					console.log(`Added user ${users[0].userid} ${users[0].username}`);
 				} else if ( users.length == 0) {
-					this.console.log( 'No user selected' );
+					console.log( 'No user selected' );
 				}
 				
 			}

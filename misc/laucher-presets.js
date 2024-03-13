@@ -4,12 +4,16 @@ const config = require('../modules/webserver/config');
 const back_categories = {
 	users: 'main',
 	update_beatmaps: 'main',
-	refresh_scores: 'main',
-	db_tools: 'main',
-	import_jsons: 'main',
+	scores: 'main',
+	tools: 'main',
 	webserver: 'main',
-	get_scores: 'main',
-	V2_JSON_RECOUNT: 'main',
+
+	refresh_scores: 'scores',
+	get_scores: 'scores',
+	V2_JSON_RECOUNT: 'scores',
+	import_jsons: 'scores',
+
+	db_tools: 'tools',
 };
 
 module.exports = {
@@ -44,14 +48,23 @@ module.exports = {
 	main: [
 		{ name: 'Users menu >', value: { category: 'users' }},
 		{ name: 'Update beatmaps >', value: { category: 'update_beatmaps' }},
+		{ name: 'Scores >', value: { category: 'scores' }},
+		{ name: 'Webserver >', value: { category: 'webserver' }},
+		{ name: 'Tools >', value: { category: 'tools' }},
+		{ name: 'Exit', value: { action: 'exit', args: [] } }
+	],
+
+	tools: [
+		{ name: 'DB Import/Export >', value: { category: 'db_tools' }},
+		{ name: 'Update collections.db', value: { action: 'update_collections', args: [] } },
+		{ name: 'Update scores.db', value: { action: 'update_osu_scores_db_v1', args: [] } },
+	],
+
+	scores: [
 		{ name: 'Get scores >', value: { category: 'get_scores' }},
 		{ name: 'Refresh scores >', value: { category: 'refresh_scores' }},
 		{ name: 'V2_JSON_RECOUNT >', value: { category: 'V2_JSON_RECOUNT' }},
-		{ name: 'Webserver >', value: { category: 'webserver' }},
-		{ name: 'DB Tools >', value: { category: 'db_tools' }},
 		{ name: 'Import json scores to DB >', value: { category: 'import_jsons' }},
-		{ name: 'Update collections', value: { action: 'update_collections', args: [] } },
-		{ name: 'Exit', value: { action: 'exit', args: [] } }
 	],
 
 	users: [

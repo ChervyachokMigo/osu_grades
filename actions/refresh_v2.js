@@ -1,7 +1,8 @@
-const { save_scores_v2, update_grades_v2 } = require('../modules/scores/v2');
+const { save_scores_v2 } = require('../modules/scores/v2');
 const refresh_users_loop = require('../tools/loops/refresh_users_loop');
 const { request_user_recent_scores_v2 } = require('../modules/osu_requests_v2');
 const { found_X_scores_gamemode } = require('../misc/text_templates');
+const { update_grades } = require('../modules/DB/scores');
 
 module.exports = {
 	args: ['userid', 'gamemode'],
@@ -13,7 +14,7 @@ module.exports = {
 				try {
 					const data = await request_user_recent_scores_v2({ userid, ruleset, offset, limit });
 					if ( !data ) {
-						await update_grades_v2( { userid, gamemode: ruleset.idx } );
+						await update_grades({ userid, gamemode: ruleset.idx, score_mode: 2 });
 						return false;
 					}
 
@@ -22,7 +23,7 @@ module.exports = {
 					if (data.length)
 						console.log( found_X_scores_gamemode({ length: data.length, userid, gamemode_int: ruleset.idx }) );
 
-					await update_grades_v2( { userid, gamemode: ruleset.idx } );
+					await update_grades({ userid, gamemode: ruleset.idx, score_mode: 2 });
 
 					return data.length;
 				} catch (e) {

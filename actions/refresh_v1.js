@@ -1,9 +1,10 @@
-const { save_scores_v1, update_grades_v1 } = require('../modules/scores/v1');
+const { save_scores_v1 } = require('../modules/scores/v1');
 const refresh_users_loop = require('../tools/loops/refresh_users_loop');
 const { request_user_recent_scores } = require('../modules/osu_requests_v1');
 const { gamemode } = require('../misc/const');
 const { found_X_scores_gamemode } = require('../misc/text_templates');
 const { get_ruleset_by_gamemode_int } = require('../tools/misc');
+const { update_grades } = require('../modules/DB/scores');
 
 module.exports = {
 	args: ['userid', 'gamemode'],
@@ -28,7 +29,7 @@ module.exports = {
 
 						const data = await request_user_recent_scores({ userid, ruleset: current_ruleset });
 						if ( !data ) {
-							await update_grades_v1({ userid, gamemode: current_ruleset.idx });
+							await update_grades({ userid, gamemode: current_ruleset.idx, score_mode: 1 });
 							return false;
 						}
 
@@ -36,7 +37,7 @@ module.exports = {
 						if (data.length)
 							console.log( found_X_scores_gamemode({ length: data.length, userid, gamemode_int: current_ruleset.idx }) );
 						
-						await update_grades_v1({ userid, gamemode: current_ruleset.idx });
+						await update_grades({ userid, gamemode: current_ruleset.idx, score_mode: 1 });
 
 						data_length += data.length;
 						count--;

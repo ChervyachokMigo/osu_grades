@@ -2,7 +2,6 @@ const { ModsIntToShortText, scores_db_load,
 	all_score_properties, scores_db_save, ModsShortTextToInt } = require('osu-tools');
 const path = require('path');
 
-
 const { osu_score_legacy, beatmaps_md5 } = require('../DB/defines');
 const { Num, boolean_from_string, group_by } = require('../../tools/misc');
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
@@ -10,7 +9,6 @@ const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 const { rank_to_int } = require('../../misc/const');
 const { osu_path } = require('../../data/config');
 const { request_user_info } = require('../osu_requests_v1');
-const { update_grades } = require('../DB/users');
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
 	score: {
@@ -138,51 +136,5 @@ const _this = module.exports = {
 		});
 		scores_db_save( scores_osu, 'changed_scores.db' );
 		console.log( 'scores saved' );
-	},
-	update_grades_v1: async ({ userid, gamemode }) => {
-		console.log( 'update_grades_v1', userid, gamemode );
-
-		const scores = await osu_score_legacy.findAll({ raw: true, 
-			attributes: ['id', 'total_score', 'rank', 'best', 'beatmap_id'], 
-			where: { userid, gamemode }});
-
-		const grouped_scores = group_by( scores, 'beatmap_id' );
-		
-		const scores_arr = Object.entries(grouped_scores);
-
-		const scores_to_update = [];
-
-		// eslint-disable-next-line no-unused-vars
-		scores_arr.forEach( ([beatmap_id, scores]) => {
-			scores.sort( (a, b) => b.total_score - a.total_score );
-			scores.forEach( (score, i) => {
-				const old_best = score.best;
-				score.best = (i == 0) ? true : false;
-				if (old_best != score.best) {
-					scores_to_update.push({ id: score.id, best: score.best });
-				}
-			});
-		});
-
-		console.log('scores to update:', scores_to_update.length);
-		let count = 0;
-		console.time('updating for');
-		for (let score of scores_to_update) {
-			await osu_score_legacy.update( score, { fields: ['best'], where: { id: score.id }} );
-			count++;
-		}
-		console.log( `updated ${count} scores` );
-		console.timeEnd('updating for');
-	
-		let grades = {};
-		for ( let rank of Object.entries(rank_to_int)) {
-			const res = await osu_score_legacy.findAndCountAll({ raw: true, attributes: ['rank'], where: { userid, gamemode, 
-				rank: rank[1], best: true }});
-			const count = res?.count || 0;
-			grades = {...grades, [rank[0]]: count };
-		}
-
-		await update_grades ({ userid, gamemode, score_mode: 1 }, grades);
-
-	},
+	}
 };

@@ -97,8 +97,7 @@ module.exports = {
 		console.timeEnd('updating for');
 	
 		let grades = {};
-		for ( let rank of Object.entries(rank_to_int)) {
-			let [rank_char, rank_int] = rank;
+		for ( let [rank_char, rank_int] of Object.entries(rank_to_int)) {
 			where_count.rank = rank_int;
 			const res = await score_mode_model.findAndCountAll({ 
 				raw: true, attributes: ['rank'], where: where_count });

@@ -5,7 +5,7 @@ const { osu_path } = require('../data/config');
 const { osu_score, beatmaps_md5 } = require('../modules/DB/defines');
 const { group_by, get_ruleset_by_gamemode_int, get_key_by_value } = require('../tools/misc');
 const { rank_to_int } = require('../misc/const');
-const { copyFileSync, rmSync } = require('fs');
+const { copyFileSync, renameSync } = require('fs');
 const users = require('../modules/DB/users');
 
 			
@@ -66,10 +66,8 @@ module.exports = {
 			
 		});
 
-		copyFileSync( old_collection_path, backup_path  );
+		copyFileSync( old_collection_path, backup_path );
 		collection_db_save ( collections, temp_collection_path );
-
-		copyFileSync ( temp_collection_path, old_collection_path );
-		rmSync( temp_collection_path, { force: true } );
+		renameSync ( temp_collection_path, old_collection_path );
 
 	}};

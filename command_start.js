@@ -31,4 +31,3 @@ module.exports = async (args) => {
 // разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
 // сделать config editor
 // update beatmaps qualified, loved, approved and scores
-// добавить скоры в scores.db

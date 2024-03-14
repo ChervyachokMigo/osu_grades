@@ -26,12 +26,3 @@ module.exports = async (args) => {
 
 	console.error(`undefined action: ${action}\navailable actions:`, actions.map( v => v.name).join(', '));
 };
-
-// при запуске запустить beatmap check
-// разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
-// сделать config editor
-// update beatmaps qualified, loved, approved and scores
-// Сканить конверты
-// импрувнуть сохранение scores.db
-// документация по установке
-// отправка ошибок

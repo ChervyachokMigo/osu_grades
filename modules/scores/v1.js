@@ -146,12 +146,14 @@ const _this = module.exports = {
 			count++;
 		}
 
-
+		scores_osu.beatmaps_scores.forEach( x => x.scores.sort(( a, b ) => b.scores  - a.scores ));
 	
 		console.log( 'make backup:', backup_path );
 		copyFileSync( old_scores_path, backup_path );
 		console.log( 'saving scores...');
+		console.time( 'saving scores');
 		scores_db_save( scores_osu, temp_scores_path );
+		console.timeEnd('saving scores');
 		renameSync( temp_scores_path, old_scores_path );
 		
 		console.log( 'scores saved' );

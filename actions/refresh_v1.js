@@ -28,6 +28,7 @@ module.exports = {
 						let current_ruleset = get_ruleset_by_gamemode_int( gamemode_int );
 
 						const data = await request_user_recent_scores({ userid, ruleset: current_ruleset });
+
 						if ( !data ) {
 							await update_grades({ userid, gamemode: current_ruleset.idx, score_mode: 1 });
 							return false;

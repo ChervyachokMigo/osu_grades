@@ -11,20 +11,18 @@ module.exports = async ({
 }) => {
 	const md5_condition = beatmap_md5 ? { hash: beatmap_md5 } : {};
 
-	const beatmap_id_condition = {};
-	if (gamemode && gamemode >=0 )
-		beatmap_id_condition.gamemode = gamemode;
-	else 
-		beatmap_id_condition.gamemode = 0;
+	const beatmap_where = {};
+	if (gamemode && gamemode >= 0 )
+		beatmap_where.gamemode = gamemode;
 	if (ranked)
-		beatmap_id_condition.ranked = ranked;
+		beatmap_where.ranked = ranked;
 	if (beatmap_id) 
-		beatmap_id_condition.beatmap_id = beatmap_id;
+		beatmap_where.beatmap_id = beatmap_id;
 	if (beatmapset_id) 
-		beatmap_id_condition.beatmapset_id = beatmapset_id;
+		beatmap_where.beatmapset_id = beatmapset_id;
 
 	const options = {
-		where: beatmap_id_condition,
+		where: beatmap_where,
 
 		include: [{ model: beatmaps_md5, where: md5_condition }],
         

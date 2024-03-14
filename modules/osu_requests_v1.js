@@ -25,11 +25,11 @@ module.exports = {
 		const res = await axios( url );
 
 		if (res && res.data && typeof res.data == 'object' && res.data.length > 0){
-			const scores = ( await Promise.all( await res.data
-				.filter( x => x.score_id && Num( x.beatmap_id ))
-				.map( async score => ({ score,
-					beatmap: await find_beatmaps({ beatmap_id: score.beatmap_id, single: true })}))))
-				.filter( x => x.beatmap );
+			const data = res.data.filter( x => x.score_id && Num( x.beatmap_id ));
+			const scores = (await Promise.all( await data.map( 
+				async score => ({ score, beatmap: 
+					await find_beatmaps({ gamemode: ruleset.idx, beatmap_id: Num(score.beatmap_id), single: true }) })
+			)));
                 
 			if (scores.length > 0) {
 				return scores;

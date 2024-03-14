@@ -33,3 +33,5 @@ module.exports = async (args) => {
 // update beatmaps qualified, loved, approved and scores
 // Сканить конверты
 // импрувнуть сохранение scores.db
+// документация по установке
+// отправка ошибок

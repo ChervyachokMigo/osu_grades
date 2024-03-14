@@ -7,9 +7,12 @@ module.exports = {
 	DB_NAME_BEATMAPS: 'osu_beatmaps',
 	DB_NAME_SCORES: 'osu_scores',
 
+	// v1 (osu legacy)
 	api_key: '',
-	login: '',
-	password: '',
+
+	// v2 (osu laser)
+	api_v2_app_id: '',
+	api_v2_app_key: '',
 
 	backup_instead_remove: true,
 	print_progress_import_jsons_frequency: 100,

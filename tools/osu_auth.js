@@ -2,13 +2,13 @@ const { readFileSync, existsSync, writeFileSync } = require('fs');
 const { auth } = require ('osu-api-extended');
 
 const { osu_token_path } = require('../misc/const');
-const { login, password } = require('../data/config');
+const { api_v2_app_key, api_v2_app_id } = require('../data/config');
 
 let access_token = null;
 let expires_in = null;
 
 const login_osu_loop = async () => {
-	access_token = await auth.login_lazer(login, password);
+	access_token = await auth.login(api_v2_app_id, api_v2_app_key, ['identify','public']);
 
 	if (typeof access_token?.access_token == 'undefined'){
 		console.log('no auth osu, trying again');

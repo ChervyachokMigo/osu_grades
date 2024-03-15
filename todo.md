@@ -4,5 +4,5 @@
 ?update beatmaps qualified, loved, approved and scores
 Сканить конверты
 импрувнуть сохранение scores.db
-документация по установке
+документация по установке {cm:2024-03-15}
 oтправка ошибок

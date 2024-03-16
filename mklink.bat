@@ -1,0 +1,1 @@
+mklink /D node_modules\osu-tools F:\node_js_stuff\node_projects\osu-tools

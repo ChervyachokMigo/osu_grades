@@ -9,17 +9,17 @@ module.exports = async ({
 	ranked = null,
 	single = false,
 }) => {
-	const md5_condition = beatmap_md5 ? { hash: beatmap_md5 } : {};
+	const md5_condition = beatmap_md5 !== null ? { hash: beatmap_md5 } : {};
 
 	const beatmap_where = {};
-	if (gamemode && gamemode >= 0 )
-		beatmap_where.gamemode = gamemode;
-	if (ranked)
-		beatmap_where.ranked = ranked;
-	if (beatmap_id) 
+	if (beatmap_id !== null) 
 		beatmap_where.beatmap_id = beatmap_id;
-	if (beatmapset_id) 
+	if (beatmapset_id !== null) 
 		beatmap_where.beatmapset_id = beatmapset_id;
+	if (ranked !== null)
+		beatmap_where.ranked = ranked;
+	if (gamemode !== null)
+		beatmap_where.gamemode = gamemode;
 
 	const options = {
 		where: beatmap_where,

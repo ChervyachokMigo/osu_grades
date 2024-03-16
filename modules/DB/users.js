@@ -25,10 +25,15 @@ const _this = module.exports = {
 		if (res) console.log( add_user_scoremode_gamemode({ username, userid, score_mode, ruleset }) );
 	},
 
-	find: async (where) => await osu_user_grade.findOne({ where, raw: true }),
+	find: async (where) => {
+		if (where.gamemode < 0 || typeof where.gamemode === 'undefined') {
+			where.gamemode = {[Op.between]: [0, 3]};
+		}
+		return await osu_user_grade.findOne ({ where, raw: true });
+	},
 
 	findAll: async (where) => {
-		if (where.gamemode < 0) {
+		if (where.gamemode < 0 || typeof where.gamemode === 'undefined') {
 			where.gamemode = {[Op.between]: [0, 3]};
 		}
 		return await osu_user_grade.findAll ({ where, raw: true });

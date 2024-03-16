@@ -8,7 +8,6 @@ const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 
 const { rank_to_int } = require('../../misc/const');
 const { osu_path } = require('../../data/config');
-const { request_user_info } = require('../osu_requests_v1');
 const { copyFileSync, renameSync } = require('fs');
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
@@ -97,7 +96,13 @@ const _this = module.exports = {
 		online_id: BigInt(score.id)
 	}),
 
-	update_osu_scores_db: async ({ userid }) => {
+	update_osu_scores_db: async ( users ) => {
+
+		if (!users.length || users.length == 0){
+			console.error('update_osu_scores_db', 'No users');
+			return;
+		}
+
 		const old_scores_path = path.join( osu_path , 'scores.db' );
 		const temp_scores_path = path.join( osu_path, 'temp_scores.db' );
 
@@ -107,43 +112,42 @@ const _this = module.exports = {
 		const backup_path = path.join( osu_path, backup_name );
 
 		const scores_osu = scores_db_load(path.join(osu_path, 'scores.db'), all_score_properties);
-		const scores_db = await osu_score_legacy.findAll({ 
-			raw: true, 
-			include: [ { model: beatmaps_md5 } ],
 
-			fieldMap: {
-				'beatmaps_md5.id': 'md5',
-				'beatmaps_md5.hash': 'hash',
-			},
+		for (let {userid, username, gamemode} of users) {
+			const new_scores = await osu_score_legacy.findAll({ 
+				raw: true, 
+				include: [ { model: beatmaps_md5 } ],
 
-			where: { userid },
-		});
+				fieldMap: {
+					'beatmaps_md5.id': 'md5',
+					'beatmaps_md5.hash': 'hash',
+				},
 
-		const osu_user = await request_user_info({ userid });
-		if (!osu_user) return;
-		const username = osu_user.username;
-
-		const beatmaps_scores_exists = new Set(scores_osu.beatmaps_scores.map( x => x.beatmap_md5 ));
-		const scores_ids_exists = new Set( concat_array_of_arrays(
-			scores_osu.beatmaps_scores.map( x => x.scores.map( y => y.online_id.toString() ))));
-		
-		let count = 0;
-
-		for (let [beatmap_md5, scores] of Object.entries( group_by( scores_db, 'hash' ))) {
-
-			if ( !beatmaps_scores_exists.has( beatmap_md5 )) {
-				const converted_scores = scores.map ( 
-					score => _this.convert_v1_to_osu(username, beatmap_md5, score));
-				scores_osu.beatmaps_scores.push({ beatmap_md5, scores: converted_scores });
-			} else {
-				const new_scores = scores.filter( score => !scores_ids_exists.has(score.id) )
-					.map( score =>  _this.convert_v1_to_osu(username, beatmap_md5, score));
-				const i = scores_osu.beatmaps_scores.findIndex( x => x.beatmap_md5 === beatmap_md5 );
-				scores_osu.beatmaps_scores[i].scores.push( ...new_scores );
-			}
+				where: { userid, gamemode },
+			});
 			
-			print_processed({ current: count, size: scores_db.length, name: 'scores' });
-			count++;
+			const beatmaps_scores_exists = new Set(scores_osu.beatmaps_scores.map( x => x.beatmap_md5 ));
+			const scores_ids_exists = new Set( concat_array_of_arrays(
+				scores_osu.beatmaps_scores.map( x => x.scores.map( y => y.online_id.toString() ))));
+		
+			let count = 0;
+
+			for (let [beatmap_md5, scores] of Object.entries( group_by( new_scores, 'hash' ))) {
+
+				if ( !beatmaps_scores_exists.has( beatmap_md5 )) {
+					const converted_scores = scores.map ( 
+						score => _this.convert_v1_to_osu(username, beatmap_md5, score));
+					scores_osu.beatmaps_scores.push({ beatmap_md5, scores: converted_scores });
+				} else {
+					const new_scores = scores.filter( score => !scores_ids_exists.has(score.id) )
+						.map( score =>  _this.convert_v1_to_osu(username, beatmap_md5, score));
+					const i = scores_osu.beatmaps_scores.findIndex( x => x.beatmap_md5 === beatmap_md5 );
+					scores_osu.beatmaps_scores[i].scores.push( ...new_scores );
+				}
+			
+				print_processed({ current: count, size: new_scores.length, name: 'scores' });
+				count++;
+			}
 		}
 
 		scores_osu.beatmaps_scores.forEach( x => x.scores.sort(( a, b ) => b.scores  - a.scores ));

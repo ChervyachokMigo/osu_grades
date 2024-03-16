@@ -167,4 +167,8 @@ const _this = module.exports = {
 
 	get_key_by_value: ( obj, value ) => Object.keys(obj).find(key => obj[key] === value),
 
+	get_objects_attributes: ( obj_arr = [], attributes = [] ) => obj_arr.map( x => 
+		Object.fromEntries( Object.entries(x)
+			// eslint-disable-next-line no-unused-vars
+			.filter(([ key, value ]) => attributes.includes(key) ))),
 };

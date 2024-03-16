@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "SadGod",
   "license": "ISC",
   "dependencies": {
     "@sequelize/core": "^7.0.0-alpha.37",

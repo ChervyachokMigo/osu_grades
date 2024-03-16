@@ -3,7 +3,7 @@
 сделать config editor
 ?update beatmaps qualified, loved, approved and scores
 Сканить конверты
-импрувнуть сохранение scores.db
+импрувнуть сохранение scores.db {cm:2024-03-16}
 обновление scores.db для всех юзеров за раз
 документация по установке {cm:2024-03-15}
 oтправка ошибок

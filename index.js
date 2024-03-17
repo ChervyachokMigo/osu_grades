@@ -30,7 +30,24 @@ const select_action = async ( selected_action ) => {
 	}
 };
 
+var checkUpdate = require('check-update-github');
+var pkg = require('./package.json');
+
 const launcher_start = async() => {
+
+	await new Promise( res => checkUpdate({
+		name: pkg.name, 
+		currentVersion: pkg.version, 
+		user: 'ChervyachokMigo',
+		branch: 'master'
+	}, function(err, latestVersion, defaultMessage){
+		if(!err){
+			console.log(defaultMessage);
+			res( true );
+		}
+	}));
+
+
 	folder_prepare('data');
 
 	init_cache();

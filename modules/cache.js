@@ -1,9 +1,9 @@
 const { is_use_caching, cache_expire_time_hours, is_delete_cache } = require('../data/config');
 const { cache_path, beatmaps_v1_request_limit, beatmaps_v2_request_limit } = require('../misc/const');
 const { cache_beatmap_v1_filename, cache_beatmap_v2_filename } = require('../misc/text_templates');
-const { folder_prepare, escape_windows_special_chars, delete_files_in_folder } = require('../tools/misc');
+const { folder_prepare, escape_windows_special_chars, delete_files_in_folder, load_json } = require('../tools/misc');
 
-const { existsSync, readFileSync, writeFileSync, readdirSync, lstatSync, rmSync } = require('fs');
+const { writeFileSync, readdirSync, lstatSync, rmSync } = require('fs');
 
 const path = require('path');
 
@@ -73,33 +73,22 @@ const _this = module.exports = {
 			const filename = escape_windows_special_chars( cache_beatmap_v1_filename( params ) );
 			const request_filepath = path.join( cache_beatmaps_v1, filename );
 
-			if (!existsSync( request_filepath ))
-				return false;
-
-			const data = readFileSync( request_filepath ,'utf8' );
-			if ( !data )
-				return false;
+			const data = load_json( request_filepath );
+			if ( !data ) return false;
 
 			console.log( 'found cache data, returning', data.length, 'bytes' );
-
-			return JSON.parse( data );
+			return data;
 
 		// ========================= BEATMAP V2 =========================
 		} else if (cache_type === 'beatmaps_v2') {
 			const filename = escape_windows_special_chars( cache_beatmap_v2_filename( params ) );
 			const request_filepath = path.join( cache_beatmaps_v2, filename );
 
-			if (!existsSync( request_filepath ))
-				return false;
-
-			const data = readFileSync( request_filepath ,'utf8' );
-			if ( !data )
-				return false;
+			const data = load_json( request_filepath );
+			if ( !data ) return false;
 
 			console.log( 'found cache data, returning', data.length, 'bytes' );
-
-			return JSON.parse( data );
-
+			return data;
 
 		}
 	},

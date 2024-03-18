@@ -1,10 +1,10 @@
-const { existsSync, readFileSync, writeFileSync } = require('fs');
+const { writeFileSync } = require('fs');
 
 const { RankedStatus } = require('osu-tools');
 
 const osu_auth = require('../osu_auth');
 const find_beatmaps = require('../find_beatmaps');
-const { check_gamemode, print_processed, check_userid, folder_prepare } = require('../misc');
+const { check_gamemode, print_processed, check_userid, folder_prepare, load_json } = require('../misc');
 const { get_scores_load_filename } = require('../../misc/text_templates');
 const { load_path } = require('../../misc/const');
 const path = require('path');
@@ -24,7 +24,12 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 	folder_prepare( load_path );
 	if ( continue_md5 && continue_md5.length !==32 ){
 		if ( continue_md5 === 'load' ) {
-			continue_md5 = existsSync( load_filename ) ? JSON.parse(readFileSync( load_filename, 'utf8' )).continue_md5 : null;
+			const data = load_json( load_filename );
+			if (data && data?.continue_md5){
+				continue_md5 = data.continue_md5;
+			} else {
+				continue_md5 = null;
+			}
 		} else {
 			console.error( '[continue_md5] > wrong md5 hash' );
 			return;

@@ -1,11 +1,13 @@
-const { writeFileSync, existsSync, readFileSync } = require('fs');
+const { writeFileSync } = require('fs');
 const path = require('path');
 
 const osu_auth = require('../tools/osu_auth');
 const { save_beatmapsets_v2 } = require('../modules/DB/beatmap');
-const { check_gamemode, print_processed, folder_prepare, is_gamemode } = require('../tools/misc');
+const { check_gamemode, print_processed, folder_prepare, is_gamemode, load_json } = require('../tools/misc');
 const { request_beatmaps_by_cursor_v2 } = require('../modules/osu_requests_v2');
 const { beatmap_status_bancho_text, beatmaps_v2_request_limit, load_path, saved_cursor_v2_beatmaps_name } = require('../misc/const');
+
+const cursor_default = null;
 
 module.exports = {
 	args: ['gamemode', 'status', 'cursor'],
@@ -27,17 +29,18 @@ module.exports = {
 			const saved_cursor_v2_beatmaps_gamemode_path = path.join( load_path, saved_cursor_v2_beatmaps_name + `_${current_gamemode}.json` );
 			// check cursor string
 			// arg first, then load, then null
-
-			let cursor_string = null;
+			
+			let cursor_string = cursor_default;
 
 			if (args?.cursor === 'false'){
-				cursor_string = existsSync( saved_cursor_v2_beatmaps_gamemode_path )
-					? JSON.parse( readFileSync( saved_cursor_v2_beatmaps_gamemode_path, 'utf8' )).cursor_string 
-					: null;
+				const data = load_json( saved_cursor_v2_beatmaps_gamemode_path );
+				cursor_string = data && data?.cursor_string ? data.cursor_string : cursor_default;
+
 			} else if (args?.cursor === 'true'){
-				cursor_string = null;
+				cursor_string = cursor_default;
+
 			} else {
-				cursor_string = args?.cursor || null;
+				cursor_string = args?.cursor || cursor_default;
 			}
 
 			// check status, default 1 (ranked)

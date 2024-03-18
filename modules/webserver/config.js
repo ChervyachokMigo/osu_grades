@@ -1,9 +1,9 @@
-const { existsSync, readFileSync, writeFileSync } = require('fs');
+const { writeFileSync } = require('fs');
 const input = require('input');
 
 const default_webconfig = require('../../misc/default_webconfig');
 const { webserver_config_path } = require('../../misc/const');
-const { Num } = require('../../tools/misc');
+const { Num, load_json } = require('../../tools/misc');
 const { findAll } = require('../DB/users');
 const { Op } = require('@sequelize/core');
 
@@ -11,9 +11,10 @@ const config_keys = Object.keys(default_webconfig);
 
 const _this = module.exports = {
 	init: async () => {
-		_this.data = existsSync( webserver_config_path ) 
-			? JSON.parse( readFileSync( webserver_config_path, 'utf8' ))
-			: _this.save ( default_webconfig );
+		_this.data = load_json( webserver_config_path );
+		if (!_this.data) {
+			_this.data = _this.save ( default_webconfig );
+		}
 		return _this.data;
 	},
 

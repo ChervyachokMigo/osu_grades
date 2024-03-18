@@ -1,4 +1,4 @@
-const { existsSync, mkdirSync, readdirSync, unlinkSync } = require('fs');
+const { existsSync, mkdirSync, readdirSync, unlinkSync, readFileSync } = require('fs');
 
 const { gamemode, print_progress_frequency, beatmap_status_to_db, beatmap_status_from_db } = require('../misc/const');
 const path = require('path');
@@ -159,10 +159,22 @@ const _this = module.exports = {
 
 	isJSON: ( str ) => {
 		try { 
-			JSON.parse( str.toString() ); } 
-		catch (e) { 
-			return false; }
+			JSON.parse( str.toString() );
+		} catch (e) { 
+			return false; 
+		}
 		return true;
+	},
+
+	load_json: ( filepath, default_value = null ) => {
+		if (existsSync( filepath )){
+			const data = readFileSync( filepath, 'utf8' );
+			if ( _this.isJSON( data )){
+				return JSON.parse( data );
+			}
+		} 
+
+		return default_value;
 	},
 
 	get_key_by_value: ( obj, value ) => Object.keys(obj).find(key => obj[key] === value),

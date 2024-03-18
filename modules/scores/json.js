@@ -4,7 +4,7 @@ const path = require('path');
 const find_beatmaps = require('../../tools/find_beatmaps');
 const { save_scores_v1, convert_v2_to_v1 } = require('./v1');
 const { save_scores_v2 } = require('./v2');
-const { folder_prepare, print_processed, group_by } = require('../../tools/misc');
+const { folder_prepare, print_processed, group_by, load_json } = require('../../tools/misc');
 const { save_beatmap_info } = require('../DB/beatmap');
 const { request_beatmap_by_md5, request_beatmap_by_id } = require('../osu_requests_v1');
 
@@ -146,11 +146,10 @@ module.exports = {
 
 			// if scores of beatmap is exists load and add new score
 			// else save new score
-			const is_old_score = existsSync( score_path );
-			const saved_scores = ( is_old_score 
-				? [ ...JSON.parse( readFileSync( score_path, { encoding: 'utf8' })), ...beatmap_scores ] 
-				: beatmap_scores ) 
-			//filter unique by score id
+			const is_old_scores = load_json( score_path );
+
+			const saved_scores = is_old_scores ? [ ...is_old_scores, ...beatmap_scores ]: beatmap_scores 
+				//filter unique by score id
 				.filter(( v, i, a ) => a.findIndex( x => x.id === v.id ) === i );
 
 			// sorting by total score
@@ -158,7 +157,7 @@ module.exports = {
 			saved_scores.sort( (a, b) => b[sort_condition] - a[sort_condition] );
 
 			// save if only new score
-			if ( !is_old_score || ( is_old_score && saved_scores.length !== length_before_sort )) {
+			if ( !is_old_scores || ( is_old_scores && saved_scores.length !== length_before_sort )) {
 				writeFileSync( score_path, JSON.stringify( saved_scores ), { encoding: 'utf8' });
 				saves_scores_length++;
 			}

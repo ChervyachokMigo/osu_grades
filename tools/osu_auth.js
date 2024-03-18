@@ -27,6 +27,7 @@ module.exports = async () => {
 	const current_time = new Date().getTime();
 
 	if (!access_token || !expires_in){
+		
 		if (existsSync(osu_token_path)){
 			const data = JSON.parse(readFileSync(osu_token_path, {encoding: 'utf8'}));
 			expires_in = data.time;

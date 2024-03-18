@@ -10,3 +10,4 @@ oтправка ошибок
 показывает неверное количество карт при получении скоров {cm:2024-03-16}
 Добавить выбор лаведов сканировать или нет {cm:2024-03-18}
 is json failed проверка jsonов {cm:2024-03-18}
+webserver check refreshing scores now ( exclude multiple runs )

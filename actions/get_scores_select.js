@@ -12,7 +12,7 @@ module.exports = {
 	args: [ 'continue_md5' ],
 
 	action: async( args ) => {
-		await users.users_variants( 'checkboxes', async ( selected ) => {
+		await users.users_variants( 'checkboxes', true, async ( selected ) => {
 
 			console.log('selected', selected );
 

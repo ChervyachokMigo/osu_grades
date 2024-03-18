@@ -6,6 +6,7 @@ const { users_header } = require('../../misc/text_consts');
 const { delete_user_gamemode, add_user_scoremode_gamemode, user_row_record } = require('../../misc/text_templates');
 const { get_ruleset_by_gamemode_int } = require('../../tools/misc');
 const { Op } = require('@sequelize/core');
+const config = require('../config_control');
 
 const _this = module.exports = {
 	add: async ({ userid, ruleset, score_mode, username }) => {
@@ -71,14 +72,16 @@ const _this = module.exports = {
 
 	update_grades: async ( where, grades ) => await osu_user_grade.update( grades, { where }),
 	
-	users_variants: async ( input_type = 'checkboxes', action_selected_callback ) => {
+	users_variants: async ( input_type = 'checkboxes', is_filter_api_version = false, action_selected_callback ) => {
+		const current_api_version = config.get_value('api_version');
+
 		const variants = (await _this.list_all()).map( x => ({ 
 			name: x.text, 
 			value: { 
 				userid: x.userid, 
 				gamemode: x.gamemode,
 				score_mode: x.score_mode
-			}}));
+			}})).filter (x => is_filter_api_version ? x.value.score_mode === current_api_version: true );
 
 		if (variants.length > 0){
 			console.log ( users_header );

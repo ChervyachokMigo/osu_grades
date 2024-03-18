@@ -50,5 +50,6 @@ module.exports = {
 	cache_path: path.join( 'data', 'cache' ),
 	load_path: path.join( 'data', 'load' ),
 	webserver_config_path: path.join('data','webserver_config.json'),
+	config_path: path.join('data', 'config.json')
 };
 

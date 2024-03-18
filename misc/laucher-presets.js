@@ -1,5 +1,6 @@
-const { get_is_loaded } = require('../actions/webserver');
-const config = require('../modules/webserver/config');
+const webserver = require('../actions/webserver');
+const config = require('../modules/config_control');
+const webconfig = require('../modules/webserver/config');
 
 const back_categories = {
 	users: 'main',
@@ -16,9 +17,11 @@ const back_categories = {
 	db_tools: 'tools',
 };
 
-module.exports = {
+const _this = module.exports = {
 	get_category: ( name ) => {
-		let category = module.exports[name];
+		const current_api_version = config.get_value('api_version');
+
+		let category = _this[name];
 		let res = [];
 
 		const back = name !== 'main' && back_categories[name] ? 
@@ -29,23 +32,24 @@ module.exports = {
 		}
 
 		if (name === 'webserver') {
-			const selected_userid = config.get_value( 'web_selected_userid');
+			const selected_userid = webconfig.get_value( 'web_selected_userid');
 			const is_stopped = 0;
 			const is_loaded = 1;
 			
 			category = [
 				...category.variants[ 
-					get_is_loaded() == false ? is_stopped : is_loaded ]
+					webserver.get_is_loaded() == false ? is_stopped : is_loaded ]
 					.map( x => ({ ...x, disabled: selected_userid == 0 }) ),
 				...category.values,
 			];
 			delete category.variants;
 		}
 
-		return [...res, ...category];
+		return [...res, ...category.filter( x => x?.versions ? x.versions.includes( current_api_version ) : true )];
 	},
 
 	main: [
+		{ name: 'Change API version', value: { action: 'change_api_version', args: [] }},
 		{ name: 'Users menu >', value: { category: 'users' }},
 		{ name: 'Update beatmaps >', value: { category: 'update_beatmaps' }},
 		{ name: 'Scores >', value: { category: 'scores' }},
@@ -56,19 +60,19 @@ module.exports = {
 
 	tools: [
 		{ name: 'DB Import/Export >', value: { category: 'db_tools' }},
-		{ name: 'Update collections.db', value: { action: 'update_collections', args: [] } },
-		{ name: 'Update scores.db', value: { action: 'update_osu_scores_db_v1', args: [] } },
+		{ name: 'Update collections.db', value: { action: 'update_collections', args: [] }, versions: [ 2 ]},
+		{ name: 'Update scores.db', value: { action: 'update_osu_scores_db_v1', args: [] }, versions: [ 1 ]},
 	],
 
 	scores: [
 		{ name: 'Get scores >', value: { category: 'get_scores' }},
-		{ name: 'Refresh scores >', value: { category: 'refresh_scores' }},
-		{ name: 'V2_JSON_RECOUNT >', value: { category: 'V2_JSON_RECOUNT' }},
-		{ name: 'Import json scores to DB >', value: { category: 'import_jsons' }},
+		{ name: 'Refresh scores >', value: { category: 'refresh_scores' }, versions: [ 1, 2 ]},
+		{ name: 'V2_JSON_RECOUNT >', value: { category: 'V2_JSON_RECOUNT'}, versions: [ 3 ]},
+		{ name: 'Import json scores to DB >', value: { category: 'import_jsons' }, versions: [ 3 ]},
 	],
 
 	users: [
-		{ name: 'Add/Change user', value: { action: 'user', args: ['add'] } },
+		{ name: 'Add user', value: { action: 'user', args: ['add'] } },
 		{ name: 'Delete user', value: { action: 'user', args: ['delete'] } },
 		{ name: 'Show users list ', value: { action: 'user', args: ['list'] } },
 	],
@@ -109,26 +113,26 @@ module.exports = {
 	],
 
 	refresh_scores: [
-		{ name: 'Refresh all v1', value: { action:'refresh_all', args: [1, -2] } },
+		{ name: 'Refresh all v1', value: { action:'refresh_all', args: [1, -2] }, versions: [ 1 ]},
 
-		{ name: 'Refresh [OSU] v1', value: { action:'refresh_all', args: [1, 0] } },
-		{ name: 'Refresh [TAIKO] v1', value: { action:'refresh_all', args: [1, 1] } },
-		{ name: 'Refresh [FRUITS] v1', value: { action:'refresh_all', args: [1, 2] } },
-		{ name: 'Refresh [MANIA] v1', value: { action:'refresh_all', args: [1, 3] } },
+		{ name: 'Refresh [OSU] v1', value: { action:'refresh_all', args: [1, 0] }, versions: [ 1 ] },
+		{ name: 'Refresh [TAIKO] v1', value: { action:'refresh_all', args: [1, 1] }, versions: [ 1 ] },
+		{ name: 'Refresh [FRUITS] v1', value: { action:'refresh_all', args: [1, 2] }, versions: [ 1 ] },
+		{ name: 'Refresh [MANIA] v1', value: { action:'refresh_all', args: [1, 3] }, versions: [ 1 ] },
 
-		{ name: 'Refresh all v2', value: { action:'refresh_all', args: [2, -2] } },
+		{ name: 'Refresh all v2', value: { action:'refresh_all', args: [2, -2] }, versions: [ 2 ]},
 
-		{ name: 'Refresh [OSU] v2', value: { action:'refresh_all', args: [2, 0] } },
-		{ name: 'Refresh [TAIKO] v2', value: { action:'refresh_all', args: [2, 1] } },
-		{ name: 'Refresh [FRUITS] v2', value: { action:'refresh_all', args: [2, 2] } },
-		{ name: 'Refresh [MANIA] v2', value: { action:'refresh_all', args: [2, 3] } },
+		{ name: 'Refresh [OSU] v2', value: { action:'refresh_all', args: [2, 0] }, versions: [ 2 ] },
+		{ name: 'Refresh [TAIKO] v2', value: { action:'refresh_all', args: [2, 1] }, versions: [ 2 ]},
+		{ name: 'Refresh [FRUITS] v2', value: { action:'refresh_all', args: [2, 2] }, versions: [ 2 ]},
+		{ name: 'Refresh [MANIA] v2', value: { action:'refresh_all', args: [2, 3] }, versions: [ 2 ]},
 
-		{ name: 'Refresh all v2 JSON', value: { action:'refresh_all', args: [3, -2] } },
+		{ name: 'Refresh all v2 JSON', value: { action:'refresh_all', args: [3, -2] }, versions: [ 3 ]},
 
-		{ name: 'Refresh [OSU] v2 JSON', value: { action:'refresh_all', args: [3, 0] } },
-		{ name: 'Refresh [TAIKO] v2 JSON', value: { action:'refresh_all', args: [3, 1] } },
-		{ name: 'Refresh [FRUITS] v2 JSON', value: { action:'refresh_all', args: [3, 2] } },
-		{ name: 'Refresh [MANIA] v2 JSON', value: { action:'refresh_all', args: [3, 3] } },
+		{ name: 'Refresh [OSU] v2 JSON', value: { action:'refresh_all', args: [3, 0] }, versions: [ 3 ]},
+		{ name: 'Refresh [TAIKO] v2 JSON', value: { action:'refresh_all', args: [3, 1] }, versions: [ 3 ]},
+		{ name: 'Refresh [FRUITS] v2 JSON', value: { action:'refresh_all', args: [3, 2] }, versions: [ 3 ]},
+		{ name: 'Refresh [MANIA] v2 JSON', value: { action:'refresh_all', args: [3, 3] }, versions: [ 3 ]},
 	],
 
 	V2_JSON_RECOUNT: [

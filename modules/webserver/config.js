@@ -10,7 +10,7 @@ const { Op } = require('@sequelize/core');
 const config_keys = Object.keys(default_webconfig);
 
 const _this = module.exports = {
-	init: async () => {
+	init: () => {
 		_this.data = load_json( webserver_config_path );
 		if (!_this.data) {
 			_this.data = _this.save ( default_webconfig );

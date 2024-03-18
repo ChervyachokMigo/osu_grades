@@ -24,4 +24,5 @@ module.exports = {
 	osu_path: 'C:\\osu!',
 
 	is_loved_select: false,
+	api_version: 1,
 };

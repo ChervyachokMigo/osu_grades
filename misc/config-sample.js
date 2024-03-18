@@ -22,4 +22,6 @@ module.exports = {
 	cache_expire_time_hours: 24,
 	
 	osu_path: 'C:\\osu!',
+
+	is_loved_select: false,
 };

@@ -36,5 +36,5 @@ module.exports = {
 		`${params?.sort}.json`,
 
 	get_scores_load_filename: ( params ) => 
-		`get_scores_${params?.userid}_${params.score_mode}_${params.ruleset.idx}_${params.ranked_status}.json`,
+		`get_scores_${params?.userid}_${params.score_mode}_${params.ruleset.idx}.json`,
 };

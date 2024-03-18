@@ -9,8 +9,9 @@ const { get_scores_load_filename } = require('../../misc/text_templates');
 const { load_path } = require('../../misc/const');
 const path = require('path');
 const { Op } = require('@sequelize/core');
+const { is_loved_select } = require('../../data/config');
 
-module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, init = async () => {}, callback }) => {
+module.exports = async({ args, score_mode, init = async () => {}, callback }) => {
 	//check userid
 	const userid = check_userid( args.userid );
 	if (!userid) return;
@@ -20,7 +21,8 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 
 	//check continue
 	let continue_md5 = args.continue_md5 || null;
-	const load_filename = path.join( load_path, get_scores_load_filename({ userid, score_mode, ruleset, ranked_status }));
+	const load_filename = path.join( load_path, get_scores_load_filename({ userid, score_mode, ruleset }));
+
 	folder_prepare( load_path );
 	if ( continue_md5 && continue_md5.length !==32 ){
 		if ( continue_md5 === 'load' ) {
@@ -39,8 +41,10 @@ module.exports = async({ args, score_mode, ranked_status = RankedStatus.ranked, 
 
 	await init( userid );
 
-	// ranked + approved
-	const ranked_where = ranked_status == RankedStatus.ranked ? { [Op.in]: [ RankedStatus.ranked, RankedStatus.approved ] } : ranked_status;
+	// ranked + approved + ?loved
+	const ranked_statuses = [ RankedStatus.ranked, RankedStatus.approved ];
+	const ranked_where = { [Op.in]: is_loved_select ?  [ ...ranked_statuses, RankedStatus.loved ]: ranked_statuses };
+
 	//load beatmaps from DB
 	const beatmaps_db = ( await find_beatmaps({ ranked: ranked_where, gamemode: ruleset.idx }))
 		.filter( x => x.beatmap_id > 0 );

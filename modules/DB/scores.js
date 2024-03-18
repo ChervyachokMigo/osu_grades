@@ -4,6 +4,7 @@ const { RankedStatus } = require('osu-tools');
 const { group_by } = require('../../tools/misc');
 const { rank_to_int } = require('../../misc/const');
 const users = require('./users');
+const { is_loved_select } = require('../../data/config');
 
 const select_score_mode_model = ( score_mode ) => {
 	const model = {
@@ -22,7 +23,11 @@ module.exports = {
 	count_scores_by_gamemode: async ({ userid, gamemode = -1, score_mode = 2 }) => {
 
 		const where_scores = { userid, best: true };
-		const where_beatmaps = { ranked: { [Op.in]: [ RankedStatus.ranked, RankedStatus.approved ] } };
+
+		const ranked_statuses = [ RankedStatus.ranked, RankedStatus.approved ];
+		const statuses = is_loved_select ?  [ ...ranked_statuses, RankedStatus.loved  ]: ranked_statuses;
+
+		const where_beatmaps = { ranked: { [Op.in]: statuses } };
 		
 		if ( gamemode >= 0 && gamemode <= 3 ){
 			where_scores.gamemode = gamemode;

@@ -9,7 +9,8 @@ const { save_beatmap_info } = require('../DB/beatmap');
 const { request_beatmap_by_md5, request_beatmap_by_id } = require('../osu_requests_v1');
 
 const { scores_folder_path, scores_backup_path } = require('../../misc/const');
-const { backup_instead_remove, print_progress_import_jsons_frequency } = require('../../data/config');
+
+const config = require('../../modules/config_control.js');
 
 const import_json_user_scores_v1 = async ( userid ) => {
 	const user_scores_path = path.join( scores_folder_path, userid.toString() );
@@ -20,14 +21,18 @@ const import_json_user_scores_v1 = async ( userid ) => {
 		return;
 	}
 
+	const backup_instead_remove = config.get_value('backup_instead_remove');
 	if (backup_instead_remove) {
 		folder_prepare( user_scores_backup_path );
 	}
 
 	const scores_json_names = readdirSync(user_scores_path, 'utf8');
 
+	const print_progress_import_jsons_frequency = config.get_value('print_progress_import_jsons_frequency');
+
 	for ( let i in scores_json_names ){
-		print_processed({ current: i, size: scores_json_names.length, frequency: print_progress_import_jsons_frequency, name: 'scores' });
+		print_processed({ current: i, size: scores_json_names.length, 
+			frequency: print_progress_import_jsons_frequency, name: 'scores' });
 
 		const json_filepath = path.join ( user_scores_path, scores_json_names[i] );
 		const md5 = scores_json_names[i].slice(0, scores_json_names[i].length - 5);
@@ -83,10 +88,13 @@ const import_json_user_scores_v2 = async ( userid ) => {
 		console.error( 'wrong user scores path', user_scores_path );
 		return;
 	}
-
+	
+	const backup_instead_remove = config.get_value('backup_instead_remove');
 	if (backup_instead_remove) {
 		folder_prepare( user_scores_backup_path );
 	}
+
+	const print_progress_import_jsons_frequency = config.get_value('print_progress_import_jsons_frequency');
 
 	const scores_json_names = readdirSync( user_scores_path, 'utf8' );
 	for ( let i in scores_json_names ){

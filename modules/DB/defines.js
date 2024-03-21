@@ -1,7 +1,10 @@
 const { createConnection } = require('mysql2/promise');
 const { Sequelize, DataTypes } = require('@sequelize/core');
+const config = require('../../modules/config_control.js');
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME_BEATMAPS, DB_NAME_SCORES } = require('../../data/config.js');
+let config_data = config.get_data();
+
+let { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME_BEATMAPS, DB_NAME_SCORES } = config_data;
 
 const osu_beatmaps_mysql = new Sequelize( DB_NAME_BEATMAPS, DB_USER, DB_PASSWORD, {
 	dialect: 'mysql',
@@ -173,30 +176,42 @@ const _this = module.exports = {
 	osu_score_legacy,
 	osu_user_grade,
 
+	check_connect: async () => {
+		console.log('База данных', 'Проверка соединения');
+
+		try {
+			config_data = config.get_data();
+			
+			const connection = await createConnection(`mysql://${config_data.DB_USER}:${config_data.DB_PASSWORD}@${config_data.DB_HOST}:${config_data.DB_PORT}`);
+
+			await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config_data.DB_NAME_BEATMAPS}\`;`);
+			await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config_data.DB_NAME_SCORES}\`;`);
+
+			return connection;
+
+		} catch (e){
+			console.error('проверьте правильность данных data\\config.json\n');
+			
+			Object.entries(config_data).forEach( ([key, val]) => !val? 
+				console.log( `${key}: Ошибка: отсутствует значение\n`) : null );
+
+			if (e.code === 'ECONNREFUSED' || e.name === 'SequelizeConnectionRefusedError'){
+				console.error('База данных', 'ошибка соединения', 'Нет доступа к базе');
+			} else {
+				console.error('База данных', 'ошибка базы', e );
+			}
+
+			return false;
+		}
+	},
+
 	prepareDB: async ( args ) => {
 		const alter_db = args?.alter_db || false;
 		
 		console.log('База данных', 'Подготовка');
-		try {
-			const connection = await createConnection(`mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}`);
-			await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME_BEATMAPS}\`;`);
-			await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME_SCORES}\`;`);
-		} catch (e){
-			console.error('проверьте правильность данных data\\config.js\n');
-			console.log( '', 
-				`DB_HOST: ${ !DB_HOST ? 'Ошибка: отсутствует значение\n' : `${DB_HOST} (${typeof DB_HOST})\n` }`, 
-				`DB_PORT: ${ !DB_PORT ? 'Ошибка: отсутствует значение\n' : `${DB_PORT} (${typeof DB_PORT})\n` }`, 
-				`DB_USER: ${ !DB_USER ? 'Ошибка: отсутствует значение\n' : `${DB_USER} (${typeof DB_USER})\n` }`, 
-				`DB_PASSWORD: ${ !DB_PASSWORD ? 'Ошибка: отсутствует значение\n' : `${DB_PASSWORD} (${typeof DB_PASSWORD})\n` }`, 
-				`DB_NAME_BEATMAPS: ${ !DB_NAME_BEATMAPS ? 'Ошибка: отсутствует значение\n' : `${DB_NAME_BEATMAPS} (${typeof DB_NAME_BEATMAPS})\n` }`, 
-				`DB_NAME_SCORES: ${ !DB_NAME_SCORES ? 'Ошибка: отсутствует значение\n' : `${DB_NAME_SCORES} (${typeof DB_NAME_SCORES})\n` }`, 
-			);
-
-			if (e.code === 'ECONNREFUSED' || e.name === 'SequelizeConnectionRefusedError'){
-				throw new Error('Нет доступа к базе');
-			} else {
-				throw new Error(`ошибка базы: ${e}`);
-			}
+		
+		if ( !(await _this.check_connect()) ){
+			return false;
 		}
 		
 		const sync_params = alter_db ? { alter: true } : { alter: false };
@@ -213,6 +228,7 @@ const _this = module.exports = {
 		}));
         
 		console.log('База данных', 'Подготовка завершена');
+		return true;
 	},
 
 	select_mysql_model: (action) => {

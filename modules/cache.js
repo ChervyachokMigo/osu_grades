@@ -1,4 +1,5 @@
-const { is_use_caching, cache_expire_time_hours, is_delete_cache } = require('../data/config');
+const config = require('../modules/config_control.js');
+
 const { cache_path, beatmaps_v1_request_limit, beatmaps_v2_request_limit } = require('../misc/const');
 const { cache_beatmap_v1_filename, cache_beatmap_v2_filename } = require('../misc/text_templates');
 const { folder_prepare, escape_windows_special_chars, delete_files_in_folder, load_json } = require('../tools/misc');
@@ -10,9 +11,11 @@ const path = require('path');
 const cache_beatmaps_v1 = path.join( cache_path, 'beatmaps', 'v1' );
 const cache_beatmaps_v2 = path.join( cache_path, 'beatmaps', 'v2' );
 
-const cache_expire_time_ms = cache_expire_time_hours * 60 * 60 * 1000;
+
 
 const check_cache_folder_for_expire_files = ( folder , file ) => {
+	const cache_expire_time_hours = config.get_value('cache_expire_time_hours');
+	const cache_expire_time_ms = cache_expire_time_hours * 60 * 60 * 1000;
 	const filepath = path.join( folder, file );
 	const filetime = lstatSync( filepath ).mtime.getTime();
 	const now = new Date().getTime();
@@ -30,6 +33,7 @@ const _this = module.exports = {
 	},
 
 	check_cache_date: () => {
+		const is_use_caching = config.get_value('is_use_caching');
 		if ( is_use_caching == false )
 			return;
 
@@ -42,6 +46,7 @@ const _this = module.exports = {
 	},
 
 	init_cache: () => {
+		const is_use_caching = config.get_value('is_use_caching');
 		if (is_use_caching == false){
 			return;
 		}
@@ -51,6 +56,7 @@ const _this = module.exports = {
 		folder_prepare( cache_beatmaps_v1 );
 		folder_prepare( cache_beatmaps_v2 );
 
+		const is_delete_cache = config.get_value('is_delete_cache');
 		if (is_delete_cache) _this.check_cache_date();
 
 	},
@@ -63,9 +69,11 @@ const _this = module.exports = {
 	 * @returns request results
 	 */
 	get_cache: ( cache_type, params ) => {
+		const is_use_caching = config.get_value('is_use_caching');
 		if (is_use_caching == false)
 			return false;
-
+		
+		const is_delete_cache = config.get_value('is_delete_cache');
 		if (is_delete_cache) _this.check_cache_date();
 
 		// ========================= BEATMAP V1 =========================
@@ -94,9 +102,11 @@ const _this = module.exports = {
 	},
 
 	set_cache: ( cache_type, params, data ) => {
+		const is_use_caching = config.get_value('is_use_caching');
 		if (is_use_caching == false)
 			return false;
 
+		const is_delete_cache = config.get_value('is_delete_cache');
 		if (is_delete_cache) _this.check_cache_date();
 
 		// ========================= BEATMAP V1 =========================

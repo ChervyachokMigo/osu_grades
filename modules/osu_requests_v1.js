@@ -3,12 +3,16 @@ const axios = require('axios');
 const find_beatmaps = require('../tools/find_beatmaps');
 const { Num } = require('../tools/misc');
 
-const { api_key, is_use_caching } = require('../data/config');
 const { get_cache, set_cache } = require('./cache');
 const { beatmaps_v1_request_limit } = require('../misc/const');
 
+const config = require('./config_control');
+
 module.exports = {
 	request_beatmap_user_scores: async ({ beatmap, userid }) => {
+		const api_key = config.get_value('api_key');
+		if (!api_key) return null;
+
 		const url = `https://osu.ppy.sh/api/get_scores?k=${api_key}&b=${beatmap.beatmap_id}&u=${userid}&m=${beatmap.gamemode}`;
 		const res = await axios( url );
         
@@ -21,6 +25,9 @@ module.exports = {
 	},
 
 	request_user_recent_scores: async ({ userid, ruleset }) => {
+		const api_key = config.get_value('api_key');
+		if (!api_key) return null;
+
 		const url = `https://osu.ppy.sh/api/get_user_recent?k=${api_key}&u=${userid}&m=${ruleset.idx}&limit=50`;
 		const res = await axios( url );
 
@@ -42,6 +49,10 @@ module.exports = {
 
 	// for v1
 	request_beatmaps_by_date: async ( params ) => {
+		const is_use_caching = config.get_value('is_use_caching');
+		const api_key = config.get_value('api_key');
+		if (!api_key) return null;
+
 		const this_params = { 
 			since_date: params.since_date || null, 
 			limit: params.limit || beatmaps_v1_request_limit, 
@@ -71,6 +82,9 @@ module.exports = {
 
 	// for jsons
 	request_beatmap_by_md5: async ({ md5 }) => {
+		const api_key = config.get_value('api_key');
+		if (!api_key) return null;
+
 		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&h=${md5}&limit=1`;
 		const res = await axios( url );
         
@@ -89,6 +103,9 @@ module.exports = {
      */
 	// for jsons
 	request_beatmap_by_id: async ({ beatmap, gamemode }) => {
+		const api_key = config.get_value('api_key');
+		if (!api_key) return null;
+
 		const url = `https://osu.ppy.sh/api/get_beatmaps?k=${api_key}&b=${beatmap}${ gamemode >= 0 ? `&m=${gamemode}` : '' }&limit=1`;
 		const res = await axios( url );
 
@@ -101,6 +118,9 @@ module.exports = {
 	},
 
 	request_user_info: async ({ userid }) => {
+		const api_key = config.get_value('api_key');
+		if (!api_key) return null;
+
 		const url = `https://osu.ppy.sh/api/get_user?k=${api_key}&u=${userid}`;
 		const res = await axios( url );
         

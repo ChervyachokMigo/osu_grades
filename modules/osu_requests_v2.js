@@ -1,7 +1,8 @@
 const { v2 } = require('osu-api-extended');
-const { is_use_caching } = require('../data/config');
+
 const { get_cache, set_cache } = require('./cache');
 const { beatmaps_v2_request_limit } = require('../misc/const');
+const config = require('./config_control');
 
 module.exports = {
 	request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = null, 
@@ -59,7 +60,8 @@ module.exports = {
 	 * @returns request results
 	 */
 	request_beatmaps_by_cursor_v2: async ( params ) => {
-		
+		const is_use_caching = config.get_value('is_use_caching');
+
 		const query_strict = params?.query_strict || false;
 
 		const search_object = { 

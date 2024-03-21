@@ -110,7 +110,10 @@ const _this = module.exports = {
 	},
 
 	import_table_csv: async ({ filepath, tablename, chunk_size = 500, skip_errors = false}) => {
-		await prepareDB();
+		if (! await prepareDB()) {	
+			console.error('prepareDB failed');
+			return false;
+		}
 
 		const content_objects = await _this.load_csv({ filepath, skip_errors });
 

@@ -43,7 +43,10 @@ const _this = module.exports = {
 			return false;
 		}
 		
-		await prepareDB();
+		if (!await prepareDB()) {
+			console.error('prepareDB failed');
+			return false;
+		}
 
 		console.log('geting all data');
 		const mysql_values = await MYSQL_GET_ALL( tablename );

@@ -1,7 +1,7 @@
 const { collection_db_load, collection_db_save } = require('osu-tools');
 const path = require('path');
 
-const { osu_path } = require('../data/config');
+const config = require('../modules/config_control.js');
 const { osu_score, beatmaps_md5 } = require('../modules/DB/defines');
 const { group_by, get_ruleset_by_gamemode_int, get_key_by_value } = require('../tools/misc');
 const { rank_to_int } = require('../misc/const');
@@ -14,6 +14,8 @@ module.exports = {
 
 	// eslint-disable-next-line no-unused-vars
 	action: async( args ) => {
+		const osu_path = config.get_value('osu_path');
+
 		const old_collection_path = path.join( osu_path , 'collection.db' );
 		const temp_collection_path = path.join( osu_path, 'temp_collection.db' );
 

@@ -1,6 +1,6 @@
 при запуске запустить beatmap check
-разделение на в1 в2 джсон (по конфигу мб) (лаунчер)
-сделать config editor
+разделение на в1 в2 джсон (по конфигу мб) (лаунчер) {cm:2024-03-21}
+сделать config editor {cm:2024-03-21}
 ?update beatmaps qualified, loved, approved and scores
 Сканить конверты
 импрувнуть сохранение scores.db {cm:2024-03-16}

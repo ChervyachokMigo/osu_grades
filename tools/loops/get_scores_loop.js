@@ -9,7 +9,8 @@ const { get_scores_load_filename } = require('../../misc/text_templates');
 const { load_path } = require('../../misc/const');
 const path = require('path');
 const { Op } = require('@sequelize/core');
-const { is_loved_select } = require('../../data/config');
+
+const config = require('../../modules/config_control.js');
 
 module.exports = async({ args, score_mode, init = async () => {}, callback }) => {
 	//check userid
@@ -41,6 +42,7 @@ module.exports = async({ args, score_mode, init = async () => {}, callback }) =>
 
 	await init( userid );
 
+	const is_loved_select = config.get_value('is_loved_select');
 	// ranked + approved + ?loved
 	const ranked_statuses = [ RankedStatus.ranked, RankedStatus.approved ];
 	const ranked_where = { [Op.in]: is_loved_select ?  [ ...ranked_statuses, RankedStatus.loved ]: ranked_statuses };

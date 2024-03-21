@@ -59,6 +59,7 @@ const _this = module.exports = {
 	],
 
 	tools: [
+		{ name: 'Config edit', value: { action: 'edit_config', args: [] }},
 		{ name: 'DB Import/Export >', value: { category: 'db_tools' }},
 		{ name: 'Update collections.db', value: { action: 'update_collections', args: [] }, versions: [ 2 ]},
 		{ name: 'Update scores.db', value: { action: 'update_osu_scores_db_v1', args: [] }, versions: [ 1 ]},

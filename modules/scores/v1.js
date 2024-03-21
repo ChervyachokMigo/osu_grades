@@ -7,8 +7,8 @@ const { Num, boolean_from_string, group_by, concat_array_of_arrays, print_proces
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 
 const { rank_to_int } = require('../../misc/const');
-const { osu_path } = require('../../data/config');
 const { copyFileSync, renameSync } = require('fs');
+const config = require('../../modules/config_control.js');
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
 	score: {
@@ -103,6 +103,8 @@ const _this = module.exports = {
 			return;
 		}
 
+		const osu_path = config.get_value('osu_path');
+		
 		const old_scores_path = path.join( osu_path , 'scores.db' );
 		const temp_scores_path = path.join( osu_path, 'temp_scores.db' );
 

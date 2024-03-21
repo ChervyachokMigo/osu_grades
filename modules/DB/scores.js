@@ -4,7 +4,7 @@ const { RankedStatus } = require('osu-tools');
 const { group_by } = require('../../tools/misc');
 const { rank_to_int } = require('../../misc/const');
 const users = require('./users');
-const { is_loved_select } = require('../../data/config');
+const config = require('../../modules/config_control.js');
 
 const select_score_mode_model = ( score_mode ) => {
 	const model = {
@@ -21,7 +21,8 @@ const select_score_mode_model = ( score_mode ) => {
 
 module.exports = {
 	count_scores_by_gamemode: async ({ userid, gamemode = -1, score_mode = 2 }) => {
-
+		const is_loved_select = config.get_value('is_loved_select');
+		
 		const where_scores = { userid, best: true };
 
 		const ranked_statuses = [ RankedStatus.ranked, RankedStatus.approved ];

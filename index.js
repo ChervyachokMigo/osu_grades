@@ -1,4 +1,6 @@
 const input = require('input');
+const { existsSync } = require('fs');
+
 
 const { folder_prepare } = require('./tools/misc');
 const { prepareDB } = require('./modules/DB/defines');
@@ -38,8 +40,53 @@ const select_action = async ( selected_action ) => {
 
 var checkUpdate = require('check-update-github');
 var pkg = require('./package.json');
+const { request_beatmap_by_id } = require('./modules/osu_requests_v1');
+const osu_auth = require('./tools/osu_auth');
+const path = require('path');
+
+const v1_check_config = async () => {
+	if (!config.get_value('api_key')){
+		return false;
+	}
+	return await request_beatmap_by_id({ beatmap: 75 });
+};
+
+const v2_check_config = async () => {
+	if (!config.get_value('api_v2_app_id') || !config.get_value('api_v2_app_key')){
+		return false;
+	}
+	return await osu_auth();
+};
+
+const osu_path_check = () => {
+	const osu_path = config.get_value('osu_path');
+	return existsSync(path.join(osu_path, 'scores.db')) && existsSync(path.join(osu_path, 'collection.db'));
+};
+
+const prepare_config = async() => {
+	const db = await prepareDB();
+	const v1 = await v1_check_config();
+	const v2 = await v2_check_config();
+	const osu = osu_path_check();
+
+	if (!db) console.error('DB Init error');
+	if (!v1) console.error('API v1 key error');
+	if (!v2) console.error('API v2 key error');
+	if (!osu) console.error('Osu path incorrect');
+
+	if (!db || !v1 || !v2 || !osu) {
+		await config.edit();
+		return false;
+	} else {
+		return true;
+	}
+};
 
 const launcher_start = async() => {
+	let res = false;
+	do {
+		res = await prepare_config();
+	} while (res == false);
 
 	await new Promise( res => checkUpdate({
 		name: pkg.name, 
@@ -53,9 +100,7 @@ const launcher_start = async() => {
 		}
 	}));
 
-	init_cache();
-	
-	await prepareDB();
+	init_cache();	
 
 	if (process_args.length > 0) {
 		await command_start( process_args );
@@ -67,8 +112,8 @@ const launcher_start = async() => {
 				break;
 			}
 		}
-		
 	}
+
 };
 
 launcher_start();

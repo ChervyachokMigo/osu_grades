@@ -1,4 +1,4 @@
-const { beatmaps_md5, mysql_actions } = require('./defines');
+const { select_mysql_model, find_model } = require('mysql-tools');
 
 module.exports = {
 	get_md5_id: async ( hash ) => {
@@ -7,6 +7,7 @@ module.exports = {
 			throw new Error( 'beatmap hash not valid' );
 		}
         
+		const beatmaps_md5 = select_mysql_model('beatmaps_md5');
 		const result = await beatmaps_md5.findOrCreate({ 
 			where: { hash },
 			ignoreDuplicates: true,
@@ -23,5 +24,5 @@ module.exports = {
 
 	mods_v2_to_string: (mods) => mods && mods.length > 0 ? mods.map( x => x.acronym ).join('+') : 'No Mods',
 
-	get_attributes_types: (tablename) => (mysql_actions.find(x=>x.names === tablename))?.attributes.map( x => x.attribute.type)
+	get_attributes_types: (tablename) => find_model(tablename)?.attributes.map( x => x.attribute.type)
 };

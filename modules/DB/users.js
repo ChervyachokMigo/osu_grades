@@ -1,11 +1,12 @@
 const input = require('input');
+const { Op } = require('@sequelize/core');
+const { select_mysql_model } = require('mysql-tools');
 
-const { osu_user_grade } = require('./defines');
 const { gamemode } = require('../../misc/const');
 const { users_header } = require('../../misc/text_consts');
 const { delete_user_gamemode, add_user_scoremode_gamemode, user_row_record } = require('../../misc/text_templates');
 const { get_ruleset_by_gamemode_int } = require('../../tools/misc');
-const { Op } = require('@sequelize/core');
+
 const config = require('../config_control');
 
 const _this = module.exports = {
@@ -15,7 +16,7 @@ const _this = module.exports = {
 		if (exist_record) {
 			await osu_user_grade.destroy({ where: { userid, gamemode: ruleset.idx } });
 		}*/
-
+		const osu_user_grade = select_mysql_model('osu_user_grade');
 		const res = (await osu_user_grade.upsert({ 
 			userid, 
 			gamemode: ruleset.idx, 
@@ -30,6 +31,7 @@ const _this = module.exports = {
 		if (where.gamemode < 0 || typeof where.gamemode === 'undefined') {
 			where.gamemode = {[Op.between]: [0, 3]};
 		}
+		const osu_user_grade = select_mysql_model('osu_user_grade');
 		return await osu_user_grade.findOne ({ where, raw: true });
 	},
 
@@ -37,6 +39,7 @@ const _this = module.exports = {
 		if (where.gamemode < 0 || typeof where.gamemode === 'undefined') {
 			where.gamemode = {[Op.between]: [0, 3]};
 		}
+		const osu_user_grade = select_mysql_model('osu_user_grade');
 		return await osu_user_grade.findAll ({ where, raw: true });
 	},
 
@@ -61,6 +64,7 @@ const _this = module.exports = {
 	})),
 
 	action_delete: async ( where ) => {
+		const osu_user_grade = select_mysql_model('osu_user_grade');
 		const res = await osu_user_grade.destroy({ where });
 		if (res) console.log( delete_user_gamemode({ userid: where.userid, score_mode: where.score_mode, gamemode_int: where.gamemode }) );
 	},
@@ -70,7 +74,10 @@ const _this = module.exports = {
 		return { text: users_header + res.map( x => x.text + '\r\n' ).join(''), length: res.length };
 	},
 
-	update_grades: async ( where, grades ) => await osu_user_grade.update( grades, { where }),
+	update_grades: async ( where, grades ) => {
+		const osu_user_grade = select_mysql_model('osu_user_grade');
+		await osu_user_grade.update( grades, { where })
+	},
 	
 	users_variants: async ( input_type = 'checkboxes', is_filter_api_version = false, action_selected_callback ) => {
 		const current_api_version = config.get_value('api_version');

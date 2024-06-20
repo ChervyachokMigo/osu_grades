@@ -1,15 +1,13 @@
 
 const { writeFileSync } = require('fs');
 const path = require('path');
-
+const { find_model, MYSQL_GET_ALL } = require('mysql-tools');
 const { csv_folder_path } = require('../../misc/const');
 const { spawnSync } = require('child_process');
-const { MYSQL_GET_ALL } = require('./base');
 const { prepareDB } = require('./defines');
 
 const { folder_prepare, print_processed } = require('../../tools/misc');
 const { get_attributes_types } = require('../../modules/DB/tools');
-const { mysql_actions } = require('../../modules/DB/defines');
 
 const pack = async (tablename = 'mysql_backups') => {
 
@@ -38,7 +36,7 @@ const _this = module.exports = {
 	pack,
 
 	export_table_csv: async ( tablename, string_quotes = '"', separator = ';' ) => {
-		if (!tablename || mysql_actions.find( x => x.names === tablename) === -1) {
+		if (!tablename || typeof find_model(tablename) === 'undefined') {
 			console.error('tablename invalid', tablename);
 			return false;
 		}
@@ -49,7 +47,7 @@ const _this = module.exports = {
 		}
 
 		console.log('geting all data');
-		const mysql_values = await MYSQL_GET_ALL( tablename );
+		const mysql_values = await MYSQL_GET_ALL({ action: tablename });
 		console.log('reciving', mysql_values.length, 'rows');
 		_this.save_csv( mysql_values, tablename, string_quotes, separator );
 
@@ -59,7 +57,7 @@ const _this = module.exports = {
 
 		folder_prepare (csv_folder_path);
 
-		if (!tablename || mysql_actions.find( x => x.names === tablename) === -1) {
+		if (!tablename || typeof find_model(tablename) === 'undefined') {
 			console.error('tablename invalid', tablename);
 			return false;
 		}

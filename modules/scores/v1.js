@@ -1,14 +1,15 @@
 const { ModsIntToShortText, scores_db_load,
 	all_score_properties, scores_db_save, ModsShortTextToInt } = require('osu-tools');
 const path = require('path');
+const { select_mysql_model } = require('mysql-tools');
 
-const { osu_score_legacy, beatmaps_md5 } = require('../DB/defines');
 const { Num, boolean_from_string, group_by, concat_array_of_arrays, print_processed } = require('../../tools/misc');
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 
 const { rank_to_int } = require('../../misc/const');
 const { copyFileSync, renameSync } = require('fs');
 const config = require('../../modules/config_control.js');
+
 
 const convert_v2_to_v1 = async ({ score, beatmap }) => ({
 	score: {
@@ -68,6 +69,7 @@ const save_scores_v1 = async ( data_arr ) => {
 	const scores = ( await Promise.all( 
 		data_arr.filter( x => x && x.score && x.beatmap ).map( async x => await score_v1_parse( x )))
 	);
+	const osu_score_legacy = select_mysql_model('osu_score_legacy');
 	const res = await osu_score_legacy.bulkCreate( scores, { ignoreDuplicates: true });
 	return res.length;
 };
@@ -114,6 +116,8 @@ const _this = module.exports = {
 		const backup_path = path.join( osu_path, backup_name );
 
 		const scores_osu = scores_db_load(path.join(osu_path, 'scores.db'), all_score_properties);
+		const beatmaps_md5 = select_mysql_model('beatmaps_md5');
+		const osu_score_legacy = select_mysql_model('osu_score_legacy');
 
 		for (let {userid, username, gamemode} of users) {
 			const new_scores = await osu_score_legacy.findAll({ 

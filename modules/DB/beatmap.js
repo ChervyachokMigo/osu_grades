@@ -1,7 +1,6 @@
 const { RankedStatus } = require('osu-tools');
-const { select_mysql_model } = require('mysql-tools');
+const { select_mysql_model, MYSQL_SAVE } = require('mysql-tools');
 const { Num, import_beatmap_status, concat_array_of_arrays } = require('../../tools/misc');
-const { MYSQL_SAVE } = require('./base');
 const { get_md5_id } = require('./tools');
 
 
@@ -102,14 +101,16 @@ module.exports = {
 		const beatmap = convert_v1_to_db( beatmap_v1 );
 
 		try {
-			await MYSQL_SAVE( 'beatmap_info', { md5: beatmap_md5_id }, {
+			await MYSQL_SAVE( 'beatmap_info', { 
+				md5: beatmap_md5_id,
 				artist: beatmap.artist,
 				title: beatmap.title,
 				creator: beatmap.creator,
 				difficulty: beatmap.difficulty
 			});
 
-			await MYSQL_SAVE( 'beatmap_id', { md5: beatmap_md5_id }, {
+			await MYSQL_SAVE( 'beatmap_id', { 
+				md5: beatmap_md5_id,
 				beatmap_id: beatmap.beatmap_id,
 				beatmapset_id: beatmap.beatmapset_id,
 				gamemode: beatmap.gamemode,
@@ -130,14 +131,16 @@ module.exports = {
 				const beatmap_md5_id = await get_md5_id( beatmap.checksum );
 				const beatmap_for_db = convert_v2_to_db( beatmapset, beatmap );
 				try {
-					await MYSQL_SAVE( 'beatmap_info', { md5: beatmap_md5_id }, {
+					await MYSQL_SAVE( 'beatmap_info', { 
+						md5: beatmap_md5_id,
 						artist: beatmap_for_db.artist,
 						title: beatmap_for_db.title,
 						creator: beatmap_for_db.creator,
 						difficulty: beatmap_for_db.difficulty
 					});
 
-					await MYSQL_SAVE( 'beatmap_id', { md5: beatmap_md5_id }, {
+					await MYSQL_SAVE( 'beatmap_id', { 
+						md5: beatmap_md5_id,
 						beatmap_id: beatmap_for_db.beatmap_id,
 						beatmapset_id: beatmap_for_db.beatmapset_id,
 						gamemode: beatmap_for_db.gamemode,

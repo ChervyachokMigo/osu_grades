@@ -1,7 +1,6 @@
 const fs = require('fs');
 const input = require('input');
 
-const { MYSQL_SAVE } = require('./base.js');
 const { split_array_on_chunks, print_processed } = require('../../tools/misc.js');
 const { prepareDB } = require('./defines.js');
 
@@ -123,7 +122,7 @@ const _this = module.exports = {
 
 		for (let chunk of chunks){
 			count += chunk.length;
-			await MYSQL_SAVE(tablename, 0, chunk);
+			await MYSQL_SAVE(tablename, chunk);
 			print_processed({
 				current: count, 
 				size: chunks.length * chunk_size, 

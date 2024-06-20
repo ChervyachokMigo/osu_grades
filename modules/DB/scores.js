@@ -1,5 +1,6 @@
 const { Op } = require('@sequelize/core');
-const { osu_score, osu_beatmap_id, osu_score_legacy } = require('./defines');
+const { select_mysql_model } = require('mysql-tools');
+
 const { RankedStatus } = require('osu-tools');
 const { group_by } = require('../../tools/misc');
 const { rank_to_int } = require('../../misc/const');
@@ -8,8 +9,8 @@ const config = require('../../modules/config_control.js');
 
 const select_score_mode_model = ( score_mode ) => {
 	const model = {
-		'1': osu_score_legacy,
-		'2': osu_score,
+		'1': select_mysql_model('osu_score_legacy'),
+		'2': select_mysql_model('osu_score'),
 	};
 
 	if (Object.keys(model).indexOf(score_mode.toString()) === -1){
@@ -40,6 +41,7 @@ module.exports = {
 		const scores = await score_mode_model.findAll({ where: where_scores, raw: true, attributes: ['md5', 'gamemode'] });
 		const scores_gamemodes = Object.entries(group_by(scores, 'gamemode'));
 
+		const osu_beatmap_id = select_mysql_model('beatmap_id');
 		const beatmaps = await osu_beatmap_id.findAll({ where: where_beatmaps, raw: true, attributes: ['md5', 'gamemode'] });
 		const beatmaps_gamemodes = Object.entries(group_by(beatmaps,'gamemode'));
 		const beatmaps_count = beatmaps_gamemodes.map( ([m, s]) => ({ gamemode: m, count: s.length }));

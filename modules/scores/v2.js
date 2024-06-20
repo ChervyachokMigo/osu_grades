@@ -1,9 +1,10 @@
 
-const { osu_score } = require('../DB/defines');
+const { select_mysql_model } = require('mysql-tools');
 const { Num } = require('../../tools/misc');
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 
 const { rank_to_int } = require('../../misc/const');
+
 
 const _this = module.exports = {
 	convert_v2_to_db: async ( score ) => ({
@@ -33,6 +34,7 @@ const _this = module.exports = {
 	// Single score
 	save_score_v2: async ( data ) => {
 		const score = await _this.convert_v2_to_db( data );
+		const osu_score = select_mysql_model('osu_score');
 		const res = await osu_score.upsert( score, { raw: true });
 		return res.pop();
 	},
@@ -41,7 +43,7 @@ const _this = module.exports = {
 		const scores = await Promise.all( 
 			data_arr.filter( x => x && x.id ).map ( async x => await _this.convert_v2_to_db( x ))
 		);
-        
+        const osu_score = select_mysql_model('osu_score');
 		const res = await osu_score.bulkCreate( scores, { ignoreDuplicates: true });
 		return res.length;
 	}

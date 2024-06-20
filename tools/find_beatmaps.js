@@ -1,5 +1,5 @@
 
-const { beatmaps_md5, osu_beatmap_id } = require('../modules/DB/defines');
+const { select_mysql_model } = require('mysql-tools');
 
 module.exports = async ({ 
 	beatmap_md5 = null, 
@@ -21,6 +21,7 @@ module.exports = async ({
 	if (gamemode !== null)
 		beatmap_where.gamemode = gamemode;
 
+	const beatmaps_md5 = select_mysql_model('beatmaps_md5');
 	const options = {
 		where: beatmap_where,
 
@@ -43,6 +44,7 @@ module.exports = async ({
 		raw: true, 
 	};
 
+	const osu_beatmap_id = select_mysql_model('beatmap_id');
 	if (single) {
 		return await osu_beatmap_id.findOne(options);
 	} else {

@@ -1,12 +1,14 @@
+const { copyFileSync, renameSync } = require('fs');
 const { collection_db_load, collection_db_save } = require('osu-tools');
 const path = require('path');
+const { select_mysql_model } = require('mysql-tools');
 
 const config = require('../modules/config_control.js');
-const { osu_score, beatmaps_md5 } = require('../modules/DB/defines');
+
 const { group_by, get_ruleset_by_gamemode_int, get_key_by_value } = require('../tools/misc');
 const { rank_to_int } = require('../misc/const');
-const { copyFileSync, renameSync } = require('fs');
 const users = require('../modules/DB/users');
+
 
 			
 module.exports = {
@@ -25,6 +27,9 @@ module.exports = {
 		const backup_path = path.join( osu_path, backup_name );
 
 		let collections = collection_db_load( old_collection_path );
+
+		const beatmaps_md5 = select_mysql_model('beatmaps_md5');
+		const osu_score = select_mysql_model('osu_score');
 
 		await users.users_variants( 'checkboxes', async ( {userid, gamemode} ) => {
 			const res = await osu_score.findAll({ 

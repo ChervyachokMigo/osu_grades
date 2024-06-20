@@ -1,8 +1,9 @@
 const { RankedStatus } = require('osu-tools');
+const { select_mysql_model } = require('mysql-tools');
 const { Num, import_beatmap_status, concat_array_of_arrays } = require('../../tools/misc');
 const { MYSQL_SAVE } = require('./base');
-const { osu_beatmap_id, beatmap_info } = require('./defines');
 const { get_md5_id } = require('./tools');
+
 
 const convert_v1_to_db = ( beatmap_v1 ) => ({
 	md5: beatmap_v1.file_md5,
@@ -70,10 +71,14 @@ module.exports = {
 			difficulty: x.difficulty})
 		).filter( x => x.md5 );
 		
+		const osu_beatmap_id = select_mysql_model('beatmap_id');
+
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
 			updateOnDuplicate: [ 'beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']		
 		})).map( x => x.dataValues );
+
+		const beatmap_info = select_mysql_model('beatmap_info');
 
 		const res2 = (await beatmap_info.bulkCreate( info_data, { 
 			ignoreDuplicates: true,
@@ -177,10 +182,14 @@ module.exports = {
 			difficulty: x.difficulty})
 		).filter( x => x.md5 );
 
+		const osu_beatmap_id = select_mysql_model('beatmap_id');
+
 		const res = (await osu_beatmap_id.bulkCreate( ids_data, {
 			ignoreDuplicates: true,
 			updateOnDuplicate: [ 'beatmap_id', 'beatmapset_id', 'gamemode', 'ranked']
 		})).map( x => x.dataValues );
+
+		const beatmap_info = select_mysql_model('beatmap_info');
 
 		const res2 = (await beatmap_info.bulkCreate( info_data, { 
 			ignoreDuplicates: true,

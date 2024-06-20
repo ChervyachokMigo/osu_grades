@@ -1,6 +1,6 @@
 const { DataTypes } = require('@sequelize/core');
 const config = require('../../modules/config_control.js');
-const { prepareDB, prepareEND } = require('mysql-tools');
+const { prepareDB, prepareEND, add_model_names } = require('mysql-tools');
 
 let config_data = config.get_data();
 

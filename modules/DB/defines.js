@@ -28,7 +28,7 @@ module.exports = {
 			beatmapset_id: {type: DataTypes.INTEGER, allowNull: false},
 			gamemode: {type: DataTypes.TINYINT.UNSIGNED, allowNull: false},
 			ranked: {type: DataTypes.TINYINT, allowNull: false},
-		});
+		}, {noPrimaryKey: false});
 
 		const beatmap_info = osu_beatmaps_connection.define ('beatmap_info', {
 			md5: {type: DataTypes.INTEGER,allowNull: false, unique: true, primaryKey: true},
@@ -36,7 +36,7 @@ module.exports = {
 			title: {type: DataTypes.STRING, allowNull: false},
 			creator: {type: DataTypes.STRING, allowNull: false},
 			difficulty: {type: DataTypes.STRING, allowNull: false},
-		});
+		}, {noPrimaryKey: false});
 
 		beatmaps_md5.hasOne(osu_beatmap_id, { foreignKey: 'md5', foreignKeyConstraints: false});
 		beatmaps_md5.hasOne(beatmap_info, { foreignKey: 'md5',  foreignKeyConstraints: false});

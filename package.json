@@ -19,7 +19,6 @@
     "express": "^4.18.2",
     "input": "^1.0.1",
     "mysql-tools": "github:ChervyachokMigo/MYSQL-tools",
-    "mysql2": "^3.9.1",
     "osu-api-extended": "^2.8.1",
     "osu-tools": "github:ChervyachokMigo/osu-tools",
     "ws": "^8.16.0"

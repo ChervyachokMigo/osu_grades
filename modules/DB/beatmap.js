@@ -1,5 +1,5 @@
 const { RankedStatus } = require('osu-tools');
-const { select_mysql_model, MYSQL_SAVE } = require('mysql-tools');
+const { select_mysql_model, MYSQL_SAVE } = require('MYSQL-tools');
 const { Num, import_beatmap_status, concat_array_of_arrays } = require('../../tools/misc');
 const { get_md5_id } = require('./tools');
 

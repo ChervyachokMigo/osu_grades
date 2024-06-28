@@ -1,6 +1,6 @@
 const input = require('input');
 const { Op } = require('@sequelize/core');
-const { select_mysql_model } = require('mysql-tools');
+const { select_mysql_model } = require('MYSQL-tools');
 
 const { gamemode } = require('../../misc/const');
 const { users_header } = require('../../misc/text_consts');

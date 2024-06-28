@@ -1,5 +1,5 @@
 const { Op } = require('@sequelize/core');
-const { select_mysql_model } = require('mysql-tools');
+const { select_mysql_model } = require('MYSQL-tools');
 
 const { RankedStatus } = require('osu-tools');
 const { group_by } = require('../../tools/misc');

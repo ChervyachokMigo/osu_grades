@@ -1,5 +1,5 @@
 
-const { select_mysql_model } = require('mysql-tools');
+const { select_mysql_model } = require('MYSQL-tools');
 const { Num } = require('../../tools/misc');
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');
 

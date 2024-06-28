@@ -1,5 +1,5 @@
 
-const { select_mysql_model } = require('mysql-tools');
+const { select_mysql_model } = require('MYSQL-tools');
 
 module.exports = async ({ 
 	beatmap_md5 = null, 

@@ -1,7 +1,7 @@
 const { copyFileSync, renameSync } = require('fs');
 const { collection_db_load, collection_db_save } = require('osu-tools');
 const path = require('path');
-const { select_mysql_model } = require('mysql-tools');
+const { select_mysql_model } = require('MYSQL-tools');
 
 const config = require('../modules/config_control.js');
 

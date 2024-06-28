@@ -1,7 +1,7 @@
 
 const { writeFileSync } = require('fs');
 const path = require('path');
-const { find_model, MYSQL_GET_ALL } = require('mysql-tools');
+const { find_model, MYSQL_GET_ALL } = require('MYSQL-tools');
 const { csv_folder_path } = require('../../misc/const');
 const { spawnSync } = require('child_process');
 const { prepareDB } = require('./defines');

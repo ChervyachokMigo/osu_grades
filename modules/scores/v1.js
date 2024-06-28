@@ -1,5 +1,5 @@
 const { ModsIntToShortText, scores_db_load,
-	all_score_properties, scores_db_save, ModsShortTextToInt } = require('osu-tools');
+	all_score_properties, scores_db_save, ModsShortTextToInt, osu_db_load, all_beatmap_properties, get_score_grade, osu_db_save } = require('osu-tools');
 const path = require('path');
 const { select_mysql_model } = require('MYSQL-tools');
 
@@ -167,5 +167,62 @@ const _this = module.exports = {
 		renameSync( temp_scores_path, old_scores_path );
 		
 		console.log( 'scores saved' );
+
+		console.log( 'update osu.db');
+		const osu_db_path = path.join( osu_path, 'osu!.db' );
+		const osu_db_data = osu_db_load(osu_db_path, all_beatmap_properties);
+
+		console.log('fining grades');
+		const scores_grades = [];
+
+		scores_osu.beatmaps_scores.forEach( v => {
+			if (v.scores.length > 0) {
+				scores_grades.push({
+					playername: v.scores[0].playername,
+					beatmap_md5: v.scores[0].beatmap_md5, 
+					gamemode_int: v.scores[0].gamemode_int, 
+					grade: get_score_grade(v.scores[0]),
+					date_int: v.scores[0].windows_tick_date
+				});
+			}
+			
+		});
+
+        const grades_names = [
+			'grade_achieved_std',
+			'grade_achieved_taiko',
+			'grade_achieved_ctb',
+			'grade_achieved_mania'
+		];
+
+		console.log('setting grades');
+		osu_db_data.beatmaps.forEach( x => {
+			const score = scores_grades.find( y => y.beatmap_md5 === x.beatmap_md5 && y.gamemode_int === x.gamemode_int );
+			if (score) {
+				
+				x[grades_names[score.gamemode_int]] = score.grade;
+				if (score.playername === osu_db_data.playername) {
+					x.is_unplayed = false;
+					x.last_played = {int: score.date_int};
+				}
+			}
+		})
+
+		const osu_db_backup_name = 'osu!-' + 
+			new Date().toISOString().replace(/[T.:]+/gui, '-').replace('Z', '') + 
+			'.db.bak';
+		const osu_db_backup_name_path = path.join( osu_path, backup_name );
+
+		console.log( 'make backup:', osu_db_backup_name_path );
+		copyFileSync( osu_db_path, osu_db_backup_name_path );
+
+		const temp_osu_db = path.join( osu_path, 'temp_osu!.db' );
+		console.time( 'saving osu!.db');
+		osu_db_save( osu_db_data, temp_osu_db );
+		console.timeEnd('saving osu!.db');
+
+		renameSync( temp_osu_db, osu_db_path );
+		
+		console.log( 'osu!.db saved' );
 	}
 };

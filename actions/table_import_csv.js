@@ -1,11 +1,11 @@
 const input = require('input');
 const fs = require('fs');
 const path = require('path');
-const { get_models_names } = require('MYSQL-tools');
+const { get_models_names, import_table_csv } = require('MYSQL-tools');
 
-const { import_table_csv } = require('../modules/DB/mysql_import');
+//const { import_table_csv } = require('../modules/DB/mysql_import');
 const { csv_folder_path } = require('../misc/const');
-const { boolean_from_string, folder_prepare } = require('../tools/misc');
+const { folder_prepare } = require('../tools/misc');
 
 module.exports = {
 	args: ['filepath', 'tablename', 'skip_errors', 'strings_quotes' ],
@@ -16,11 +16,10 @@ module.exports = {
 		const files = fs.readdirSync( csv_folder_path );
 		const tables = get_models_names();
 
-		await import_table_csv({
-			filepath: args.filepath || path.join( csv_folder_path, await input.select('Select csv file', files )), 
-			tablename: args.tablename || await input.select('Select table name', tables),
-			skip_errors: boolean_from_string(args.skip_errors) || false
-		});
+		await import_table_csv(
+			args.filepath || path.join( csv_folder_path, await input.select('Select csv file', files )), 
+			args.tablename || await input.select('Select table name', tables),
+		);
 		
 		console.log('import complete');
 	}};

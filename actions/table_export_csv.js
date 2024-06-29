@@ -1,6 +1,6 @@
 const input = require('input');
-const { get_models_names } = require('MYSQL-tools');
-const { export_table_csv } = require('../modules/DB/mysql_export');
+const { get_models_names, export_table_csv } = require('MYSQL-tools');
+const { csv_folder_path } = require('../misc/const');
 
 module.exports = {
 	args: ['tablename'],
@@ -8,12 +8,13 @@ module.exports = {
 		console.log('export table');
 
 		const tables = get_models_names();
-
-		await export_table_csv( 
-			args.tablename || await input.select('Select table name', tables),
-			await input.text('Enter string quotes', { default: '"' }),
-			await input.text('Enter separator', { default: ';' }),
-		);
+		
+		await export_table_csv({
+			folder_path: csv_folder_path,
+			tablename: args.tablename || await input.select('Select table name', tables),
+			string_quotes: await input.text('Enter string quotes', { default: '"' }),
+			separator: await input.text('Enter separator', { default: ';' }),
+		});
 		
 		console.log('export complete');
 	}};

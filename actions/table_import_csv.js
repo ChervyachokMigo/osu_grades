@@ -14,8 +14,8 @@ module.exports = {
 		folder_prepare( csv_folder_path );
 		
 		const files = fs.readdirSync( csv_folder_path );
-		const tables = get_models_names();
-
+		const tables = get_models_names().map( x => Array.isArray(x)? x[0]: x );
+		
 		await import_table_csv(
 			args.filepath || path.join( csv_folder_path, await input.select('Select csv file', files )), 
 			args.tablename || await input.select('Select table name', tables),

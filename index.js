@@ -92,7 +92,7 @@ const launcher_start = async() => {
 		name: pkg.name, 
 		currentVersion: pkg.version, 
 		user: 'ChervyachokMigo',
-		branch: 'master'
+		branch: 'main'
 	}, function(err, latestVersion, defaultMessage){
 		if(!err){
 			console.log(defaultMessage);

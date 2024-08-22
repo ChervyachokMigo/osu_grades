@@ -9,6 +9,10 @@ const { rank_to_int } = require('../../misc/const');
 const { count_scores_by_gamemode } = require('../DB/scores');
 const refresh_v1 = require('../../actions/refresh_v1');
 
+let interval = null;
+let clients = [];
+let is_updating = false;
+
 const client_send = async ( client, action, response_data ) => 
 	await client.send( JSON.stringify({ action, response_data }) );
 
@@ -34,9 +38,6 @@ const refresh_scores = async ({ userid, gamemode, score_mode }) => {
 	}
 };
 
-let interval = null;
-let clients = [];
-
 const client_change_type = (client_id, type) => {
 	const idx = clients.findIndex( x => x.id === client_id);
 	if ( idx > -1 ){
@@ -52,7 +53,9 @@ const _this = module.exports = {
 	},
 
 	refresh_grades_action: async ({ clients, userid, gamemode, score_mode, sort_method }) => {
-		if ( clients.length > 0 ){
+		if ( clients.length > 0 && is_updating === false ){
+			is_updating = true;
+
 			await refresh_scores({ userid, gamemode, score_mode }).finally( async () => {
 	
 				let grades_sum = {};
@@ -75,6 +78,8 @@ const _this = module.exports = {
 					}
 				}
 
+				is_updating = false;
+
 			});
 		}
 	},
@@ -89,11 +94,13 @@ const _this = module.exports = {
 
 		const args = { clients, userid, gamemode, score_mode, sort_method };
 
-		if (is_web_autoupdating && !interval ) {
-			interval = setInterval( _this.refresh_grades_action, autoupdate_time_sec * 1000, args );
-		}
+		if (is_updating === false) {
+			if (is_web_autoupdating && !interval ) {
+				interval = setInterval( _this.refresh_grades_action, autoupdate_time_sec * 1000, args );
+			}
 
-		await _this.refresh_grades_action( args );
+			await _this.refresh_grades_action( args );
+		}
 	},
 
 	init_socket_server: () => {

@@ -2,7 +2,7 @@ const { writeFileSync } = require('fs');
 
 const { RankedStatus } = require('osu-tools');
 
-const osu_auth = require('../osu_auth');
+const { osu_auth } = require('../osu_auth');
 const find_beatmaps = require('../find_beatmaps');
 const { check_gamemode, print_processed, check_userid, folder_prepare, load_json } = require('../misc');
 const { get_scores_load_filename } = require('../../misc/text_templates');

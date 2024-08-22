@@ -27,32 +27,34 @@ const login_osu_loop = async () => {
 	}
 };
 
-module.exports = async () => {
-	const current_time = new Date().getTime();
+module.exports = {
+	get_token: () => access_token?.access_token || null,
+	osu_auth: async () => {
+		const current_time = new Date().getTime();
 
-	if (!access_token || !expires_in){
-		if (existsSync(osu_token_path)){
-			const data = JSON.parse(readFileSync(osu_token_path, {encoding: 'utf8'}));
-			expires_in = data.time;
-			access_token = data.access_token;
-			if (access_token && expires_in && current_time < expires_in) {
-				auth.set_v2(access_token.access_token);
-				return true;
+		if (!access_token || !expires_in){
+			if (existsSync(osu_token_path)){
+				const data = JSON.parse(readFileSync(osu_token_path, {encoding: 'utf8'}));
+				expires_in = data.time;
+				access_token = data.access_token;
+				if (access_token && expires_in && current_time < expires_in) {
+					auth.set_v2(access_token.access_token);
+					return true;
+				} else {
+					await login_osu_loop();
+				}
 			} else {
 				await login_osu_loop();
 			}
 		} else {
-			await login_osu_loop();
+			if (access_token && expires_in && current_time > expires_in) {
+				await login_osu_loop();
+			} else {
+				//actual token, nothing to do
+				return true;
+			}
 		}
-	} else {
-		if (access_token && expires_in && current_time > expires_in) {
-			await login_osu_loop();
-		} else {
-			//actual token, nothing to do
-			return true;
-		}
+
+		return false;
 	}
-
-	return false;
-
 };

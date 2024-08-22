@@ -76,7 +76,7 @@ const _this = module.exports = {
 		if ( force || print_current % percent == 0 || current == initial || print_current == size ) {
 			let percent_text = show_percent ? (( current == initial ? 0 : print_current ) / size * 100 ).toFixed(percent_precition) + '%' : '';
 			let value_text = show_values ? `(${print_current * multiplier}/${size * multiplier})` : '';
-			console.log( 'processed ' + spaceAfter(name) + spaceAfter(percent_text) + value_text );
+			process.stdout.write( 'processed ' + spaceAfter(name) + spaceAfter(percent_text) + value_text + '\r' );
 		}
 	},
 

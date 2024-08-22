@@ -1,4 +1,4 @@
-const osu_auth = require('../osu_auth');
+const { osu_auth } = require('../osu_auth');
 const { check_gamemode, check_userid } = require('../misc');
 
 module.exports = async({ args, looping = false , score_mode, limit = 100, init = async () => false, callback }) => {

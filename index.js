@@ -41,7 +41,7 @@ const select_action = async ( selected_action ) => {
 var checkUpdate = require('check-update-github');
 var pkg = require('./package.json');
 const { request_beatmap_by_id } = require('./modules/osu_requests_v1');
-const osu_auth = require('./tools/osu_auth');
+const { osu_auth } = require('./tools/osu_auth');
 const path = require('path');
 
 const v1_check_config = async () => {

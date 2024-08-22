@@ -1,7 +1,7 @@
 const { writeFileSync } = require('fs');
 const path = require('path');
 
-const osu_auth = require('../tools/osu_auth');
+const { osu_auth } = require('../tools/osu_auth');
 const { save_beatmapsets_v2 } = require('../modules/DB/beatmap');
 const { check_gamemode, print_processed, folder_prepare, is_gamemode, load_json } = require('../tools/misc');
 const { request_beatmaps_by_cursor_v2 } = require('../modules/osu_requests_v2');

@@ -14,7 +14,7 @@ const back_categories = {
 	V2_JSON_RECOUNT: 'scores',
 	import_jsons: 'scores',
 
-	db_tools: 'tools',
+	db_tools: 'tools'
 };
 
 const _this = module.exports = {
@@ -161,6 +161,7 @@ const _this = module.exports = {
 		values: [
 			{ name: 'Edit config', value: { action: 'webserver', args: [4] }},
 			{ name: 'Reset config', value: { action: 'webserver', args: [5] }},
-		]},
+		]
+	},
 
 };

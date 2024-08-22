@@ -5,8 +5,7 @@ const { beatmaps_v2_request_limit } = require('../misc/const');
 const config = require('./config_control');
 
 module.exports = {
-	request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = null, 
-		sort_condition = 'total_score', notice_miss = false, best_only = false }) => {
+	request_beatmap_user_scores_v2: async ({ beatmap_id, userid, gamemode = null, sort_condition = 'total_score', notice_miss = false, best_only = false }) => {
 
 		const data = await v2.scores.user.beatmap( beatmap_id, userid, { mode: gamemode, best_only }).catch( (e) => {
 			console.error( 'request user scores on beatmap error' );

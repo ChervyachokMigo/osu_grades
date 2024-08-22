@@ -1,4 +1,4 @@
-const osu_auth = require('../tools/osu_auth');
+const { osu_auth } = require('../tools/osu_auth');
 const { check_userid } = require('../tools/misc');
 const { request_beatmap_user_scores_v2 } = require('../modules/osu_requests_v2');
 

@@ -1,11 +1,10 @@
 const { writeFileSync } = require('fs');
 const input = require('input');
 
-
-const default_config = require('../misc/config-sample.js');
-const { config_path } = require('../misc/const');
+const { config_path, default_config_path } = require('../misc/const');
 const { load_json, boolean_from_string, Num, folder_prepare } = require('../tools/misc');
 
+const default_config = load_json(default_config_path);
 const config_keys = Object.keys(default_config);
 
 const _this = module.exports = {

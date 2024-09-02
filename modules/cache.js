@@ -84,7 +84,7 @@ const _this = module.exports = {
 			const data = load_json( request_filepath );
 			if ( !data ) return false;
 
-			console.log( 'found cache data, returning', data.length, 'bytes' );
+			console.log( 'loading data from cache' );
 			return data;
 
 		// ========================= BEATMAP V2 =========================
@@ -95,7 +95,7 @@ const _this = module.exports = {
 			const data = load_json( request_filepath );
 			if ( !data ) return false;
 
-			console.log( 'found cache data, returning', data.length, 'bytes' );
+			console.log( 'loading data from cache' );
 			return data;
 
 		}

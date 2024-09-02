@@ -24,7 +24,8 @@ const _this = module.exports = {
 	get_value: ( key ) => {
 		const value = _this.data[ key ];
 		const default_value = default_config[ key ];
-		if (key === 'api_version' && !(value >= 1 && value <= 3) ) {
+
+		if ( (key === 'api_version' && !(value >= 1 && value <= 3)) || typeof value === 'undefined' ) {
 			return default_value;
 		}
 		

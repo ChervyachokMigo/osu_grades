@@ -8,6 +8,12 @@
 		"files.exclude": {
 			"**/data/csv": true,
 			"**/data/scores": true,
+			"**/data/cache": true,
+			"**/data/load": true,
+			"**/data/scores_backup": true,
+			"**/data/sql": true,
+			"**/results": true,
+			"**/unusedbats": true
 			"**/node_modules": true
 		}
 	}

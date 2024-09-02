@@ -22,5 +22,7 @@
 	"osu_path": "C:\\osu!",
 
 	"is_loved_select": false,
-	"api_version": 1
+	"api_version": 1,
+
+	"WORKER_SERVER_PORT": 6969
 }

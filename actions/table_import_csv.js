@@ -1,7 +1,7 @@
 const input = require('input');
 const fs = require('fs');
 const path = require('path');
-const { get_models_names, import_table_csv } = require('MYSQL-tools');
+const { get_models_names, import_table_csv } = require('mysql-tools');
 
 //const { import_table_csv } = require('../modules/DB/mysql_import');
 const { csv_folder_path } = require('../misc/const');

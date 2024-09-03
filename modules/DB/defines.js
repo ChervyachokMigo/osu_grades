@@ -1,5 +1,5 @@
 
-const { prepareDB, prepareEND, beatmaps_prepare, scores_prepare } = require('MYSQL-tools');
+const { prepareDB, prepareEND, beatmaps_prepare, scores_prepare } = require('mysql-tools');
 
 const config = require('../../modules/config_control.js');
 

@@ -1,4 +1,4 @@
-const { select_mysql_model, find_model } = require('MYSQL-tools');
+const { select_mysql_model, find_model } = require('mysql-tools');
 
 module.exports = {
 	get_md5_id: async ( hash ) => {

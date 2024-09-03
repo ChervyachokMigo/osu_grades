@@ -1,7 +1,7 @@
 const { ModsIntToShortText, scores_db_load,
 	all_score_properties, scores_db_save, ModsShortTextToInt, osu_db_load, all_beatmap_properties, get_score_grade, osu_db_save } = require('osu-tools');
 const path = require('path');
-const { select_mysql_model } = require('MYSQL-tools');
+const { select_mysql_model } = require('mysql-tools');
 
 const { Num, boolean_from_string, group_by, concat_array_of_arrays, print_processed } = require('../../tools/misc');
 const { get_md5_id, mods_v2_to_string } = require('../DB/tools');

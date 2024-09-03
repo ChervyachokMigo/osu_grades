@@ -1,5 +1,5 @@
 const input = require('input');
-const { get_models_names, export_table_csv } = require('MYSQL-tools');
+const { get_models_names, export_table_csv } = require('mysql-tools');
 const { csv_folder_path } = require('../misc/const');
 
 module.exports = {

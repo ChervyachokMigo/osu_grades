@@ -2,39 +2,40 @@ const { prepareDB } = require("./modules/DB/defines");
 const config_control = require("./modules/config_control");
 const { save_scores_v2 } = require("./modules/scores/v2");
 const worker_client = require("./modules/worker/client");
-const worker_server = require("./modules/worker/server");
 const find_beatmaps = require("./tools/find_beatmaps");
+const worker_server = require('osu-grades-worker-node');
 
 config_control.init();
 
 const connections = [
-	{hostname: 'localhost', client: null},
+	//{ hostname: '62.109.26.120', client: null },
+	{ hostname: '127.0.0.1', client: null},
 	//{hostname: 'localhost2', client: null},
 ];
 
 var chunk_counter = 0;
 
-const userid = 8046661;
+const userid = 13903685;
 const gamemode = 0;
 
 (async () => {
-	await worker_server.init();
+
 	await prepareDB();
 
 	const beatmapsets = (await find_beatmaps({ ranked: 4, gamemode: gamemode }))
 		.filter( x => x.beatmap_id > 0 )
 		.filter( beatmap => beatmap.gamemode === gamemode );
 
-	console.log(
-		'Found', beatmapsets.length, 'ranked beatmapsets'
-	);
+	console.log('Found', beatmapsets.length, 'ranked beatmapsets');
 
+	console.time('done');
 
 	const get_beatmapset_chunk = (chunk_size = 102) => {
 		const res = beatmapsets.slice(chunk_counter * chunk_size, chunk_counter * chunk_size + chunk_size );
 		
 		if (res.length === 0) {
 			console.log('No more beatmapsets to process');
+			console.timeEnd('done');
 			return null;
 		}
 
@@ -83,9 +84,6 @@ const gamemode = 0;
 					return;
 				}
 			});
-			//connections[i].client.id
-
-			//console.log('client', connections[i].client);
 			
 			/*const worker_ping_interval = setInterval( () => {
 				if ( worker_client.ping(connections[i].client.id) === false ) {
@@ -115,4 +113,4 @@ const gamemode = 0;
 		}
     }
 	
-}) ();
+}) //();

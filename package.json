@@ -21,6 +21,7 @@
     "input": "^1.0.1",
     "mysql-tools": "github:ChervyachokMigo/mysql-tools",
     "osu-api-extended": "^2.8.1",
+    "osu-grades-worker-node": "github:ChervyachokMigo/osu-grades-worker-node",
     "osu-tools": "github:ChervyachokMigo/osu-tools",
     "ws": "^8.16.0"
   },
